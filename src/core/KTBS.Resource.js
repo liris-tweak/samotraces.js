@@ -41,26 +41,43 @@ Samotraces.KTBS.Resource = (function() {
 	 * on success.
 	 */
 	function force_state_refresh() {
-		console.log(this.uri);	
-		//$.getJSON(this.uri,this._on_state_refresh_.bind(this));	
+		url = this.uri;
+		var trc = this ;
 		$.ajax({
-			url: this.uri,
+			url: url,
 			type: 'GET',
 			dataType: 'json',
-			error: (function(jqXHR, textStatus, errorThrown) {
-console.log("error",this);
-console.log(textStatus,errorThrown);
-				Samotraces.log("Cannot refresh "+this.get_resource_type()+" " + this.uri + ": ", textStatus + ' ' + JSON.stringify(errorThrown));
-			}).bind(this),
-			success: this._on_state_refresh_.bind(this),
-		/*	error: function(jqXHR,textStatus,error) {
-				console.log("Error in force_state_refresh():");
-				console.log([jqXHR,textStatus,error]);
-				if(textStatus == "parsererror") {
-					console.log("--> parsererror -->");
-					console.log(jqXHR.responseText);
-				}
-			}*/
+			 xhrFields: {
+                        withCredentials: true
+                        }, 
+			error: function(XHR, textStatus, errorThrown) {
+                           
+			                if(XHR.status =='401'){
+			                    console.log (XHR.getAllResponseHeaders());
+			                    Link = XHR.getResponseHeader('Link');
+			                    D= Link.split (',');
+			            	    for  (var i=0;i<D.length;i++)
+			            	    {
+			            		    var SousD = D[i].split(';');
+			            			if (SousD[1] === " rel=oauth_resource_server")
+			            			        {
+			            				 		link = SousD[0].substr(1,SousD[0].length-2)
+
+			            				 	}
+			            				 	
+			            			if (SousD[1] === " rel=successful_login_redirect")
+			            			        {
+			            				 		URLSuccess = SousD[0].substr(2,SousD[0].length-3)
+			            				 	}
+
+			            		}
+			            				 
+			            				
+			            				   win = window.open (link) ; 
+			            	}
+			},
+			success: trc._on_state_refresh_.bind(trc),
+		
 		});
 	}
 	/**
