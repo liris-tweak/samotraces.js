@@ -2,7 +2,7 @@ Samotraces.UI.Widgets.ktbs = Samotraces.UI.Widgets.ktbs || {};
 
 /**
  * @class Generic Widget for visualising the available bases of a KTBS.
- * @author Benoît Mathern
+ * @author Benoît Mathern // fatma DErbel
  * @constructor
  * @augments Samotraces.Widgets.Widget
  * @description
