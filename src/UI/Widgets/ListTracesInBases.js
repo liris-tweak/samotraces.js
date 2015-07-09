@@ -30,20 +30,20 @@ Samotraces.UI.Widgets.ktbs.ListTracesInBases = function(html_id,ktbs_base,events
 
 Samotraces.UI.Widgets.ktbs.ListTracesInBases.prototype = {
 	init_DOM: function() {
-		this.element.innerHTML = "";
+		//this.element.innerHTML = "";
 
-		var title = document.createElement('h2');
+		/*var title = document.createElement('h2');
 		var title_text = document.createTextNode('Base: '+this.base.get_uri());
 		title.appendChild(title_text);
-		this.element.appendChild(title);
+		this.element.appendChild(title);*/
 
 		this.datalist_element = document.createElement('ul');
 		this.element.appendChild(this.datalist_element);
 
-		this.remove_button = document.createElement('button');
+		/*this.remove_button = document.createElement('button');
 		$(this.remove_button).append('Delete base');
 		this.element.appendChild(this.remove_button);
-		$(this.remove_button).click(this.remove_base.bind(this));
+		$(this.remove_button).click(this.remove_base.bind(this));*/
 
 		this.add_button = document.createElement('button');
 		$(this.add_button).append('New trace');
@@ -96,11 +96,17 @@ Samotraces.UI.Widgets.ktbs.ListTracesInBases.prototype = {
 		this.datalist_element.innerHTML = '';
 		var li_element;
 		this.base.list_traces().forEach(function(t) {
+				if (t['@type']=="StoredTrace"){
 				li_element = document.createElement('li');
-				li_element.appendChild(document.createTextNode(t['@id']));
+				li_link = document.createElement('button');
+				li_link.setAttribute("class","trace");
+				li_link.appendChild(document.createTextNode(t['@id']));
+				li_element.appendChild(li_link);
+				//li_element.appendChild(document.createTextNode(t['@id']));
 				li_element.addEventListener('click',(function() {this.trigger('ui:click:trace',t['@id'])}).bind(this));
-				this.datalist_element.appendChild(li_element);
+				this.datalist_element.appendChild(li_element);}
 			},this);
+		this.trigger("ListTrace");
 
 	},
 	select: function() {
