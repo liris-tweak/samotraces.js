@@ -150,7 +150,7 @@ Samotraces.KTBS.Trace.prototype = {
 			            win = window.open (link) ;
 			    }
 			}, 
-			success: this._on_refresh_obsel_list_.bind(this)
+			success: function (data) {	if (data['obsels'].length >0)	{OBJ.Before_on_refresh_obsel_list_ (data);}	}
 		});
 		return this.obsel_list.filter(function(o) {
 			if(end && o.get_begin() > end) { return false; }
@@ -158,6 +158,83 @@ Samotraces.KTBS.Trace.prototype = {
 			return true;
 		});
 	},
+
+	Before_on_refresh_obsel_list_: function(dataRecu) {
+                  
+                    // par paquet
+                    this.trigger('trace:Config',dataRecu);
+                    var i=0;
+		            var end = Number(i)+Number(100);
+		            
+		            if (dataRecu.obsels) {this._on_refresh_obsel_list_group(dataRecu.obsels,i,end)}
+		           else { this._on_refresh_obsel_list_group(dataRecu,i,end)}
+		                 
+		        
+	},
+	_on_refresh_obsel_list_group: function(dataRecu,i,end) {
+	    
+	    var count=0;
+		var d = dataRecu.length-Number(1);
+		var DataO = dataRecu.slice (i,end);
+		console.log ('_on_refresh_obsel_list_group');             
+	    DataO.forEach(function(el,key) {
+		      count ++;
+		      this._parse_get_obsel_(el);
+		      var Objet=this;
+			  if (count ==DataO.length )
+			      {
+			      this.trigger('trace:updateT');
+			      i = Number(i)+DataO.length + Number(1);
+			      end=Number(i)+Number(100);
+			      if (end > dataRecu.length){end=dataRecu.length-Number(1);}
+			      setTimeout(function(){ if ((i<=d)&&(end<=d)){Objet._on_refresh_obsel_list_group(dataRecu,i,end)}},2000);
+			      
+			       $("#waiting").hide();
+		            
+			                        }
+		          },this);
+	
+	},
+	
+	_on_refresh_obsel_list_ : function (data){
+	    var count = 0;
+	    var id, label, type, begin, end, attributes, obs;
+		            var new_obsel_loaded = false;
+	     data.forEach(function(el,key) {
+		                            count ++
+			                        this._parse_get_obsel_(el);
+			                        if (count ==data.length )
+			                        {this.trigger('trace:updateT',this);}
+		                          },this);
+	  
+	
+	},
+	
+	get_Last_obsel: function() {
+		var obs;
+		var max=0;
+		this.obsel_list.forEach(function(o) {
+			if(o.get_begin() > max) { obs = o; }
+		});
+		return obs;
+	},
+	get_First_obsel: function() {
+		var obs;
+		var min1=9999999999999;
+		this.obsel_list.forEach(function(o) {
+			if(o.get_begin() < min1) { obs = o; }
+		});
+		return obs;
+	},
+	get_List_obsel_ParType: function(obselType) {
+		var liste = [];
+		
+		this.obsel_list.forEach(function(o) {
+			if(o.type == obselType) { liste.push(o); }
+		});
+		return liste;
+	},
+	
 	
 	/**
 	 * @summary Forces the local obsel list to be synchronised
@@ -220,6 +297,7 @@ Samotraces.KTBS.Trace.prototype = {
 
 		// OBSEL ID
 		obs.id = data["@id"];
+		if (this.type === "ComputedTrace") {obs.id=obs.type+"_"+obs.id}
 		if(obs.id.substr(0,2) == "./") { obs.id = obs.id.substr(2); }
 		
 		// OBSEL TRACE
@@ -234,9 +312,12 @@ Samotraces.KTBS.Trace.prototype = {
 		if(data.hasOwnProperty('http://www.w3.org/2000/01/rdf-schema#label')) {
 			obs.label = data['http://www.w3.org/2000/01/rdf-schema#label'];
 		}
-		obs.begin = data.begin;
-		obs.end = data.end;
-		
+		//obs.begin = data.begin;
+		//obs.end = data.end;
+		var d = new Date (this.origin);
+		obs.begin = d.getTime()+data.begin ;
+		obs.end = d.getTime()+data.end;
+
 		// DELETING PROPERTIES THAT HAVE ALREADY BEEN COPIED
 		delete data["@id"];
 		delete data.hasTrace;
@@ -269,10 +350,12 @@ Samotraces.KTBS.Trace.prototype = {
 //		console.log(data);
 		this._check_and_update_trace_type_(data['@type']);
 		this._check_change_('default_subject', data.hasDefaultSubject, '');
-		this._check_change_('model_uri', data.hasModel, '');
+		this._check_change_('model_uri', data.hasModel, 'trace:model');
 		this._check_change_('obsel_list_uri', data.hasObselList, 'trace:update');
 		this._check_change_('base_uri', data.inBase, '');
-		this._check_change_('origin', data.origin, '');
+		this._check_change_('origin', data.origin, 'trace:update');
+		this._check_change_('label', data.label, 'trace:update');
+		this.trigger('trace:updateData',data);
 		//this._check_change_('origin_offset',this.ktbs_origin_to_ms(data.origin),'');
 	},
 	_update_method_: function(trace_type,method_name) {
@@ -294,7 +377,7 @@ Samotraces.KTBS.Trace.prototype = {
 		}
 	},
 ///////////
-	_on_refresh_obsel_list_: function(data) {
+/*	_on_refresh_obsel_list_: function(data) {
 //		console.log(data);
 		var id, label, type, begin, end, attributes, obs;
 		var new_obsel_loaded = false;
@@ -320,12 +403,12 @@ Samotraces.KTBS.Trace.prototype = {
 				new_obsel_loaded = true;
 			}
 */
-		},this);
+		//},this);
 /*		if(new_obsel_loaded) {
 			this.trigger('trace:update',this.traceSet);
 		}
 */
-	},
+	//},*/
 	_check_obsel_loaded_: function(obs) {
 		if(this.obsel_list.some(function(o) {
 			return o.get_id() == obs.get_id(); // first approximation: obsel has the same ID => it is already loaded... We don't check if the obsel has changed!
