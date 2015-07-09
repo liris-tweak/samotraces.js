@@ -27,15 +27,13 @@ Samotraces.KTBS.Trace = function Trace(uri,id) {
 	Samotraces.KTBS.Resource.call(this,id,uri,'Base',"");
 
 	this.temp = {}; // attribute used to store actions made by the user on the trace while not knowing if they are allowed. e.g., create_obsel, when we don't know yet if the Trace is a StoredTrace because the KTBS didn't reply yet.
-
 	this.default_subject = "";
 	this.model_uri = "";
-	this.obsel_list_uri = "";
+	this.obsel_list_uri = uri+"@obsels";
 	this.base_uri = "";
 	this.origin = "";
 	//this.origin_offset = (new Date(0)).getMilliseconds();
 	this.obsel_list = []; this.traceSet = [];
-
 	this.force_state_refresh();
 };
 
@@ -115,18 +113,43 @@ Samotraces.KTBS.Trace.prototype = {
 	 */
 	// TODO add an optional CALLBACK???
 	list_obsels: function(begin,end,reverse) {
+		this.obsel_list_uri= this.uri+"@obsels";
 		if(this.obsel_list_uri === "") {
 			console.log("Error in KTBS:Trace:list_obsels() unknown uri");
 			return false;
-		} else if(this.obsel_list_uri == "@obsels") {
-			this.obsel_list_uri = this.uri + this.obsel_list_uri;
-		}
+		} 
+
+		var OBJ = this;
+		
 //		$.getJSON(this.obsel_list_uri,this._on_refresh_obsel_list_.bind(this));
+		var OBJ = this;
 		$.ajax({
 			url: this.obsel_list_uri,//+'.json',
 			type: 'GET',
 			dataType: 'json',
 			data: {begin: begin, end: end, reverse: reverse},
+			xhrFields: { withCredentials: true },
+			 error: function(XHR, textStatus, errorThrown) {
+                if(XHR.status =='401'){
+			            Link = XHR.getResponseHeader('Link');
+			            D= Link.split (',');
+			            for  (var i=0;i<D.length;i++)
+			            {
+			            	var SousD = D[i].split(';');
+			            	if (SousD[1] === " rel=oauth_resource_server")
+			            			        {
+			            				 		link = SousD[0].substr(1,SousD[0].length-2)
+
+			            				 	}
+			            				 	
+			            	if (SousD[1] === " rel=successful_login_redirect")
+			            			        {
+			            				 		URLSuccess = SousD[0].substr(2,SousD[0].length-3)
+			            				 	}
+						}
+			            win = window.open (link) ;
+			    }
+			}, 
 			success: this._on_refresh_obsel_list_.bind(this)
 		});
 		return this.obsel_list.filter(function(o) {
