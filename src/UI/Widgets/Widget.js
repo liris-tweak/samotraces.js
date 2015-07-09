@@ -127,8 +127,11 @@ Samotraces.UI.Widgets.Widget = (function() {
 	}
 	return function(id) {
 		// DOCUMENTED ABOVE
-		this.id = id;
-		this.element = document.getElementById(this.id);
+		//this.id = id;
+		//this.element = document.getElementById(this.id);
+		this.element = id;
+		this.id = this.element.id;
+
 		this.add_class = add_class;
 		this.add_behaviour = add_behaviour;
 
