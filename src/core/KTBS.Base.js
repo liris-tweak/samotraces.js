@@ -22,6 +22,7 @@ Samotraces.KTBS.Base = function Base(uri,id) {
 	if(id === undefined) { id = uri; }
 	Samotraces.KTBS.Resource.call(this,id,uri,'Base',"");
 	this.traces = [];
+	this.models = [];
 	this.force_state_refresh();
 };
 
@@ -37,7 +38,7 @@ Samotraces.KTBS.Base.prototype = {
 	/**
 	 * @todo METHOD NOT IMPLEMENTED
 	 */
-	list_models: function() {},
+	list_models: function() { return this.models; },
 	/**
 	 * Create a stored trace in the KTBS
 	 * @param id {String} ID of the created trace
