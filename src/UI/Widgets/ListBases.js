@@ -97,6 +97,7 @@ Samotraces.UI.Widgets.ktbs.ListBases.prototype = {
 				li_element.addEventListener('click',(function() {this.trigger('ui:click:base',b)}).bind(this));
 				this.datalist_element.appendChild(li_element);
 			},this);
+		this.trigger("ListBase");
 
 	},
 };
