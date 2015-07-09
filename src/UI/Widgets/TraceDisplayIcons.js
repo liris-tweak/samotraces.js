@@ -160,7 +160,8 @@ Samotraces.UI.Widgets.TraceDisplayIcons.prototype = {
 	init_DOM: function() {
 
 
-		var div_elmt = d3.select('#'+this.id);
+		//var div_elmt = d3.select('#'+this.id);
+		var div_elmt = d3.select(this.element);
 		this.svg = div_elmt.append('svg');
 
 		// create the (red) line representing current time
