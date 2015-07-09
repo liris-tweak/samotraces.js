@@ -31,8 +31,8 @@ Samotraces.UI.Widgets.ktbs.ListBases = function(html_id,ktbs,events) {
 
 Samotraces.UI.Widgets.ktbs.ListBases.prototype = {
 	init_DOM: function() {
-		this.element.innerHTML = "";
-		$(this.element).append('<h2>KTBS root: '+this.ktbs.get_uri()+'</h2>');
+		//this.element.innerHTML = "";
+		//$(this.element).append('<h2>KTBS root: '+this.ktbs.get_uri()+'</h2>');
 /*
 		var title = document.createElement('h2');
 		var title_text = document.createTextNode('KTBS root: '+this.ktbs.get_uri());
@@ -90,7 +90,10 @@ Samotraces.UI.Widgets.ktbs.ListBases.prototype = {
 		var li_element;
 		this.ktbs.list_bases().forEach(function(b) {
 				li_element = document.createElement('li');
-				li_element.appendChild(document.createTextNode(b));
+				li_link = document.createElement('button');
+				li_link.setAttribute("class","base");
+				li_link.appendChild(document.createTextNode(b));
+				li_element.appendChild(li_link);
 				li_element.addEventListener('click',(function() {this.trigger('ui:click:base',b)}).bind(this));
 				this.datalist_element.appendChild(li_element);
 			},this);
