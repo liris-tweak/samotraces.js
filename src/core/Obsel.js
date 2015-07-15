@@ -1,5 +1,5 @@
 /**
- * Obsel is a shortname for the 
+ * Obsel is a shortname for the
  * {@link Samotraces.Obsel}
  * object.
  * @typedef Obsel
@@ -44,21 +44,21 @@
  * @param {String} [param.label] Label of the obsel.
  * @todo FIXME RELATIONS ARE NOT YET SUPPORTED
  */
-// *
-Samotraces.Obsel = function Obsel(param) {
-	this._private_check_error(param,'id');
-	this._private_check_error(param,'trace');
-	this._private_check_error(param,'type');
-	this._private_check_default(param,'begin',	Date.now());
-	this._private_check_default(param,'end',		this.begin);
-	this._private_check_default(param,'attributes',	{});
-	this._private_check_undef(param,'relations',	[]); // TODO ajouter rel à l'autre obsel
-	this._private_check_undef(param,'inverse_relations',	[]); // TODO ajouter rel à l'autre obsel
-	this._private_check_undef(param,'source_obsels',		[]);
-	this._private_check_undef(param,'label',		"");
+
+var Obsel = function Obsel(param) {
+  this._private_check_error(param,'id');
+  this._private_check_error(param,'trace');
+  this._private_check_error(param,'type');
+  this._private_check_default(param,'begin',	Date.now());
+  this._private_check_default(param,'end',		this.begin);
+  this._private_check_default(param,'attributes',	{});
+  this._private_check_undef(param,'relations',	[]); // TODO ajouter rel à l'autre obsel
+  this._private_check_undef(param,'inverse_relations',	[]); // TODO ajouter rel à l'autre obsel
+  this._private_check_undef(param,'source_obsels',		[]);
+  this._private_check_undef(param,'label',		"");
 };
 
-Samotraces.Obsel.prototype = {
+Obsel.prototype = {
 	// ATTRIBUTES
 	attributes: {},
 	relations: [],
@@ -112,7 +112,7 @@ Samotraces.Obsel.prototype = {
 	 * Remove the obsel from its trace.
 	 * @description
 	 * Remove the obsel from its trace.
-	 * The trace will trigger a 
+	 * The trace will trigger a
 	 * {@link Samotraces.Trace#trace:remove_obsel} event
 	 */
 	remove: function() {
@@ -159,7 +159,7 @@ Samotraces.Obsel.prototype = {
 	 * Returns the time when the Obsel starts.
 	 * @returns {Number} Time when the Obsel starts.
 	 */
-	get_begin: 		function() { 
+	get_begin: 		function() {
 		//return this.get_trace().get_origin_offset() + this.begin;
 		return this.begin;
 	},
@@ -177,7 +177,7 @@ Samotraces.Obsel.prototype = {
 	 * Sets the type of the Obsel.
 	 * @description
 	 * Sets the type of the Obsel.
-	 * The trace will trigger a 
+	 * The trace will trigger a
 	 * {@link Samotraces.Trace#trace:edit_obsel} event
 	 * @params {String} type Type of the obsel.
 	 * @todo TODO not KTBS API compliant
@@ -192,7 +192,7 @@ Samotraces.Obsel.prototype = {
 	 * Sets the time when the Obsel starts.
 	 * @description
 	 * Sets the time when the Obsel starts.
-	 * The trace will trigger a 
+	 * The trace will trigger a
 	 * {@link Samotraces.Trace#trace:edit_obsel} event
 	 * @params {Number} begin Time when the Obsel starts.
 	 * @todo TODO not KTBS API compliant
@@ -207,7 +207,7 @@ Samotraces.Obsel.prototype = {
 	 * Sets the time when the Obsel ends.
 	 * @description
 	 * Sets the time when the Obsel ends.
-	 * The trace will trigger a 
+	 * The trace will trigger a
 	 * {@link Samotraces.Trace#trace:edit_obsel} event
 	 * @params {Number} end Time when the Obsel ends.
 	 * @todo TODO not KTBS API compliant
@@ -262,7 +262,7 @@ Samotraces.Obsel.prototype = {
 	 * @todo TODO Check how it is supposed to work in KTBS API
 	 */
 	list_related_obsels: 	function(relation_type) {
-		var obss = [];	
+		var obss = [];
 		if(this.relations !== undefined) {
 			this.relations.forEach(function(r) {
 				var uniqueNames = [];
@@ -332,7 +332,7 @@ Samotraces.Obsel.prototype = {
 	 * Removes the attribute with the given name.
 	 * @description
 	 * Removes the attribute with the given name.
-	 * The trace will trigger a 
+	 * The trace will trigger a
 	 * {@link Samotraces.Trace#trace:edit_obsel} event
 	 * @todo TODO Check consistency with KTBS API.
 	 * @param {String} attr Attribute name.
@@ -404,4 +404,4 @@ Samotraces.Obsel.prototype = {
 	},
 };
 
-
+module.exports = Obsel;

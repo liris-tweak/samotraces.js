@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title></title>
+  <script type="application/javascript" src="/dist/samotraces.js"></script>
+</head>
+<body>
+<script type="application/javascript">
+  (function() {
+    "use strict";
+    console.log("hello");
+    var obselParams = {
+      'id': 42,
+      'trace': "nothing",
+      'type': " ",
+      'begin': 424242,
+      'end': 4242*42,
+      'attributes': "foo bar",
+      'source_obsels': [],
+      'label': ""
+    };
+    var obs = new Samotraces.Obsel(obselParams);
+    console.log(obs);
+  })();
+</script>
+</body>
+</html>

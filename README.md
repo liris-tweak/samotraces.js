@@ -62,13 +62,13 @@ The latest Samotraces.js file can be found in the dist/
 directory of Samotraces.js repository.
 
 ```
-<script type="text/javascript" src="Samotraces.js"></script>
+<script type="text/javascript" src="samotraces.js"></script>
 ```
 
-For developpers contributing to Samotraces.js, 
-you can call the src/generate_samotraces.php
-script to re-generate a Samotraces.js file that includes the
-changes that have been made in the src/ folder.
+TODO FIXME
+ 
+For developpers contributing to Samotraces.js, you can uses the grunt task `grunt browserify` 
+script to re-generate a samotraces.js file that includes the changes that have been made in the src/ folder.
 
 As Samotraces.js uses some UTF-8 characters, the HTML 
 document must explicitly use the UTF-8 charser. The following
