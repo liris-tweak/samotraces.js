@@ -30,9 +30,9 @@ module.exports = function(grunt) {
         'shadow': true,
         'undef': true,
         'singleGroups': true,
-        'unused': true
-        //'nonew': true,
-        //'strict': true,
+        'unused': true,
+        'nonew': true,
+        'strict': true
         //'varstmt': true
       }
     }
