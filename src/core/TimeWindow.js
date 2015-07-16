@@ -1,5 +1,7 @@
+var EventHandler = require("./EventHandler.js");
+
 /**
- * TimeWindow is a shortname for the 
+ * TimeWindow is a shortname for the
  * {@link Samotraces.TimeWindow}
  * object.
  * @typedef TimeWindow
@@ -15,7 +17,7 @@
  * The {@link Samotraces.TimeWindow} object is a Javascript Object
  * that stores the current time window.
  * This Object stores a time window and informs widgets or other
- * objects when the time window changes via the 
+ * objects when the time window changes via the
  * {@link Samotraces.TimeWindow#tw:update|tw:update}
  * event.
  * A {@link Samotraces.TimeWindow|TimeWindow} can be defined in two ways:
@@ -24,9 +26,9 @@
  * 2.  by defining a timer and a width.
  *
  * @param {Object} opt	Option parameter that defines the time
- *     window. Variables opt.start and opt.end must 
+ *     window. Variables opt.start and opt.end must
  *     be defined if using lower and upper bound definition.
- *     Variables opt.timer and opt.width must 
+ *     Variables opt.timer and opt.width must
  *     be defined if using timer and width definition.
  * @param {Number} opt.start Starting time of the time window (lower bound).
  * @param {Number} opt.end Ending time of the time window (upper bound).
@@ -35,7 +37,7 @@
  * @param {Number} opt.width Width of the time window.
  *
  */
-Samotraces.TimeWindow = function TimeWindow(opt) {
+var TimeWindow = function TimeWindow(opt) {
 	// Adding the Observable trait
 	Samotraces.EventHandler.call(this);
 	if(opt.start !== undefined && opt.end  !== undefined) {
@@ -52,7 +54,7 @@ Samotraces.TimeWindow = function TimeWindow(opt) {
 	}
 };
 
-Samotraces.TimeWindow.prototype = {
+TimeWindow.prototype = {
 	__calculate_width: function() {
 		this.width = this.end - this.start;
 	},
@@ -66,7 +68,7 @@ Samotraces.TimeWindow.prototype = {
 
 //		this.set_width(this.width,time);
 	},
-	/** 
+	/**
 	 * Sets the start time of the time window.
 	 * @param {Number} time Starting time of the time window.
 	 * @fires Samotraces.TimeWindow#tw:update
@@ -143,3 +145,4 @@ Samotraces.TimeWindow.prototype = {
 	},
 };
 
+module.exports = TimeWindow;

@@ -1,3 +1,6 @@
+var EventHandler = require("./EventHandler.js");
+var $ = require("jquery");
+
 /**
  * @summary Resource Objects that is synchronised to a kTBS
  * @description Resource Objects are KTBS objects. All resources
@@ -9,7 +12,7 @@
  *     'Trace','StoredTrace','ComputedTrace' or 'Obsel')
  * @param {label} [label] Label of the Resource
  */
-Samotraces.KTBS.Resource = (function() {
+var KTBSResource = (function() {
 	/**
 	 * @summary Returns the resource type of the Resource.
 	 * @memberof Samotraces.KTBS.Resource.prototype
@@ -26,7 +29,7 @@ Samotraces.KTBS.Resource = (function() {
 	 */
 	function get_id() { return this.id; }
 	/**
-	 * @summary Returns the URI of the Resource. 
+	 * @summary Returns the URI of the Resource.
 	 * @memberof Samotraces.KTBS.Resource.prototype
 	 * @returns {String} Resource URI.
 	 */
@@ -37,7 +40,7 @@ Samotraces.KTBS.Resource = (function() {
 	 * @description
 	 * Forces the Resource to synchronise with the KTBS.
 	 * This method triggers a Ajax query that will
-	 * trigger the _on_state_refresh_ method of the Resource 
+	 * trigger the _on_state_refresh_ method of the Resource
 	 * on success.
 	 */
 	function force_state_refresh() {
@@ -49,9 +52,9 @@ Samotraces.KTBS.Resource = (function() {
 			dataType: 'json',
 			 xhrFields: {
                         withCredentials: true
-                        }, 
+                        },
 			error: function(XHR, textStatus, errorThrown) {
-                           
+
 			                if(XHR.status =='401'){
 			                    console.log (XHR.getAllResponseHeaders());
 			                    Link = XHR.getResponseHeader('Link');
@@ -64,24 +67,24 @@ Samotraces.KTBS.Resource = (function() {
 			            				 		link = SousD[0].substr(1,SousD[0].length-2)
 
 			            				 	}
-			            				 	
+
 			            			if (SousD[1] === " rel=successful_login_redirect")
 			            			        {
 			            				 		URLSuccess = SousD[0].substr(2,SousD[0].length-3)
 			            				 	}
 
 			            		}
-			            				 
-			            				
-			            				   win = window.open (link) ; 
+
+
+			            				   win = window.open (link) ;
 			            	}
 			},
 			success: trc._on_state_refresh_.bind(trc),
-		
+
 		});
 	}
 	/**
-	 * @summary Forces the Resource to synchronise 
+	 * @summary Forces the Resource to synchronise
 	 * with at a given refreshing rate.
 	 * @memberof Samotraces.KTBS.Resource.prototype
 	 * @description
@@ -149,7 +152,7 @@ Samotraces.KTBS.Resource = (function() {
 	 * from the current local value (and update the local value
 	 * if there is a difference.
 	 * @private
-	 * @param local_field {String} Name of the field of the this 
+	 * @param local_field {String} Name of the field of the this
 	 *     object containing the information to check.
 	 * @param distant {Value} Value of the distant information.
 	 * @param message_if_changed {String} Message to trigger if
@@ -191,3 +194,5 @@ Samotraces.KTBS.Resource = (function() {
 	};
 })();
 
+
+module.exports = KTBSResource;

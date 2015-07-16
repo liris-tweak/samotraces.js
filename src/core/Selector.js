@@ -1,5 +1,7 @@
+var EventHandler = require("./EventHandler.js");
+
 /**
- * Selector is a shortname for the 
+ * Selector is a shortname for the
  * {@link Samotraces.Selector}
  * object.
  * @typedef Selector
@@ -17,24 +19,24 @@
  * @description
  * The {@link Samotraces.Selector|Selector} object
  * is a Javascript object that stores a selection of Objects.
- * This Object stores Objects that are selected and informs 
- * widgets or other objects (via the 
+ * This Object stores Objects that are selected and informs
+ * widgets or other objects (via the
  * triggered events) when the selection changes.
  * When first instanciated, the selection is empty.
  *
- * In order to select an object, the 
- * {@link Samotraces.Selector#select|Selector#select()} 
+ * In order to select an object, the
+ * {@link Samotraces.Selector#select|Selector#select()}
  * method has to be called.
- * Similarly, in order to unselect an object, the 
- * {@link Samotraces.Selector#unselect|Selector#unselect()} 
+ * Similarly, in order to unselect an object, the
+ * {@link Samotraces.Selector#unselect|Selector#unselect()}
  * method has to be called.
- * The whole selection can be emptied at once with the 
+ * The whole selection can be emptied at once with the
  * {@link Samotraces.Selector#empty|Selector#empty()}
  * method.
- * 
+ *
  * @param {string} type - A string describing the type of
- *     object to be selected ('Obsel', 'Trace', 'TimeWindow', etc.). 
- * @param {string} [selection_mode='single'] 
+ *     object to be selected ('Obsel', 'Trace', 'TimeWindow', etc.).
+ * @param {string} [selection_mode='single']
  *     In 'single' mode, the selection contains one object maximum.
  *     This means that adding an object to a non-empty selection
  *     will replace the previously selected object with the new one.
@@ -43,9 +45,9 @@
  * @param {EventConfig}	[events]
  *     Events to listen to and their corresponding callbacks.
  */
-Samotraces.Selector = function(type,selection_mode,events) {
+var Selector = function(type,selection_mode,events) {
 	// Adding the Observable trait
-	Samotraces.EventHandler.call(this,events);
+	EventHandler.call(this,events);
 	this.mode = selection_mode || 'single'; // other option is 'multiple'
 	this.type = type;
 	this.selection = [];
@@ -54,7 +56,7 @@ Samotraces.Selector = function(type,selection_mode,events) {
 	// été supprimé de la sélection.
 };
 
-Samotraces.Selector.prototype = {
+Selector.prototype = {
 	/**
 	 * Method to call to select an Object.
 	 * @param {Object} object
@@ -92,7 +94,7 @@ Samotraces.Selector.prototype = {
 	},
 	/**
 	 * Method that checks if the selection is empty
-	 * @returns {Boolean} Returns true if the selection and empty 
+	 * @returns {Boolean} Returns true if the selection and empty
 	 *     and false if the selection is not empty.
 	 */
 	is_empty: function() {
@@ -116,7 +118,7 @@ Samotraces.Selector.prototype = {
 			var found = false;
 			this.selection = this.selection.filter(function(el) {
 				if(el === object) {
-					found = true;	
+					found = true;
 					return false;
 				} else {
 					return true;
@@ -157,3 +159,4 @@ Samotraces.Selector.prototype = {
 	}
 };
 
+module.exports = Selector;

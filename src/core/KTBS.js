@@ -1,6 +1,6 @@
 /**
- * @summary Javascript KTBS Object that is bound to a KTBS. 
- * @class Javascript KTBS Object that is bound to a KTBS. 
+ * @summary Javascript KTBS Object that is bound to a KTBS.
+ * @class Javascript KTBS Object that is bound to a KTBS.
  * @author Benoît Mathern
  * @requires jQuery framework (see <a href="http://jquery.com">jquery.com</a>)
  * @constructor
@@ -14,15 +14,15 @@
  *
  * @param {String}	uri	URI of the KTBS to load.
  */
-Samotraces.KTBS = function KTBS(uri) {
+var KTBS = function KTBS(uri) {
 	// KTBS is a Resource
-	Samotraces.KTBS.Resource.call(this,uri,uri,'KTBS',"");
+	KTBSResource.call(this,uri,uri,'KTBS',"");
 	this.bases = [];
 	this.builtin_methods = [];
 	this.force_state_refresh();
 };
 
-Samotraces.KTBS.prototype = {
+KTBS.prototype = {
 /////////// OFFICIAL API
 	/**
 	 * @todo METHOD NOT IMPLEMENTED
@@ -83,3 +83,4 @@ Samotraces.KTBS.prototype = {
 	},
 };
 
+module.exports = KTBS;

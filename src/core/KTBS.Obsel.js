@@ -1,3 +1,6 @@
+var KTBSResource = require("./KTBS.Resource.js");
+var Obsel = require("./Obsel.js");
+
 /**
  * @class Samotraces.KTBS.Obsel is part of the Samotraces.KTBS implementation.
  * @augments Samotraces.Obsel
@@ -5,8 +8,8 @@
  * @todo TODO update set_methods
  * -> sync with KTBS instead of local change
  */
-Samotraces.KTBS.Obsel = function Obsel(param) {
-	Samotraces.KTBS.Resource.call(this,param.id,param.uri,'Obsel',param.label || "");
+var KTBSObsel = function (param) {
+	KTBSResource.call(this,param.id,param.uri,'Obsel',param.label || "");
 
 	this._private_check_error(param,'trace');
 	this._private_check_error(param,'type');
@@ -18,7 +21,7 @@ Samotraces.KTBS.Obsel = function Obsel(param) {
 	this._private_check_undef(param,'source_obsels',		[]);
 }
 
-Samotraces.KTBS.Obsel.prototype = Samotraces.Obsel.prototype;
+KTBSObsel.prototype = Obsel.prototype;
 
 /*
 Samotraces.KTBS.Obsel.prototype.get_ktbs_status = function() {
@@ -26,3 +29,4 @@ Samotraces.KTBS.Obsel.prototype.get_ktbs_status = function() {
 };
 */
 
+module.exports = KTBSObsel;

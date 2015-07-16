@@ -1,3 +1,5 @@
+var EventHandler = require("./EventHandler.js");
+
 /**
  * @summary Object that stores the current time
  * @class Object that stores the current time
@@ -11,27 +13,27 @@
  * This Object stores a time and informs widgets or other
  * objects when the time changes.
  *
- * @param {Number} [init_time=0] 
+ * @param {Number} [init_time=0]
  *     Initial time of the timer (optional, default: 0).
- * @param {Number} [period=2000] 
+ * @param {Number} [period=2000]
  *     Perdiod (in ms) at which the timer will update itself in
  *     "play" mode.
  * @param {function} [update_function]
  *     Function called to update the timer when in "play" mode
- *     (function that returns the value of 
+ *     (function that returns the value of
  *     <code>Date.now()</code> by default).
  */
 
-Samotraces.Timer = function Timer(init_time,period,update_function) {
+var Timer = function Timer(init_time, period, update_function) {
 	// Adding the Observable trait
-	Samotraces.EventHandler.call(this);
+	EventHandler.call(this);
 	this.time = init_time || 0;
 	this.period = period || 2000;
 	this.update_function = update_function || function() {return Date.now();};
 	this.is_playing = false;
 };
 
-Samotraces.Timer.prototype = {
+Timer.prototype = {
 	/**
 	 * Sets the Timer to the given time.
 	 * @fires Samotraces.Timer#timer:update
@@ -40,7 +42,7 @@ Samotraces.Timer.prototype = {
 	set_time: function(time) {
 		new_time = Number(time);
 		if(this.time != new_time) {
-			this.time = new_time; 
+			this.time = new_time;
 			/**
 			 * Time change event.
 			 * @event Samotraces.Timer#timer:update
@@ -75,7 +77,7 @@ Samotraces.Timer.prototype = {
 		if(time) {
 			new_time = Number(time);
 			if(this.time != new_time) {
-				this.time = new_time; 
+				this.time = new_time;
 				this.trigger('timer:update',this.time);
 			}
 		} else {
@@ -96,7 +98,7 @@ Samotraces.Timer.prototype = {
 			 * Time change event (actualising time when playing)
 			 * @event Samotraces.Timer#timer:play:update
 			 * @type {object}
-			 * @property {String} type 
+			 * @property {String} type
 			 *     - The type of the event (= "timer:play:update").
 			 */
 			this.trigger('timer:play:update',this.time);
@@ -115,3 +117,4 @@ Samotraces.Timer.prototype = {
 	}
 };
 
+module.exports = Timer;

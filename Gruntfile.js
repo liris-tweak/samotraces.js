@@ -56,12 +56,21 @@ module.exports = function(grunt) {
         ],
         tasks: ["browserify:app"]
       }
+    },
+    jscs: {
+      src: "src/**/*.js",
+      options: {
+        config: ".jscsrc",
+        verbose: true, // If you need output with rule names http://jscs.info/overview.html#verbose
+        requireCurlyBraces: [ "if" ]
+      }
     }
   });
   grunt.loadNpmTasks("grunt-contrib-watch");
   grunt.loadNpmTasks("grunt-contrib-jshint");
   grunt.loadNpmTasks("grunt-contrib-connect");
   grunt.loadNpmTasks("grunt-browserify");
+  grunt.loadNpmTasks("grunt-jscs");
+  // grunt.registerTask("default", ["jshint", "jscs", "browserify", "connect", "watch"]);
   grunt.registerTask("default", ["jshint", "browserify", "connect", "watch"]);
-  //grunt.registerTask("default", ["browserify", "connect", "watch"]);
 };

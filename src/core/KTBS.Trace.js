@@ -1,6 +1,10 @@
+var KTBSResource = require("./KTBS.Resource.js");
+var KTBSObsel = require("./KTBS.Obsel.js");
+var $ = require("jquery");
+
 /**
  * @summary Trace object that is synchronised to a KTBS.
- * @class Javascript Trace Object that is bound to a KTBS trace. 
+ * @class Javascript Trace Object that is bound to a KTBS trace.
  * @author Benoît Mathern
  * @requires jQuery framework (see <a href="http://jquery.com">jquery.com</a>)
  * @constructor
@@ -9,7 +13,7 @@
  * @description
  * Samotraces.KTBS.Trace is a Javascript Trace object
  * that is bound to a KTBS trace. This Object implements the KTBS API.
- * Methods are available to get 
+ * Methods are available to get
  * the Obsels from the KTBS trace, create new Obsels, etc.
  *
  * Note: this Trace object does not implement all the methods
@@ -21,10 +25,10 @@
  * @param {String}	uri	URI of the KTBS trace to load.
  * @param {String}	[id]	ID of the KTBS trace to load.
  */
-Samotraces.KTBS.Trace = function Trace(uri,id) {
+var KTBSTrace = function Trace(uri,id) {
 	// KTBS.Trace is a Resource
 	if(id === undefined) { id = uri; }
-	Samotraces.KTBS.Resource.call(this,id,uri,'Base',"");
+	KTBSResource.call(this, id, uri, 'Base',"");
 
 	this.temp = {}; // attribute used to store actions made by the user on the trace while not knowing if they are allowed. e.g., create_obsel, when we don't know yet if the Trace is a StoredTrace because the KTBS didn't reply yet.
 	this.default_subject = "";
@@ -37,8 +41,7 @@ Samotraces.KTBS.Trace = function Trace(uri,id) {
 	this.force_state_refresh();
 };
 
-
-Samotraces.KTBS.Trace.prototype = {
+KTBSTrace.prototype = {
 /////////// OFFICIAL API
 	/**
 	 * @description
@@ -88,10 +91,10 @@ Samotraces.KTBS.Trace.prototype = {
 	 * obsels matching the time constraints.
 	 *
 	 * Note: if an obsel overlaps with the start or the end
-	 * constraint, then it will be included (for instance an 
+	 * constraint, then it will be included (for instance an
 	 * obsel that starts before the start constraint and ends
 	 * after that constraint will be included).
-	 * 
+	 *
 	 * Note: the list returned by this method is the
 	 * list of Obsels that are loaded locally.
 	 * When this method is called, a query to the KTBS
@@ -99,7 +102,7 @@ Samotraces.KTBS.Trace.prototype = {
 	 * the query. If so, these other obsels will be loaded
 	 * in the local copy of the trace and a
 	 * {@link Samotraces.Trace#trace:create:obsel|trace:create:obsel}
-	 * event or a 
+	 * event or a
 	 * {@link Samotraces.Trace#trace:update|trace:update}
 	 * event will be triggered to notify that other
 	 * Obsels have been loaded.
@@ -109,7 +112,7 @@ Samotraces.KTBS.Trace.prototype = {
 	 *     reverse chronological order if true and in normal
 	 *     chronological order if false.
 	 * @returns {Array.<Obsel>} List of relevant obsels
-	 * @todo REVERSE IS NOT YET TAKEN INTO ACCOUNT 
+	 * @todo REVERSE IS NOT YET TAKEN INTO ACCOUNT
 	 */
 	// TODO add an optional CALLBACK???
 	list_obsels: function(begin,end,reverse) {
@@ -117,10 +120,10 @@ Samotraces.KTBS.Trace.prototype = {
 		if(this.obsel_list_uri === "") {
 			console.log("Error in KTBS:Trace:list_obsels() unknown uri");
 			return false;
-		} 
+		}
 
 		var OBJ = this;
-		
+
 //		$.getJSON(this.obsel_list_uri,this._on_refresh_obsel_list_.bind(this));
 		var OBJ = this;
 		$.ajax({
@@ -141,7 +144,7 @@ Samotraces.KTBS.Trace.prototype = {
 			            				 		link = SousD[0].substr(1,SousD[0].length-2)
 
 			            				 	}
-			            				 	
+
 			            	if (SousD[1] === " rel=successful_login_redirect")
 			            			        {
 			            				 		URLSuccess = SousD[0].substr(2,SousD[0].length-3)
@@ -149,7 +152,7 @@ Samotraces.KTBS.Trace.prototype = {
 						}
 			            win = window.open (link) ;
 			    }
-			}, 
+			},
 			success: function (data) {	if (data['obsels'].length >0)	{OBJ.Before_on_refresh_obsel_list_ (data);}	}
 		});
 		return this.obsel_list.filter(function(o) {
@@ -160,23 +163,23 @@ Samotraces.KTBS.Trace.prototype = {
 	},
 
 	Before_on_refresh_obsel_list_: function(dataRecu) {
-                  
+
                     // par paquet
                     this.trigger('trace:Config',dataRecu);
                     var i=0;
 		            var end = Number(i)+Number(100);
-		            
+
 		            if (dataRecu.obsels) {this._on_refresh_obsel_list_group(dataRecu.obsels,i,end)}
 		           else { this._on_refresh_obsel_list_group(dataRecu,i,end)}
-		                 
-		        
+
+
 	},
 	_on_refresh_obsel_list_group: function(dataRecu,i,end) {
-	    
+
 	    var count=0;
 		var d = dataRecu.length-Number(1);
 		var DataO = dataRecu.slice (i,end);
-		console.log ('_on_refresh_obsel_list_group');             
+		console.log ('_on_refresh_obsel_list_group');
 	    DataO.forEach(function(el,key) {
 		      count ++;
 		      this._parse_get_obsel_(el);
@@ -188,14 +191,14 @@ Samotraces.KTBS.Trace.prototype = {
 			      end=Number(i)+Number(100);
 			      if (end > dataRecu.length){end=dataRecu.length-Number(1);}
 			      setTimeout(function(){ if ((i<=d)&&(end<=d)){Objet._on_refresh_obsel_list_group(dataRecu,i,end)}},2000);
-			      
+
 			       $("#waiting").hide();
-		            
+
 			                        }
 		          },this);
-	
+
 	},
-	
+
 	_on_refresh_obsel_list_ : function (data){
 	    var count = 0;
 	    var id, label, type, begin, end, attributes, obs;
@@ -206,10 +209,10 @@ Samotraces.KTBS.Trace.prototype = {
 			                        if (count ==data.length )
 			                        {this.trigger('trace:updateT',this);}
 		                          },this);
-	  
-	
+
+
 	},
-	
+
 	get_Last_obsel: function() {
 		var obs;
 		var max=0;
@@ -228,14 +231,14 @@ Samotraces.KTBS.Trace.prototype = {
 	},
 	get_List_obsel_ParType: function(obselType) {
 		var liste = [];
-		
+
 		this.obsel_list.forEach(function(o) {
 			if(o.type == obselType) { liste.push(o); }
 		});
 		return liste;
 	},
-	
-	
+
+
 	/**
 	 * @summary Forces the local obsel list to be synchronised
 	 * with the KTBS at a given refreshing rate.
@@ -266,7 +269,7 @@ Samotraces.KTBS.Trace.prototype = {
 	 * @returns {Obsel} Obsel that corresponds to this ID
 	 *     or undefined if the obsel was not found.
 	 * @todo TODO add an optional CALLBACK
-	 */	
+	 */
 	get_obsel: function(id) {
 		var obs;
 		this.obsel_list.forEach(function(o) {
@@ -276,7 +279,7 @@ Samotraces.KTBS.Trace.prototype = {
 			// sends a query to find the obsel
 			jQuery.ajax({
 					// TODO ideally JSON... When KTBS supports it!
-					url: this.uri+id, 
+					url: this.uri+id,
 					dataType: 'json',
 					type: 'GET',
 					success: this._parse_get_obsel_.bind(this),
@@ -299,7 +302,7 @@ Samotraces.KTBS.Trace.prototype = {
 		obs.id = data["@id"];
 		if (this.type === "ComputedTrace") {obs.id=obs.type+"_"+obs.id}
 		if(obs.id.substr(0,2) == "./") { obs.id = obs.id.substr(2); }
-		
+
 		// OBSEL TRACE
 		// data.hasTrace;
 		obs.trace = this;
@@ -308,7 +311,7 @@ Samotraces.KTBS.Trace.prototype = {
 		// data["@type"]; // TODO BUG KTBS -> USE "m:type" instead
 		// data["m:type"];
 		obs.type = data["@type"].substr(2);
-	
+
 		if(data.hasOwnProperty('http://www.w3.org/2000/01/rdf-schema#label')) {
 			obs.label = data['http://www.w3.org/2000/01/rdf-schema#label'];
 		}
@@ -326,8 +329,8 @@ Samotraces.KTBS.Trace.prototype = {
 		delete data.end;
 		delete data['http://www.w3.org/2000/01/rdf-schema#label'];
 		//delete data["m:type"];
-		
-			
+
+
 		// ATTRIBUTES
 		for(var attr in data) {
 			if(attr.substr(0,2) == "m:") { // TODO this is not generic!!!!
@@ -335,7 +338,7 @@ Samotraces.KTBS.Trace.prototype = {
 			}
 		}
 	//console.log(data,obs);
-		var o = new Samotraces.KTBS.Obsel(obs);
+		var o = new Obsel(obs);
 		if(!this._check_obsel_loaded_(o)) { // TODO first approximation
 			this.trigger('trace:create_obsel',o);
 		}
@@ -361,7 +364,6 @@ Samotraces.KTBS.Trace.prototype = {
 	_update_method_: function(trace_type,method_name) {
 		this[method_name] = this[trace_type+"_methods"][method_name];
 		if(this.temp[method_name] !== undefined) {
-			Samotraces.debug("Unfilling calls to method "+method_name);
 			this.temp[method_name].forEach(function(param) {
 				this[method_name](param);
 			},this);
@@ -369,7 +371,6 @@ Samotraces.KTBS.Trace.prototype = {
 	},
 	_check_and_update_trace_type_: function(type) {
 		if(this.type !== type) {
-			Samotraces.debug("Trace type = "+type);
 			for(var method_name in this[type+"_methods"]) {
 				this._update_method_(type,method_name);
 			}
@@ -398,7 +399,7 @@ Samotraces.KTBS.Trace.prototype = {
 			delete(attr.attributes['begin']);
 			delete(attr.attributes['end']);
 			obs = new Samotraces.KTBS.Obsel(attr);
-			
+
 			if(! this._check_obsel_loaded_(obs)) {
 				new_obsel_loaded = true;
 			}
@@ -463,7 +464,7 @@ Samotraces.KTBS.Trace.prototype = {
 				// We just need to add the ID.
 				params.id = obsel_id;
 				params.trace = this;
-				var o = new Samotraces.KTBS.Obsel(params);
+				var o = new KTBSObsel(params);
 				if(!this._check_obsel_loaded_(o)) {
 					this.trigger('trace:create_obsel',o);
 				}
@@ -486,9 +487,8 @@ Samotraces.KTBS.Trace.prototype = {
 		del_parameter: function(key) {}
 	},
 
-	// TEMPORARY METHODS	
+	// TEMPORARY METHODS
 	create_obsel: function(obsel_params) {
-		Samotraces.debug("Trace type not know yet -> file the call to create_obsel()");
 		if(!this.create_obsel.hasOwnProperty('create_obsel')) {
 			this.temp.create_obsel = [];
 		}
@@ -497,3 +497,4 @@ Samotraces.KTBS.Trace.prototype = {
 
 };
 
+module.exports = KTBSTrace;

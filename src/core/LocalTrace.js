@@ -1,3 +1,6 @@
+var Obsel = require("./Obsel.js");
+var EventHandler = require("./EventHandler.js");
+
 /**
  * @summary Javascript Trace Object.
  * @class Javascript Trace Object.
@@ -7,15 +10,15 @@
  * @augments Samotraces.Trace
  * @description
  * Samotraces.DemoTrace is a Javascript Trace object.
- * Methods are available to get 
+ * Methods are available to get
  * the Obsels from the trace, create new Obsels, etc.
  *
  * The trace is initialised empty. Obsels have to be created
  * by using the {@link Samotraces.DemoTrace#newObsel} method.
  */
-Samotraces.LocalTrace = function(source_traces) {
+var LocalTrace = function(source_traces) {
 	// Addint the Observable trait
-	Samotraces.EventHandler.call(this);
+	EventHandler.call(this);
 
 	/* Nombre d'obsels dans la trace */
 	this.count = 0; // sert d'ID pour le prochain observé.
@@ -31,7 +34,7 @@ Samotraces.LocalTrace = function(source_traces) {
 
 };
 
-Samotraces.LocalTrace.prototype = {
+LocalTrace.prototype = {
 	/**
 	 * @description
 	 * Gets the label of the trace
@@ -67,7 +70,7 @@ Samotraces.LocalTrace.prototype = {
 	 * @description
 	 * Returns the origin of the trace
 	 * @returns Origin of the trace
-	 * @todo UPDATE WHAT IS AN ORIGIN 
+	 * @todo UPDATE WHAT IS AN ORIGIN
 	 */
 	get_origin: function() { return this.origin; },
 	//get_origin_offset: function() { return this.origin_offset; },
@@ -92,7 +95,7 @@ Samotraces.LocalTrace.prototype = {
 	 * obsels matching the time constraints.
 	 *
 	 * Note: if an obsel overlaps with the start or the end
-	 * constraint, then it will be included (for instance an 
+	 * constraint, then it will be included (for instance an
 	 * obsel that starts before the start constraint and ends
 	 * after that constraint will be included).
 	 * @param {Number} [begin] Minimum time constraint
@@ -101,7 +104,7 @@ Samotraces.LocalTrace.prototype = {
 	 *     reverse chronological order if true and in normal
 	 *     chronological order if false.
 	 * @returns {Array.<Obsel>} List of relevant obsels
-	 * @todo REVERSE IS NOT YET TAKEN INTO ACCOUNT 
+	 * @todo REVERSE IS NOT YET TAKEN INTO ACCOUNT
 	 */
 	list_obsels: function(begin,end,reverse) {
 		// TODO reverse is ignored.
@@ -118,7 +121,7 @@ Samotraces.LocalTrace.prototype = {
 	 * @returns {Obsel} Obsel that corresponds to this ID
 	 *     or undefined if the obsel was not found.
 	 * @todo use KTBS abstract API.
-	 */	
+	 */
 	get_obsel: function(id) {
 		var obs;
 		this.obsel_list.forEach(function(o) {
@@ -182,7 +185,7 @@ Samotraces.LocalTrace.prototype = {
 		obsel_params.id = this.count;
 		this.count++;
 		obsel_params.trace = this;
-		var obs = new Samotraces.Obsel(obsel_params);
+		var obs = new Obsel(obsel_params);
 		this.obsel_list.push(obs);
 		this.trigger('trace:create_obsel',obs);
 	},
@@ -209,7 +212,7 @@ Samotraces.LocalTrace.prototype = {
 	transformations: {
 		duplicate: function(trace) {
 			// TODO better deep copy
-			var transformed_trace = new Samotraces.LocalTrace([trace]);
+			var transformed_trace = new LocalTrace([trace]);
 			trace.list_obsels().forEach(function(o) {
 				transformed_trace.create_obsel(o.to_Object());
 			});
@@ -222,8 +225,7 @@ Samotraces.LocalTrace.prototype = {
 		filter_obsel_type: function(trace,opt) {
 			// TODO: implement
 			// TODO better deep copy
-console.log(opt);
-			var transformed_trace = new Samotraces.LocalTrace([trace]);
+			var transformed_trace = new LocalTrace([trace]);
 			trace.list_obsels().forEach(function(o) {
 				if(opt.types.some(function(type) {return type === o.get_obsel_type();})) {
 					if(opt.mode === "keep") {
@@ -252,4 +254,4 @@ console.log(opt);
 	},
 };
 
-
+module.exports = LocalTrace;
