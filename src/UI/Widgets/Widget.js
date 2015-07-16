@@ -112,6 +112,8 @@ Samotraces.UI.Widgets.Widget = (function() {
 				eventTargetElement.addEventListener('mousedown',mousedown);
 				break;	
 			case 'zommOnScroll':
+				        var wheel;
+
 				wheel = function(e) {
 					var coef = Math.pow(0.8,e.deltaY);
 					opt.timeWindow.zoom(coef);

@@ -90,7 +90,7 @@ Samotraces.KTBS.Resource = (function() {
 	 * @param {Number} period Time in seconds between two synchronisations.
 	 */
 	function start_auto_refresh(period) {
-		this.auto_refresh_id?this.stop_auto_refresh():null;
+		var a = this.auto_refresh_id?this.stop_auto_refresh():null;
 		this.auto_refresh_id = window.setInterval(this.force_state_refresh.bind(this), period*1000);
 	}
 	/**
@@ -125,7 +125,7 @@ Samotraces.KTBS.Resource = (function() {
 			url: this.uri,
 			type: 'DELETE',
 			success: refresh_parent.bind(this),
-			error: function(jqXHR,textStatus,error) {
+			error: function(jqXHR,textStatus,errorThrown) {
                  throw "Cannot delete "+this.get_resource_type()+" " + this.uri + ": " + textStatus + ' ' + JSON.stringify(errorThrown);
 			}
 		});

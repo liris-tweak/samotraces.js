@@ -83,9 +83,12 @@ Samotraces.EventHandler = (function() {
 		 * @type {Object.<string, function>}
 		 * @property {function} eventName - Function to trigger on this event.
 		 */
+		function callback(e) { fun(e.data); }
 		for(var event_name in events) {
-			var fun = events[event_name];
-			this.on(event_name,function(e) { fun(e.data); });
+      		if (event.hasOwnProperty(event_name)){
+        		var fun = events[event_name];
+        		this.on(event_name,callback);
+      		}
 		}
 		return this;
 	};

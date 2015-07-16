@@ -80,7 +80,8 @@ Samotraces.UI.Widgets.ktbs.ListBases.prototype = {
 		}
 		
 		for( var k in this.form ) {
-			$(this.form[k]).remove();
+			if (this.form.hasOwnProperty(k))
+			{$(this.form[k]).remove();}
 		}
 		this.add_button.disabled = false;
 	},

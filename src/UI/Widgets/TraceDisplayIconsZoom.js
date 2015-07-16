@@ -79,7 +79,8 @@ Samotraces.UI.Widgets.TraceDisplayIconsZoom.prototype = {
 					.data(this.data, function(d) { return d.id;}); // TODO: bogue in case no ID exists -> might happen with KTBS traces and new obsels
 		},
 		calculate_x: function(time) {
-			return x = (time - this.window.start)*this.scale_x + this.translate_offset;
+			var x = (time - this.window.start)*this.scale_x + this.translate_offset;
+			return x;
 		},
 		
 		draw: function(e) {

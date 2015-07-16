@@ -92,7 +92,8 @@ Samotraces.UI.Widgets.TraceDisplayZoomContext.prototype = {
 	 * @param {Number} time Time for which to seek the corresponding x parameter
 	 */
 	calculate_x: function(t) {
-		return x = (t - this.w_start)*this.scale_x;
+		var x = (t - this.w_start)*this.scale_x;
+		return x ;
 	},
 	o2x1: function(o) {
 		this.w_start = this.window1.start;
@@ -203,7 +204,7 @@ Samotraces.UI.Widgets.TraceDisplayZoomContext.prototype = {
 		return p.join(" ");
 	},
 	obsel_redraw: function(e) {
-		obs = e.data;
+		var obs = e.data;
 		var sel = this.d3Obsels()
 			.filter(function(o) {
 //				console.log('data:id,obsel_edit_id',id,obs.get_id(),id == obs.get_id());

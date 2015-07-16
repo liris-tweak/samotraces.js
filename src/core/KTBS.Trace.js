@@ -242,7 +242,7 @@ Samotraces.KTBS.Trace.prototype = {
 	 * @param {Number} period Time in seconds between two synchronisations.
 	 */
 	start_auto_refresh_obsel_list: function(period) {
-		this.auto_refresh_obsel_list_id?this.stop_auto_refresh_obsel_list():null;
+		var a = this.auto_refresh_obsel_list_id?this.stop_auto_refresh_obsel_list():null;
 		this.auto_refresh_obsel_list_id = window.setInterval(this.list_obsels.bind(this), period*1000);
 	},
 	/**
@@ -371,7 +371,8 @@ Samotraces.KTBS.Trace.prototype = {
 		if(this.type !== type) {
 			Samotraces.debug("Trace type = "+type);
 			for(var method_name in this[type+"_methods"]) {
-				this._update_method_(type,method_name);
+				if (this[type+"_methods"].hasOwnProperty(method_name))
+				{this._update_method_(type,method_name);}
 			}
 			this.type = type;
 		}
@@ -447,7 +448,8 @@ Samotraces.KTBS.Trace.prototype = {
 			if(params.hasOwnProperty("end")) { json_obsel.begin=params.end;}
 			if(params.hasOwnProperty("attributes")) {
 				for(var attr in params.attributes) {
-					json_obsel["m:"+attr] = params.attributes[attr];
+					if (params.attributes.hasOwnProperty(attr))
+					{json_obsel["m:"+attr] = params.attributes[attr];}
 				}
 			}
 			function _on_create_obsel_success_(data,textStatus,jqXHR) {

@@ -85,7 +85,7 @@ Samotraces.UI.Widgets.ImportTrace.prototype = {
 	},
 
 	on_change: function(e) {
-		files = e.target.files;
+		var files = e.target.files;
 		var title_el,content_el;
 		for( var i=0, file; file = files[i]; i++) {
 			title_el = document.createElement('h2');
@@ -209,7 +209,7 @@ Samotraces.UI.Widgets.ImportTrace.prototype = {
 	//	console.log('fichier chargé');
 		// guessing the separator
 		var sep = text[text.search('[,;\t]')];
-		csv = CSVToArray(text,sep);
+		var csv = CSVToArray(text,sep);
 		csv.pop(); // remove the last line... Why?...
 	//	console.log('fichier parsé');
 		csv.map(function(line) {
@@ -218,7 +218,7 @@ Samotraces.UI.Widgets.ImportTrace.prototype = {
 			o_attr.type = line.shift();
 			o_attr.attributes = {};
 			for( var i=0; i < (line.length-1)/2 ; i++) {
-				if(line[2*i] != "") {
+				if(line[2*i] !== "") {
 					o_attr.attributes[line[2*i]] = line[2*i+1];
 				}
 			}

@@ -77,9 +77,10 @@ Samotraces.UI.Widgets.ObselInspector.prototype = {
 		this.datalist_element.appendChild(li_element);
 
 		for(var key in obs.attributes) {
-			li_element = document.createElement('li');
+			if (obs.attributes.hasOwnProperty(key))
+			{li_element = document.createElement('li');
 			li_element.appendChild(document.createTextNode(key  +': '+ obs.attributes[key]));
-			this.datalist_element.appendChild(li_element);
+			this.datalist_element.appendChild(li_element);}
 		}
 
 		this.element.style.display = 'block';

@@ -216,7 +216,9 @@ Samotraces.UI.Widgets.TraceDisplayIcons.prototype = {
 	 * @param {Number} time Time for which to seek the corresponding x parameter
 	 */
 	calculate_x: function(time) {
-		return x = (time - this.window.start)*this.scale_x + this.translate_offset;
+		 
+		var x = (time - this.window.start)*this.scale_x + this.translate_offset;
+		return x;
 	},
 	translate_x: function(e) {
 		var time_delta = e.data;
@@ -270,7 +272,7 @@ Samotraces.UI.Widgets.TraceDisplayIcons.prototype = {
 	},
 
 	obsel_redraw: function(e) {
-		obs = e.data;
+		var obs = e.data;
 		var sel = this.d3Obsels()
 			.filter(function(o) {
 //				console.log('data:id,obsel_edit_id',id,obs.get_id(),id == obs.get_id());

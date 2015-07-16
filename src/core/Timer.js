@@ -38,7 +38,7 @@ Samotraces.Timer.prototype = {
 	 * @param {Number} time New time
 	 */
 	set_time: function(time) {
-		new_time = Number(time);
+		var new_time = Number(time);
 		if(this.time != new_time) {
 			this.time = new_time; 
 			/**
@@ -73,7 +73,7 @@ Samotraces.Timer.prototype = {
 	 */
 	time: function(time) {
 		if(time) {
-			new_time = Number(time);
+			var new_time = Number(time);
 			if(this.time != new_time) {
 				this.time = new_time; 
 				this.trigger('timer:update',this.time);
