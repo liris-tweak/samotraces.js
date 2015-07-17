@@ -1,3 +1,5 @@
+var KTBSResource = require("./KTBS.Resource.js");
+
 /**
  * @summary Javascript KTBS Object that is bound to a KTBS.
  * @class Javascript KTBS Object that is bound to a KTBS.

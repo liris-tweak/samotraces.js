@@ -1,3 +1,5 @@
+var KTBSResource = require("./KTBS.Resource.js");
+
 /**
  * @class Javascript KTBS.Base Object that is bound to a KTBS.
  * @author Benoît Mathern
