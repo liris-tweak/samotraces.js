@@ -1,0 +1,21 @@
+{
+  "name": "samotraces.js",
+  "version": "0.9.1",
+  "homepage": "https://github.com/fderbel/samotraces.js",
+  "authors": [
+    "Fatma Derbel <derbelfatma@gmail.com>",
+    "Raphael Cazenave-Leveque <raphael.cazenave@gmail.com>"
+  ],
+  "keywords": [
+    "traces",
+    "widgets"
+  ],
+  "license": "GPL-2",
+  "ignore": [
+    "**/.*",
+    "node_modules",
+    "bower_components",
+    "test",
+    "tests"
+  ]
+}

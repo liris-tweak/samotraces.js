@@ -1,0 +1,5 @@
+{
+  "validateIndentation": 2,
+  "validateQuoteMarks": true,
+  "preset": "node-style-guide"
+}

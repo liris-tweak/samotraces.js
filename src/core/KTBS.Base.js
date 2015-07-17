@@ -1,5 +1,5 @@
 /**
- * @class Javascript KTBS.Base Object that is bound to a KTBS. 
+ * @class Javascript KTBS.Base Object that is bound to a KTBS.
  * @author Benoît Mathern
  * @requires jQuery framework (see <a href="http://jquery.com">jquery.com</a>)
  * @constructor
@@ -8,8 +8,8 @@
  * @description
  * Samotraces.KTBS.Base is a Javascript KTBS base
  * object that is bound to a KTBS. This Object implements the KTBS API.
- * Methods are available to get the 
- * list of traces available in the KTBS base. Access a 
+ * Methods are available to get the
+ * list of traces available in the KTBS base. Access a
  * specific trace, etc.
  *
  * @todo Fully implement KTBS API
@@ -17,16 +17,16 @@
  * @param {String}	uri	URI of the Base to load.
  * @param {String}	[id]	ID of the Base to load.
  */
-Samotraces.KTBS.Base = function Base(uri,id) {
+var Base = function Base(uri,id) {
 	// KTBS.Base is a Resource
 	if(id === undefined) { id = uri; }
-	Samotraces.KTBS.Resource.call(this,id,uri,'Base',"");
+	KTBSResource.call(this,id,uri,'Base',"");
 	this.traces = [];
 	this.models = [];
 	this.force_state_refresh();
 };
 
-Samotraces.KTBS.Base.prototype = {
+Base.prototype = {
 	get: function(id) {},
 	/**
 	 * Gets the list of traces available in the base.
@@ -105,3 +105,4 @@ Samotraces.KTBS.Base.prototype = {
 ////////////
 };
 
+module.exports = Base;

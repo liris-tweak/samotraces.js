@@ -1,13 +1,13 @@
 /**
  * @mixin
  * @description
- * The EventHandler Object is not a class. However, it is 
+ * The EventHandler Object is not a class. However, it is
  * designed for other classes to inherit of a predefined
  * Observable behaviour. For this reason, this function is
- * documented as a Class. 
- * 
- * In order to use create a class that "inherits" from the 
- * "EventHandler class", one must run the following code in 
+ * documented as a Class.
+ *
+ * In order to use create a class that "inherits" from the
+ * "EventHandler class", one must run the following code in
  * the constructor:
  * <code>
  * Samotraces.EventHandler.call(this);
@@ -16,18 +16,17 @@
  * @property {Object} callbacks
  *     Hash matching callbacks to event_types.
  */
-Samotraces.EventHandler = (function() {
+var EventHandler = (function() {
 	/**
 	 * Triggers all the registred callbacks.
 	 * @memberof Samotraces.EventHandler.prototype
 	 * @param {String} event_type
 	 *     The type of the triggered event.
 	 * @param {Object} object
-	 *     Object sent with the message to the listeners (see 
+	 *     Object sent with the message to the listeners (see
 	 *     {@link Samotraces.EventHandler#on}).
 	 */
 	function trigger(event_type,object) {
-		Samotraces.debug("EventHandler#"+event_type+" triggered");
 		var e = { type: event_type, data: object };
 		if(this.callbacks[event_type]) {
 			this.callbacks[event_type].map(function(f) { f(e); });
@@ -44,7 +43,7 @@ Samotraces.EventHandler = (function() {
 	 * @param {String} event_type
 	 *     The type of the event to listen to.
 	 * @param {Function} callback
-	 *     Callback to call when the an event of type 
+	 *     Callback to call when the an event of type
 	 *     event_type is triggered. Note: the callback
 	 *     can receive one argument that contains
 	 *     details about the triggered event.
@@ -65,9 +64,9 @@ Samotraces.EventHandler = (function() {
 		// DOCUMENTED ABOVE
 		this.callbacks = this.callbacks || {};
 		this.trigger = trigger;
-		this.on = on;	
+		this.on = on;
 		/**
-		 * EventConfig is a shortname for the 
+		 * EventConfig is a shortname for the
 		 * {@link Samotraces.EventHandler.EventConfig}
 		 * object.
 		 * @typedef EventConfig
@@ -94,5 +93,4 @@ Samotraces.EventHandler = (function() {
 	};
 })();
 
-
-
+module.exports = EventHandler;
