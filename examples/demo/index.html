@@ -1,4 +1,3 @@
-<!DOCTYPE html>
 <html lang="en">
 <head>
   <meta charset="UTF-8">
@@ -11,8 +10,10 @@
   <div id="interval-time-form"></div>
   <div id="list-bases"></div>
   <div id="list-model-in-bases"></div>
+  <div id="list-traces-in-bases"></div>
 
-  <script type="application/javascript">
+  <script type="text/javascript">
+    /* global Samotraces */
     (function() {
       "use strict";
       console.log("hello");
@@ -45,7 +46,6 @@
       console.log(localTrace);
 
       var anObject = (function(spec) {
-        "use strict";
 
         var that = {};
         Samotraces.EventHandler.call(that);
@@ -55,7 +55,7 @@
           return "purr";
         };
 
-        that.on("cat:purr", function(e) {
+        that.on("cat:purr", function() {
           console.log("purrr?");
         });
 
@@ -92,6 +92,7 @@
       var importerElement = document.querySelector("#importer");
       var importTrace = new Samotraces.UI.Widgets.ImportTrace(importerElement, trace2);
       console.log(trace2);
+      console.log(importTrace);
       
       var timeWindow = new Samotraces.TimeWindow({start: 0, end: 20});
       var intervalTimeFormElement = document.querySelector("#interval-time-form");
@@ -106,6 +107,10 @@
       var listModelInBases = new Samotraces.UI.Widgets.ListModelInBases(listModelInBasesElement, base);
       console.log(listModelInBases);
       
+      var listTracesInBasesElement = document.querySelector("#list-traces-in-bases");
+      var listTracesInBases = new Samotraces.UI.Widgets.ListTracesInBases(listTracesInBasesElement, base);
+      console.log(listTracesInBases);
+
     })();
   </script>
 </body>

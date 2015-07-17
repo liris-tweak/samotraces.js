@@ -14,7 +14,7 @@ var ImportTrace = require("./UI/Widgets/ImportTrace.js");
 var IntervalTimeForm = require("./UI/Widgets/IntervalTimeForm.js");
 var ListBases = require("./UI/Widgets/ListBases.js");
 var ListModelInBases = require("./UI/Widgets/ListModelInBases.js");
-
+var ListTracesInBases = require("./UI/Widgets/ListTracesInBases.js");
 
 var Samotraces = {
   Obsel: Obsel,
@@ -36,6 +36,7 @@ var Samotraces = {
       IntervalTimeForm: IntervalTimeForm,
       ListBases: ListBases,
       ListModelInBases: ListModelInBases,
+      ListTracesInBases: ListTracesInBases,
     },
   },
 };

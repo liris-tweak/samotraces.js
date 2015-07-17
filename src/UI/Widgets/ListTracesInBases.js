@@ -1,4 +1,6 @@
-Samotraces.UI.Widgets.ktbs = Samotraces.UI.Widgets.ktbs || {};
+var $ = require("jquery");
+var Widget = require("./Widget.js");
+var EventHandler = require("../../core/EventHandler.js");
 
 /**
  * @class Generic Widget for visualising the available bases of a KTBS.
@@ -16,10 +18,10 @@ Samotraces.UI.Widgets.ktbs = Samotraces.UI.Widgets.ktbs || {};
  * @param {Samotraces.Lib.EventHandler.EventConfig} [events]
  *     Events to listen to and their corresponding callbacks.
  */
-Samotraces.UI.Widgets.ktbs.ListTracesInBases = function(html_id,ktbs_base,events) {
+var ListTracesInBases = function(html_id,ktbs_base,events) {
 	// WidgetBasicTimeForm is a Widget
-	Samotraces.UI.Widgets.Widget.call(this,html_id);
-	Samotraces.EventHandler.call(this,events);
+	Widget.call(this,html_id);
+	EventHandler.call(this,events);
 	this.add_class('Widget-ListTraces');
 
 	this.base = ktbs_base;
@@ -28,7 +30,7 @@ Samotraces.UI.Widgets.ktbs.ListTracesInBases = function(html_id,ktbs_base,events
 	this.init_DOM();
 };
 
-Samotraces.UI.Widgets.ktbs.ListTracesInBases.prototype = {
+ListTracesInBases.prototype = {
 	init_DOM: function() {
 		//this.element.innerHTML = "";
 
@@ -113,5 +115,4 @@ Samotraces.UI.Widgets.ktbs.ListTracesInBases.prototype = {
 	}
 };
 
-
-
+module.exports = ListTracesInBases;
