@@ -11,6 +11,7 @@
   <div id="list-bases"></div>
   <div id="list-model-in-bases"></div>
   <div id="list-traces-in-bases"></div>
+  <div id="obsel-inspector"></div>
 
   <script type="text/javascript">
     /* global Samotraces */
@@ -110,6 +111,11 @@
       var listTracesInBasesElement = document.querySelector("#list-traces-in-bases");
       var listTracesInBases = new Samotraces.UI.Widgets.ListTracesInBases(listTracesInBasesElement, base);
       console.log(listTracesInBases);
+
+      var obselInspectorElement = document.querySelector("#obsel-inspector");
+      var obselInspector = new Samotraces.UI.Widgets.ObselInspector(obselInspectorElement, obselSelector);
+      obselSelector.select(obs);
+      console.log(obselInspector);
 
     })();
   </script>
