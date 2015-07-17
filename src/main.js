@@ -10,6 +10,8 @@ var KTBSModel = require("./core/KTBS.Model.js");
 var KTBSBase = require("./core/KTBS.Base.js");
 var KTBSTrace = require("./core/KTBS.Trace.js");
 
+var ImportTrace = require("./UI/Widgets/ImportTrace.js");
+
 var Samotraces = {
   Obsel: Obsel,
   TimeWindow: TimeWindow,
@@ -23,6 +25,11 @@ var Samotraces = {
     Model: KTBSModel,
     Base: KTBSBase,
     Trace: KTBSTrace,
+  },
+  UI: {
+    Widgets: {
+      ImportTrace: ImportTrace,
+    },
   },
 };
 

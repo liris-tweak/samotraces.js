@@ -1,3 +1,5 @@
+var Widget = require("./Widget.js");
+
 /**
  * @summary Widget for importing a trace from a CSV file.
  * @class Widget for importing a trace from a CSV file.
@@ -33,16 +35,16 @@
  * @param {Samotraces.Trace} trace
  *     Trace object in which the obsels will be imported.
  */
-Samotraces.UI.Widgets.ImportTrace = function(html_id,trace) {
+var ImportTrace = function(html_id,trace) {
 	// WidgetBasicTimeForm is a Widget
-	Samotraces.UI.Widgets.Widget.call(this,html_id);
+	Widget.call(this,html_id);
 
 	this.trace = trace;
 
 	this.init_DOM();
 };
 
-Samotraces.UI.Widgets.ImportTrace.prototype = {
+ImportTrace.prototype = {
 	init_DOM: function() {
 
 		var p_element = document.createElement('p');
@@ -236,3 +238,4 @@ Samotraces.UI.Widgets.ImportTrace.prototype = {
 
 };
 
+module.exports = ImportTrace;
