@@ -8,6 +8,7 @@
 <body>
   <div id="importer"></div>
   <div id="interval-time-form"></div>
+  <div id="list-bases"></div>
   <script type="application/javascript">
     (function() {
       "use strict";
@@ -93,6 +94,10 @@
       var intervalTimeFormElement = document.querySelector("#interval-time-form");
       var intervalTimeForm = new Samotraces.UI.Widgets.IntervalTimeForm(intervalTimeFormElement, timeWindow);
       console.log(intervalTimeForm);
+      
+      var listBasesElement = document.querySelector("#list-bases");
+      var listBases = new Samotraces.UI.Widgets.ListBases(listBasesElement, ktbs);
+      console.log(listBases);
       
     })();
   </script>

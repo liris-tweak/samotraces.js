@@ -12,6 +12,7 @@ var KTBSTrace = require("./core/KTBS.Trace.js");
 
 var ImportTrace = require("./UI/Widgets/ImportTrace.js");
 var IntervalTimeForm = require("./UI/Widgets/IntervalTimeForm.js");
+var ListBases = require("./UI/Widgets/ListBases.js");
 
 var Samotraces = {
   Obsel: Obsel,
@@ -31,6 +32,7 @@ var Samotraces = {
     Widgets: {
       ImportTrace: ImportTrace,
       IntervalTimeForm: IntervalTimeForm,
+      ListBases: ListBases,
     },
   },
 };
