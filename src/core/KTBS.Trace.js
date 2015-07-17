@@ -130,7 +130,7 @@ KTBSTrace.prototype = {
 			url: this.obsel_list_uri,//+'.json',
 			type: 'GET',
 			dataType: 'json',
-			data: {begin: begin, end: end, reverse: reverse},
+			data: {minb: begin, maxb: end, reverse: reverse},
 			xhrFields: { withCredentials: true },
 			 error: function(XHR, textStatus, errorThrown) {
                 if(XHR.status =='401'){
