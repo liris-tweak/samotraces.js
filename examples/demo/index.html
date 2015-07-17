@@ -7,6 +7,7 @@
 </head>
 <body>
   <div id="importer"></div>
+  <div id="interval-time-form"></div>
   <script type="application/javascript">
     (function() {
       "use strict";
@@ -87,6 +88,11 @@
       var importerElement = document.querySelector("#importer");
       var importTrace = new Samotraces.UI.Widgets.ImportTrace(importerElement, trace2);
       console.log(trace2);
+      
+      var timeWindow = new Samotraces.TimeWindow({start: 0, end: 20});
+      var intervalTimeFormElement = document.querySelector("#interval-time-form");
+      var intervalTimeForm = new Samotraces.UI.Widgets.IntervalTimeForm(intervalTimeFormElement, timeWindow);
+      console.log(intervalTimeForm);
       
     })();
   </script>
