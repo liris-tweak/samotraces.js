@@ -39,6 +39,7 @@ module.exports = function(grunt) {
       app: {
         options: {
           external: [
+            "jquery"
           ],
           browserifyOptions: {
             debug: true,
@@ -47,6 +48,16 @@ module.exports = function(grunt) {
         },
         src: "src/main.js",
         dest: "dist/samotraces.js"
+      },
+      vendor: {
+          options: {
+              alias: [
+                  "jquery"
+              ]
+          },
+          external: null,
+          src: ".",
+          dest: "dist/vendors.js"
       }
     },
     watch: {
@@ -72,5 +83,5 @@ module.exports = function(grunt) {
   grunt.loadNpmTasks("grunt-browserify");
   grunt.loadNpmTasks("grunt-jscs");
   // grunt.registerTask("default", ["jshint", "jscs", "browserify", "connect", "watch"]);
-  grunt.registerTask("default", ["jshint", "browserify", "connect", "watch"]);
+  grunt.registerTask("default", ["jshint", "browserify:vendor", "browserify:app", "connect", "watch"]);
 };
