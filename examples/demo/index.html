@@ -13,6 +13,7 @@
   <div id="list-traces-in-bases"></div>
   <div id="obsel-inspector"></div>
   <div id="obsel-type-inspector"></div>
+  <div id="readable-time-form"></div>
 
   <script type="text/javascript">
     /* global Samotraces */
@@ -122,6 +123,10 @@
       var obselTypeInspector = new Samotraces.UI.Widgets.ObselTypeInspector(obselTypeInspectorElement, obselSelector);
       obselSelector.select(obs);
       console.log(obselTypeInspector);
+
+      var readableTimeFormElement = document.querySelector("#readable-time-form");
+      var readableTimeForm = new Samotraces.UI.Widgets.ReadableTimeForm(readableTimeFormElement, timer);
+      console.log(readableTimeForm);
 
     })();
   </script>

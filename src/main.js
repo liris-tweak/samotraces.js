@@ -17,6 +17,7 @@ var ListModelInBases = require("./UI/Widgets/ListModelInBases.js");
 var ListTracesInBases = require("./UI/Widgets/ListTracesInBases.js");
 var ObselInspector = require("./UI/Widgets/ObselInspector.js");
 var ObselTypeInspector = require("./UI/Widgets/ObselTypeInspector.js");
+var ReadableTimeForm = require("./UI/Widgets/ReadableTimeForm.js");
 
 var Samotraces = {
   Obsel: Obsel,
@@ -41,6 +42,7 @@ var Samotraces = {
       ListTracesInBases: ListTracesInBases,
       ObselInspector: ObselInspector,
       ObselTypeInspector: ObselTypeInspector,
+      ReadableTimeForm: ReadableTimeForm,
     },
   },
 };
