@@ -15,6 +15,7 @@
   <div id="obsel-type-inspector"></div>
   <div id="readable-time-form"></div>
   <div id="time-form"></div>
+  <div id="time-slider"></div>
 
   <script type="text/javascript">
     /* global Samotraces */
@@ -132,6 +133,10 @@
       var timeFormElement = document.querySelector("#time-form");
       var timeForm = new Samotraces.UI.Widgets.TimeForm(timeFormElement, timer);
       console.log(timeForm);
+
+      var timeSliderElement = document.querySelector("#time-slider");
+      var timeSlider = new Samotraces.UI.Widgets.TimeSlider(timeSliderElement, timeWindow, timer);
+      console.log(timeSlider);
 
     })();
   </script>

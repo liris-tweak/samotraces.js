@@ -19,6 +19,7 @@ var ObselInspector = require("./UI/Widgets/ObselInspector.js");
 var ObselTypeInspector = require("./UI/Widgets/ObselTypeInspector.js");
 var ReadableTimeForm = require("./UI/Widgets/ReadableTimeForm.js");
 var TimeForm = require("./UI/Widgets/TimeForm.js");
+var TimeSlider = require("./UI/Widgets/TimeSlider.js");
 
 var Samotraces = {
   Obsel: Obsel,
@@ -45,6 +46,7 @@ var Samotraces = {
       ObselTypeInspector: ObselTypeInspector,
       ReadableTimeForm: ReadableTimeForm,
       TimeForm: TimeForm,
+      TimeSlider: TimeSlider,
     },
   },
 };
