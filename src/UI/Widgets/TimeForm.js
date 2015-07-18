@@ -1,3 +1,5 @@
+var Widget = require("./Widget.js");
+
 /**
  * @summary Widget for visualising the current time as a number.
  * @class Widget for visualising the current time as a number.
@@ -24,9 +26,9 @@
  * @param {Samotraces.Timer} timer
  *     Timer object to observe.
  */
-Samotraces.UI.Widgets.TimeForm = function(html_id,timer) {
+var TimeForm = function(html_id,timer) {
 	// WidgetBasicTimeForm is a Widget
-	Samotraces.UI.Widgets.Widget.call(this,html_id);
+	Widget.call(this,html_id);
 
 	this.timer = timer;
 	this.timer.on('timer:update',this.refresh.bind(this));
@@ -36,7 +38,7 @@ Samotraces.UI.Widgets.TimeForm = function(html_id,timer) {
 	this.refresh({data: this.timer.time});
 };
 
-Samotraces.UI.Widgets.TimeForm.prototype = {
+TimeForm.prototype = {
 	init_DOM: function() {
 
 		var p_element = document.createElement('p');
@@ -86,3 +88,4 @@ Samotraces.UI.Widgets.TimeForm.prototype = {
 
 };
 
+module.exports = TimeForm;

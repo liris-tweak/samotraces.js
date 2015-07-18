@@ -14,6 +14,7 @@
   <div id="obsel-inspector"></div>
   <div id="obsel-type-inspector"></div>
   <div id="readable-time-form"></div>
+  <div id="time-form"></div>
 
   <script type="text/javascript">
     /* global Samotraces */
@@ -127,6 +128,9 @@
       var readableTimeFormElement = document.querySelector("#readable-time-form");
       var readableTimeForm = new Samotraces.UI.Widgets.ReadableTimeForm(readableTimeFormElement, timer);
       console.log(readableTimeForm);
+
+      var timeFormElement = document.querySelector("#time-form");
+      var timeForm = new Samotraces.UI.Widgets.TimeForm(timeFormElement, timer);
 
     })();
   </script>
