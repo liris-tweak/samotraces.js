@@ -20,6 +20,7 @@
   <div id="trace-display-icons"></div>
   <div id="trace-display-icons-fix"></div>
   <div id="trace-display-icons-zoom"></div>
+  <div id="trace-display-obsel-occurences"></div>
 
   <script type="text/javascript">
     /* global Samotraces */
@@ -103,7 +104,7 @@
       console.log(trace2);
       console.log(importTrace);
       
-      var timeWindow = new Samotraces.TimeWindow({start: 0, end: Math.pow(2, 8)});
+      var timeWindow = new Samotraces.TimeWindow({start: 0, end: Math.pow(2, 4)});
       var intervalTimeFormElement = document.querySelector("#interval-time-form");
       var intervalTimeForm = new Samotraces.UI.Widgets.IntervalTimeForm(intervalTimeFormElement, timeWindow);
       console.log(intervalTimeForm);
@@ -159,6 +160,11 @@
       var traceDisplayIconsZoomElement = document.querySelector("#trace-display-icons-zoom");
       var traceDisplayIconsZoom = new Samotraces.UI.Widgets.TraceDisplayIconsZoom(traceDisplayIconsZoomElement, trace3, timeWindow);
       console.log(traceDisplayIconsZoom);      
+      
+      // TODO : not sure of what this widget is doing 
+      var traceDisplayObselOccurencesElement = document.querySelector("#trace-display-obsel-occurences");
+      var traceDisplayObselOccurrences = new Samotraces.UI.Widgets.TraceDisplayObselOccurrences(traceDisplayObselOccurencesElement, trace3, timeWindow);
+      console.log(traceDisplayObselOccurrences);
       
     })();
   </script>

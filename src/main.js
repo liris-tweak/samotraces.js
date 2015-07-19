@@ -23,6 +23,7 @@ var TimeSlider = require("./UI/Widgets/TimeSlider.js");
 var TraceDisplayIcons = require("./UI/Widgets/TraceDisplayIcons.js");
 var TraceDisplayIconsFix = require("./UI/Widgets/TraceDisplayIconsFix.js");
 var TraceDisplayIconsZoom = require("./UI/Widgets/TraceDisplayIconsZoom.js");
+var TraceDisplayObselOccurrences = require("./UI/Widgets/TraceDisplayObselOccurrences.js");
 
 var Samotraces = {
   Obsel: Obsel,
@@ -53,6 +54,7 @@ var Samotraces = {
       TraceDisplayIcons: TraceDisplayIcons,
       TraceDisplayIconsFix: TraceDisplayIconsFix,
       TraceDisplayIconsZoom: TraceDisplayIconsZoom,
+      TraceDisplayObselOccurrences: TraceDisplayObselOccurrences,
     },
   },
 };
