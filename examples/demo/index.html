@@ -18,6 +18,7 @@
   <div id="time-form"></div>
   <div id="time-slider"></div>
   <div id="trace-display-icons"></div>
+  <div id="trace-display-icons-fix"></div>
 
   <script type="text/javascript">
     /* global Samotraces */
@@ -148,6 +149,12 @@
       var traceDisplayIcons = new Samotraces.UI.Widgets.TraceDisplayIcons(traceDisplayIconsElement, trace3, timeWindow);
       console.log(traceDisplayIcons);
 
+      // TODO : dont know what is the time_window_Zoom argument (4th argument of TraceDisplayIconsFix)
+      // cannot test it 
+      var traceDisplayIconsFixElement = document.querySelector("#trace-display-icons-fix");
+      var traceDisplayIconsFix = new Samotraces.UI.Widgets.TraceDisplayIconsFix(traceDisplayIconsFixElement, trace3, timeWindow);
+      console.log(traceDisplayIconsFix);      
+      
     })();
   </script>
 </body>

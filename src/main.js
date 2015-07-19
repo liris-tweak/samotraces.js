@@ -21,6 +21,7 @@ var ReadableTimeForm = require("./UI/Widgets/ReadableTimeForm.js");
 var TimeForm = require("./UI/Widgets/TimeForm.js");
 var TimeSlider = require("./UI/Widgets/TimeSlider.js");
 var TraceDisplayIcons = require("./UI/Widgets/TraceDisplayIcons.js");
+var TraceDisplayIconsFix = require("./UI/Widgets/TraceDisplayIconsFix.js");
 
 var Samotraces = {
   Obsel: Obsel,
@@ -49,6 +50,7 @@ var Samotraces = {
       TimeForm: TimeForm,
       TimeSlider: TimeSlider,
       TraceDisplayIcons: TraceDisplayIcons,
+      TraceDisplayIconsFix: TraceDisplayIconsFix,
     },
   },
 };
