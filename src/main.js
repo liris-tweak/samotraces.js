@@ -27,6 +27,7 @@ var TraceDisplayObselOccurrences = require("./UI/Widgets/TraceDisplayObselOccurr
 var TraceDisplayText = require("./UI/Widgets/TraceDisplayText.js");
 var TraceDisplayZoomContext = require("./UI/Widgets/TraceDisplayZoomContext.js");
 var DisplayModel = require("./UI/Widgets/DisplayModel.js");
+var WindowScale = require("./UI/Widgets/WindowScale.js");
 
 var Samotraces = {
   Obsel: Obsel,
@@ -61,6 +62,7 @@ var Samotraces = {
       TraceDisplayText: TraceDisplayText,
       TraceDisplayZoomContext: TraceDisplayZoomContext,
       DisplayModel: DisplayModel,
+      WindowScale: WindowScale,
     },
   },
 };

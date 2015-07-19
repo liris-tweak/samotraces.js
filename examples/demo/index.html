@@ -23,6 +23,7 @@
   <div id="trace-display-obsel-occurences"></div>
   <div id="trace-display-zoom-context"></div>
   <div id="display-model"></div>
+  <div id="window-scale"></div>
 
   <script type="text/javascript">
     /* global Samotraces */
@@ -179,6 +180,9 @@
       var displayModelElement = document.querySelector("#display-model");
       var displayModel = new Samotraces.UI.Widgets.DisplayModel(displayModelElement, model, {});
       console.log(displayModel);
+      
+      var windowScaleElement = document.querySelector("#window-scale");
+      var windowScale = new Samotraces.UI.Widgets.WindowScale(windowScaleElement, timeWindow);
       
     })();
   </script>
