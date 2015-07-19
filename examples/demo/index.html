@@ -22,6 +22,7 @@
   <div id="trace-display-icons-zoom"></div>
   <div id="trace-display-obsel-occurences"></div>
   <div id="trace-display-zoom-context"></div>
+  <div id="display-model"></div>
 
   <script type="text/javascript">
     /* global Samotraces */
@@ -173,6 +174,11 @@
       var traceDisplayZoomContextElement = document.querySelector("#trace-display-zoom-context");
       var traceDisplayZoomContext = new Samotraces.UI.Widgets.TraceDisplayZoomContext(traceDisplayZoomContextElement, trace3, timeWindow1, timeWindow2, {}, {});
       console.log(traceDisplayZoomContext);
+
+      // TODO : not sure of what this widget is doing
+      var displayModelElement = document.querySelector("#display-model");
+      var displayModel = new Samotraces.UI.Widgets.DisplayModel(displayModelElement, model, {});
+      console.log(displayModel);
       
     })();
   </script>

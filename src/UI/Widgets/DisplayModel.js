@@ -1,7 +1,11 @@
-Samotraces.UI.Widgets.DisplayModel = function(divId,model,options) {
+var Widget = require("./Widget.js");
+var $ = require("jquery");
+var d3 = require("d3");
+
+var DisplayModel = function(divId, model, options) {
 		options = options || {};
 		// WidgetBasicTimeForm is a Widget
-		Samotraces.UI.Widgets.Widget.call(this,divId);
+		Widget.call(this,divId);
 		this.add_class('Widget-TraceModel');
 		//$(window).resize(this.refresh_x.bind(this));
 		this.model=model;
@@ -38,7 +42,8 @@ Samotraces.UI.Widgets.DisplayModel = function(divId,model,options) {
 		
 		           
 	};
-Samotraces.UI.Widgets.DisplayModel.prototype = {
+	
+DisplayModel.prototype = {
 		init_DOM: function() {
 			    var div_elmt = d3.select(this.element);
 			    this.div_elmt=d3.select(this.element);
@@ -154,3 +159,5 @@ Samotraces.UI.Widgets.DisplayModel.prototype = {
 				.attr('y',this.options.y);
 		},
 		};
+
+module.exports = DisplayModel;
