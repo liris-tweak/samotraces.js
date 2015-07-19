@@ -19,6 +19,7 @@
   <div id="time-slider"></div>
   <div id="trace-display-icons"></div>
   <div id="trace-display-icons-fix"></div>
+  <div id="trace-display-icons-zoom"></div>
 
   <script type="text/javascript">
     /* global Samotraces */
@@ -154,6 +155,10 @@
       var traceDisplayIconsFixElement = document.querySelector("#trace-display-icons-fix");
       var traceDisplayIconsFix = new Samotraces.UI.Widgets.TraceDisplayIconsFix(traceDisplayIconsFixElement, trace3, timeWindow);
       console.log(traceDisplayIconsFix);      
+      
+      var traceDisplayIconsZoomElement = document.querySelector("#trace-display-icons-zoom");
+      var traceDisplayIconsZoom = new Samotraces.UI.Widgets.TraceDisplayIconsZoom(traceDisplayIconsZoomElement, trace3, timeWindow);
+      console.log(traceDisplayIconsZoom);      
       
     })();
   </script>
