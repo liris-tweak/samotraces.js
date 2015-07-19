@@ -1,3 +1,7 @@
+var Widget = require("./Widget.js");
+var $ = require("jquery");
+var d3 = require("d3");
+
 /**
  * @summary Widget for visualising a trace.
  * @class Widget for visualising a trace.
@@ -17,9 +21,9 @@
  *     being currently displayed.
  * @todo add description and update doc...
  */
-Samotraces.UI.Widgets.TraceDisplayZoomContext = function(divId,trace,time_window1,time_window2,options1,options2) {
+var TraceDisplayZoomContext = function(divId, trace, time_window1, time_window2, options1, options2) {
 	// WidgetBasicTimeForm is a Widget
-	Samotraces.UI.Widgets.Widget.call(this,divId);
+	Widget.call(this,divId);
 
 	this.mode = 'window_sync';
 	if(options1 !== undefined || options2 !== undefined) {
@@ -62,7 +66,7 @@ Samotraces.UI.Widgets.TraceDisplayZoomContext = function(divId,trace,time_window
 	this.draw();
 };
 
-Samotraces.UI.Widgets.TraceDisplayZoomContext.prototype = {
+TraceDisplayZoomContext.prototype = {
 	init_DOM: function() {
 
 
@@ -224,9 +228,4 @@ Samotraces.UI.Widgets.TraceDisplayZoomContext.prototype = {
 
 };
 
-
-
-
-
-
-
+module.exports = TraceDisplayZoomContext;

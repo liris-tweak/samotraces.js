@@ -21,6 +21,7 @@
   <div id="trace-display-icons-fix"></div>
   <div id="trace-display-icons-zoom"></div>
   <div id="trace-display-obsel-occurences"></div>
+  <div id="trace-display-zoom-context"></div>
 
   <script type="text/javascript">
     /* global Samotraces */
@@ -165,6 +166,13 @@
       var traceDisplayObselOccurencesElement = document.querySelector("#trace-display-obsel-occurences");
       var traceDisplayObselOccurrences = new Samotraces.UI.Widgets.TraceDisplayObselOccurrences(traceDisplayObselOccurencesElement, trace3, timeWindow);
       console.log(traceDisplayObselOccurrences);
+      
+      // TODO : not sure of what this widget is doing 
+      var timeWindow1 = new Samotraces.TimeWindow({start: 0, end: 8});
+      var timeWindow2 = new Samotraces.TimeWindow({start: 8, end: 16});
+      var traceDisplayZoomContextElement = document.querySelector("#trace-display-zoom-context");
+      var traceDisplayZoomContext = new Samotraces.UI.Widgets.TraceDisplayZoomContext(traceDisplayZoomContextElement, trace3, timeWindow1, timeWindow2, {}, {});
+      console.log(traceDisplayZoomContext);
       
     })();
   </script>
