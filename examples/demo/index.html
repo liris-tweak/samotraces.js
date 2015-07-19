@@ -25,6 +25,7 @@
   <div id="display-model"></div>
   <div id="window-scale"></div>
   <div id="window-scale-fix"></div>
+  <div id="window-slider"></div>
 
   <script type="text/javascript">
     /* global Samotraces */
@@ -184,9 +185,17 @@
       
       var windowScaleElement = document.querySelector("#window-scale");
       var windowScale = new Samotraces.UI.Widgets.WindowScale(windowScaleElement, timeWindow);
+      console.log(windowScale);
       
       var windowScaleFixElement = document.querySelector("#window-scale-fix");
       var windowScaleFix = new Samotraces.UI.Widgets.WindowScaleFix(windowScaleFixElement, timeWindow);
+      console.log(windowScaleFix);
+      
+      var windowSliderElement = document.querySelector("#window-slider");
+      var wideWindow = new Samotraces.TimeWindow({start: 0, end: 16});
+      var smallWindow = new Samotraces.TimeWindow({start: 4, end: 12});
+      var windowSlider = new Samotraces.UI.Widgets.WindowSlider(windowSliderElement, wideWindow, smallWindow);
+      console.log(windowSlider);
       
     })();
   </script>

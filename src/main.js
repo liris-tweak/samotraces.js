@@ -29,6 +29,7 @@ var TraceDisplayZoomContext = require("./UI/Widgets/TraceDisplayZoomContext.js")
 var DisplayModel = require("./UI/Widgets/DisplayModel.js");
 var WindowScale = require("./UI/Widgets/WindowScale.js");
 var WindowScaleFix = require("./UI/Widgets/WindowScaleFix.js");
+var WindowSlider = require("./UI/Widgets/WindowSlider.js");
 
 var Samotraces = {
   Obsel: Obsel,
@@ -65,6 +66,7 @@ var Samotraces = {
       DisplayModel: DisplayModel,
       WindowScale: WindowScale,
       WindowScaleFix: WindowScaleFix,
+      WindowSlider: WindowSlider,
     },
   },
 };
