@@ -80,7 +80,7 @@
 
       anObject.purr();
 
-      Samotraces.KTBS.Resource.call(anObject,
+      Samotraces.Ktbs.Resource.call(anObject,
         "http://localhost:8001/",
         "http://localhost:8001/",
         "KTBS",
@@ -88,16 +88,16 @@
 
       console.log(anObject);
 
-      var ktbs = new Samotraces.KTBS.KTBS("http://localhost:8001/");
+      var ktbs = new Samotraces.Ktbs.Ktbs("http://localhost:8001/");
       console.log(ktbs);
 
-      var model = new Samotraces.KTBS.Model("http://localhost:8001/base1/model1");
+      var model = new Samotraces.Ktbs.Model("http://localhost:8001/base1/model1");
       console.log(model);
 
-      var base = new Samotraces.KTBS.Base("http://localhost:8001/base1/");
+      var base = new Samotraces.Ktbs.Base("http://localhost:8001/base1/");
       console.log(base);
 
-      var trace = new Samotraces.KTBS.Trace("http://localhost:8001/base1/t01/");
+      var trace = new Samotraces.Ktbs.Trace("http://localhost:8001/base1/t01/");
       console.log(trace);
 
       var obsels = trace.list_obsels(0, Math.pow(2, 16));
@@ -105,47 +105,47 @@
       
       var trace2 = new Samotraces.LocalTrace();
       var importerElement = document.querySelector("#importer");
-      var importTrace = new Samotraces.UI.Widgets.ImportTrace(importerElement, trace2);
+      var importTrace = new Samotraces.Ui.Widgets.ImportTrace(importerElement, trace2);
       console.log(trace2);
       console.log(importTrace);
       
       var timeWindow = new Samotraces.TimeWindow({start: 0, end: Math.pow(2, 4)});
       var intervalTimeFormElement = document.querySelector("#interval-time-form");
-      var intervalTimeForm = new Samotraces.UI.Widgets.IntervalTimeForm(intervalTimeFormElement, timeWindow);
+      var intervalTimeForm = new Samotraces.Ui.Widgets.IntervalTimeForm(intervalTimeFormElement, timeWindow);
       console.log(intervalTimeForm);
       
       var listBasesElement = document.querySelector("#list-bases");
-      var listBases = new Samotraces.UI.Widgets.ListBases(listBasesElement, ktbs);
+      var listBases = new Samotraces.Ui.Widgets.Ktbs.ListBases(listBasesElement, ktbs);
       console.log(listBases);
       
       var listModelInBasesElement = document.querySelector("#list-model-in-bases");
-      var listModelInBases = new Samotraces.UI.Widgets.ListModelInBases(listModelInBasesElement, base);
+      var listModelInBases = new Samotraces.Ui.Widgets.Ktbs.ListModelInBases(listModelInBasesElement, base);
       console.log(listModelInBases);
       
       var listTracesInBasesElement = document.querySelector("#list-traces-in-bases");
-      var listTracesInBases = new Samotraces.UI.Widgets.ListTracesInBases(listTracesInBasesElement, base);
+      var listTracesInBases = new Samotraces.Ui.Widgets.Ktbs.ListTracesInBases(listTracesInBasesElement, base);
       console.log(listTracesInBases);
 
       var obselInspectorElement = document.querySelector("#obsel-inspector");
-      var obselInspector = new Samotraces.UI.Widgets.ObselInspector(obselInspectorElement, obselSelector);
+      var obselInspector = new Samotraces.Ui.Widgets.ObselInspector(obselInspectorElement, obselSelector);
       obselSelector.select(obs);
       console.log(obselInspector);
 
       var obselTypeInspectorElement = document.querySelector("#obsel-type-inspector");
-      var obselTypeInspector = new Samotraces.UI.Widgets.ObselTypeInspector(obselTypeInspectorElement, obselSelector);
+      var obselTypeInspector = new Samotraces.Ui.Widgets.ObselTypeInspector(obselTypeInspectorElement, obselSelector);
       obselSelector.select(obs);
       console.log(obselTypeInspector);
 
       var readableTimeFormElement = document.querySelector("#readable-time-form");
-      var readableTimeForm = new Samotraces.UI.Widgets.ReadableTimeForm(readableTimeFormElement, timer);
+      var readableTimeForm = new Samotraces.Ui.Widgets.ReadableTimeForm(readableTimeFormElement, timer);
       console.log(readableTimeForm);
 
       var timeFormElement = document.querySelector("#time-form");
-      var timeForm = new Samotraces.UI.Widgets.TimeForm(timeFormElement, timer);
+      var timeForm = new Samotraces.Ui.Widgets.TimeForm(timeFormElement, timer);
       console.log(timeForm);
 
       //var timeSliderElement = document.querySelector("#time-slider");
-      //var timeSlider = new Samotraces.UI.Widgets.TimeSlider(timeSliderElement, timeWindow, timer);
+      //var timeSlider = new Samotraces.Ui.Widgets.TimeSlider(timeSliderElement, timeWindow, timer);
       //console.log(timeSlider);
 
       var trace3 = new Samotraces.LocalTrace();
@@ -153,48 +153,48 @@
       trace3.create_obsel({type: 'click', begin: 5});
       trace3.create_obsel({type: 'click', begin: 12});
       var traceDisplayIconsElement = document.querySelector("#trace-display-icons");
-      var traceDisplayIcons = new Samotraces.UI.Widgets.TraceDisplayIcons(traceDisplayIconsElement, trace3, timeWindow);
+      var traceDisplayIcons = new Samotraces.Ui.Widgets.TraceDisplayIcons(traceDisplayIconsElement, trace3, timeWindow);
       console.log(traceDisplayIcons);
 
       // TODO : dont know what is the time_window_Zoom argument (4th argument of TraceDisplayIconsFix)
       // cannot test it 
       var traceDisplayIconsFixElement = document.querySelector("#trace-display-icons-fix");
-      var traceDisplayIconsFix = new Samotraces.UI.Widgets.TraceDisplayIconsFix(traceDisplayIconsFixElement, trace3, timeWindow);
+      var traceDisplayIconsFix = new Samotraces.Ui.Widgets.TraceDisplayIconsFix(traceDisplayIconsFixElement, trace3, timeWindow);
       console.log(traceDisplayIconsFix);      
       
       var traceDisplayIconsZoomElement = document.querySelector("#trace-display-icons-zoom");
-      var traceDisplayIconsZoom = new Samotraces.UI.Widgets.TraceDisplayIconsZoom(traceDisplayIconsZoomElement, trace3, timeWindow);
+      var traceDisplayIconsZoom = new Samotraces.Ui.Widgets.TraceDisplayIconsZoom(traceDisplayIconsZoomElement, trace3, timeWindow);
       console.log(traceDisplayIconsZoom);      
       
       // TODO : not sure of what this widget is doing 
       var traceDisplayObselOccurencesElement = document.querySelector("#trace-display-obsel-occurences");
-      var traceDisplayObselOccurrences = new Samotraces.UI.Widgets.TraceDisplayObselOccurrences(traceDisplayObselOccurencesElement, trace3, timeWindow);
+      var traceDisplayObselOccurrences = new Samotraces.Ui.Widgets.TraceDisplayObselOccurrences(traceDisplayObselOccurencesElement, trace3, timeWindow);
       console.log(traceDisplayObselOccurrences);
       
       // TODO : not sure of what this widget is doing 
       var timeWindow1 = new Samotraces.TimeWindow({start: 0, end: 8});
       var timeWindow2 = new Samotraces.TimeWindow({start: 8, end: 16});
       var traceDisplayZoomContextElement = document.querySelector("#trace-display-zoom-context");
-      var traceDisplayZoomContext = new Samotraces.UI.Widgets.TraceDisplayZoomContext(traceDisplayZoomContextElement, trace3, timeWindow1, timeWindow2, {}, {});
+      var traceDisplayZoomContext = new Samotraces.Ui.Widgets.TraceDisplayZoomContext(traceDisplayZoomContextElement, trace3, timeWindow1, timeWindow2, {}, {});
       console.log(traceDisplayZoomContext);
 
       // TODO : not sure of what this widget is doing
       var displayModelElement = document.querySelector("#display-model");
-      var displayModel = new Samotraces.UI.Widgets.DisplayModel(displayModelElement, model, {});
+      var displayModel = new Samotraces.Ui.Widgets.DisplayModel(displayModelElement, model, {});
       console.log(displayModel);
       
       var windowScaleElement = document.querySelector("#window-scale");
-      var windowScale = new Samotraces.UI.Widgets.WindowScale(windowScaleElement, timeWindow);
+      var windowScale = new Samotraces.Ui.Widgets.WindowScale(windowScaleElement, timeWindow);
       console.log(windowScale);
       
       var windowScaleFixElement = document.querySelector("#window-scale-fix");
-      var windowScaleFix = new Samotraces.UI.Widgets.WindowScaleFix(windowScaleFixElement, timeWindow);
+      var windowScaleFix = new Samotraces.Ui.Widgets.WindowScaleFix(windowScaleFixElement, timeWindow);
       console.log(windowScaleFix);
       
       var windowSliderElement = document.querySelector("#window-slider");
       var wideWindow = new Samotraces.TimeWindow({start: 0, end: 16});
       var smallWindow = new Samotraces.TimeWindow({start: 4, end: 12});
-      var windowSlider = new Samotraces.UI.Widgets.WindowSlider(windowSliderElement, wideWindow, smallWindow);
+      var windowSlider = new Samotraces.Ui.Widgets.WindowSlider(windowSliderElement, wideWindow, smallWindow);
       console.log(windowSlider);
       
     })();

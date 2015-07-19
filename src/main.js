@@ -5,10 +5,10 @@ var TimeWindow = require("./core/TimeWindow.js");
 var Timer = require("./core/Timer.js");
 var Selector = require("./core/Selector.js");
 var LocalTrace = require("./core/LocalTrace.js");
-var KTBS = require("./core/KTBS.js");
-var KTBSModel = require("./core/KTBS.Model.js");
-var KTBSBase = require("./core/KTBS.Base.js");
-var KTBSTrace = require("./core/KTBS.Trace.js");
+var Ktbs = require("./core/KTBS.js");
+var KtbsModel = require("./core/KTBS.Model.js");
+var KtbsBase = require("./core/KTBS.Base.js");
+var KtbsTrace = require("./core/KTBS.Trace.js");
 
 var ImportTrace = require("./UI/Widgets/ImportTrace.js");
 var IntervalTimeForm = require("./UI/Widgets/IntervalTimeForm.js");
@@ -38,20 +38,17 @@ var Samotraces = {
   Selector: Selector,
   EventHandler: EventHandler,
   LocalTrace: LocalTrace,
-  KTBS: {
-    KTBS: KTBS,
+  Ktbs: {
+    Ktbs: Ktbs,
     Resource: KTBSResource,
-    Model: KTBSModel,
-    Base: KTBSBase,
-    Trace: KTBSTrace,
+    Model: KtbsModel,
+    Base: KtbsBase,
+    Trace: KtbsTrace,
   },
-  UI: {
+  Ui: {
     Widgets: {
       ImportTrace: ImportTrace,
       IntervalTimeForm: IntervalTimeForm,
-      ListBases: ListBases,
-      ListModelInBases: ListModelInBases,
-      ListTracesInBases: ListTracesInBases,
       ObselInspector: ObselInspector,
       ObselTypeInspector: ObselTypeInspector,
       ReadableTimeForm: ReadableTimeForm,
@@ -67,6 +64,11 @@ var Samotraces = {
       WindowScale: WindowScale,
       WindowScaleFix: WindowScaleFix,
       WindowSlider: WindowSlider,
+      Ktbs: {
+        ListBases: ListBases,
+        ListModelInBases: ListModelInBases,
+        ListTracesInBases: ListTracesInBases,
+      }
     },
   },
 };
