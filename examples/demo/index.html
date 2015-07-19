@@ -24,6 +24,7 @@
   <div id="trace-display-zoom-context"></div>
   <div id="display-model"></div>
   <div id="window-scale"></div>
+  <div id="window-scale-fix"></div>
 
   <script type="text/javascript">
     /* global Samotraces */
@@ -183,6 +184,9 @@
       
       var windowScaleElement = document.querySelector("#window-scale");
       var windowScale = new Samotraces.UI.Widgets.WindowScale(windowScaleElement, timeWindow);
+      
+      var windowScaleFixElement = document.querySelector("#window-scale-fix");
+      var windowScaleFix = new Samotraces.UI.Widgets.WindowScaleFix(windowScaleFixElement, timeWindow);
       
     })();
   </script>
