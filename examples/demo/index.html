@@ -4,6 +4,7 @@
   <title></title>
   <script type="application/javascript" src="/dist/vendors.js"></script>
   <script type="application/javascript" src="/dist/samotraces.js"></script>
+  <link rel="stylesheet" type="text/css" href="/dist/samotraces.css">
 </head>
 <body>
   <div id="importer"></div>
@@ -16,6 +17,7 @@
   <div id="readable-time-form"></div>
   <div id="time-form"></div>
   <div id="time-slider"></div>
+  <div id="trace-display-icons"></div>
 
   <script type="text/javascript">
     /* global Samotraces */
@@ -99,7 +101,7 @@
       console.log(trace2);
       console.log(importTrace);
       
-      var timeWindow = new Samotraces.TimeWindow({start: 0, end: 20});
+      var timeWindow = new Samotraces.TimeWindow({start: 0, end: Math.pow(2, 8)});
       var intervalTimeFormElement = document.querySelector("#interval-time-form");
       var intervalTimeForm = new Samotraces.UI.Widgets.IntervalTimeForm(intervalTimeFormElement, timeWindow);
       console.log(intervalTimeForm);
@@ -134,9 +136,17 @@
       var timeForm = new Samotraces.UI.Widgets.TimeForm(timeFormElement, timer);
       console.log(timeForm);
 
-      var timeSliderElement = document.querySelector("#time-slider");
-      var timeSlider = new Samotraces.UI.Widgets.TimeSlider(timeSliderElement, timeWindow, timer);
-      console.log(timeSlider);
+      //var timeSliderElement = document.querySelector("#time-slider");
+      //var timeSlider = new Samotraces.UI.Widgets.TimeSlider(timeSliderElement, timeWindow, timer);
+      //console.log(timeSlider);
+
+      var trace3 = new Samotraces.LocalTrace();
+      trace3.create_obsel({type: 'click', begin: 1});
+      trace3.create_obsel({type: 'click', begin: 5});
+      trace3.create_obsel({type: 'click', begin: 12});
+      var traceDisplayIconsElement = document.querySelector("#trace-display-icons");
+      var traceDisplayIcons = new Samotraces.UI.Widgets.TraceDisplayIcons(traceDisplayIconsElement, trace3, timeWindow);
+      console.log(traceDisplayIcons);
 
     })();
   </script>

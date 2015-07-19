@@ -1,3 +1,7 @@
+var Widget = require("./Widget.js");
+var $ = require("jquery");
+var d3 = require("d3");
+
 /**
  * @summary Widget for visualising a trace where obsels are displayed as images.
  * @class Widget for visualising a trace where obsels are displayed as images
@@ -67,12 +71,12 @@
  *     }
  * };
  */
-Samotraces.UI.Widgets.TraceDisplayIcons = function(divId,trace,time_window,options) {
+var TraceDisplayIcons = function(divId, trace, time_window, options) {
 
 	options = options || {};
 
 	// WidgetBasicTimeForm is a Widget
-	Samotraces.UI.Widgets.Widget.call(this,divId);
+	Widget.call(this, divId);
 
 	this.add_class('Widget-TraceDisplayIcons');
 	$(window).resize(this.refresh_x.bind(this));
@@ -156,7 +160,7 @@ Samotraces.UI.Widgets.TraceDisplayIcons = function(divId,trace,time_window,optio
 	this.draw();
 };
 
-Samotraces.UI.Widgets.TraceDisplayIcons.prototype = {
+TraceDisplayIcons.prototype = {
 	init_DOM: function() {
 
 
@@ -295,8 +299,4 @@ Samotraces.UI.Widgets.TraceDisplayIcons.prototype = {
 
 };
 
-
-
-
-
-
+module.exports = TraceDisplayIcons;
