@@ -42,6 +42,8 @@
     "grunt-jscs": "^1.8.0"
   },
   "dependencies": {
-    "jquery": "^2.1.4"
+    "d3": "^3.5.6",
+    "jquery": "^2.1.4",
+    "jquery-mousewheel": "^3.1.13"
   }
 }

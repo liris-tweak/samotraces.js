@@ -1,3 +1,6 @@
+var $ = require("jquery");
+require('jquery-mousewheel')($);
+
 /**
  * @mixin
  * @requires jQuery framework (see <a href="http://jquery.com">jquery.com</a>)
