@@ -1,4 +1,6 @@
-Samotraces.UI.Widgets.ktbs = Samotraces.UI.Widgets.ktbs || {};
+var $ = require("jquery");
+var Widget = require("./Widget.js");
+var EventHandler = require("../../core/EventHandler.js");
 
 /**
  * @class Generic Widget for visualising the available bases of a KTBS.
@@ -8,27 +10,27 @@ Samotraces.UI.Widgets.ktbs = Samotraces.UI.Widgets.ktbs || {};
  * @description
  * TODO ecrire description
  * @todo ECRIRE LA DESCRIPTION
- * @param {String}	html_id
+ * @param {String}	htmlElement
  *     Id of the DIV element where the widget will be
  *     instantiated
- * @param {Samotraces.Lib.KTBS.Base} ktbs_base
+ * @param {Samotraces.Lib.KTBS.Base} ktbsBase
  *     KTBS Base to bind to.
  * @param {Samotraces.Lib.EventHandler.EventConfig} [events]
  *     Events to listen to and their corresponding callbacks.
  */
-Samotraces.UI.Widgets.ktbs.ListModelInBases = function(html_id,ktbs_base,events) {
+var ListModelInBases = function(htmlElement, ktbsBase, events) {
 	// WidgetBasicTimeForm is a Widget
-	Samotraces.UI.Widgets.Widget.call(this,html_id);
-	Samotraces.EventHandler.call(this,events);
+	Widget.call(this, htmlElement);
+	EventHandler.call(this, events);
 	this.add_class('Widget-ListTraces');
 
-	this.base = ktbs_base;
+	this.base = ktbsBase;
 	this.base.on('base:update',this.refresh.bind(this));
 
 	this.init_DOM();
 };
 
-Samotraces.UI.Widgets.ktbs.ListModelInBases.prototype = {
+ListModelInBases.prototype = {
 	init_DOM: function() {
 		//this.element.innerHTML = "";
 
@@ -113,5 +115,4 @@ Samotraces.UI.Widgets.ktbs.ListModelInBases.prototype = {
 	}
 };
 
-
-
+module.exports = ListModelInBases;

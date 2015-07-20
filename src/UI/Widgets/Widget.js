@@ -1,3 +1,6 @@
+var $ = require("jquery");
+require('jquery-mousewheel')($);
+
 /**
  * @mixin
  * @requires jQuery framework (see <a href="http://jquery.com">jquery.com</a>)
@@ -16,7 +19,7 @@
  * @property {HTMLElement} element HTML element the
  * Widget is attached to.
  */
-Samotraces.UI.Widgets.Widget = (function() {
+var Widget = (function() {
 	/**
 	 * Adds the given class to the HTML element to which
 	 * this Widget is attached to.
@@ -143,3 +146,4 @@ Samotraces.UI.Widgets.Widget = (function() {
 	};
 })();
 
+module.exports = Widget;

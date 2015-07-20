@@ -1,3 +1,7 @@
+var Widget = require("./Widget.js");
+var $ = require("jquery");
+var d3 = require("d3");
+
 /**
  * @summary Widget for visualising a trace.
  * @class Widget for visualising a trace.
@@ -17,9 +21,9 @@
  *     being currently displayed.
  * @todo add description and update doc...
  */
-Samotraces.UI.Widgets.TraceDisplayObselOccurrences = function(divId,trace,time_window) {
+var TraceDisplayObselOccurrences = function(divId,trace,time_window) {
 	// WidgetBasicTimeForm is a Widget
-	Samotraces.UI.Widgets.Widget.call(this,divId);
+	Widget.call(this,divId);
 
 	this.add_class('Widget-ObselOccurrences');
 	//this.add_class('Widget-TraceDisplayObselOccurrences');
@@ -47,7 +51,7 @@ Samotraces.UI.Widgets.TraceDisplayObselOccurrences = function(divId,trace,time_w
 	this.draw();
 };
 
-Samotraces.UI.Widgets.TraceDisplayObselOccurrences.prototype = {
+TraceDisplayObselOccurrences.prototype = {
 	init_DOM: function() {
 
 
@@ -171,9 +175,4 @@ Samotraces.UI.Widgets.TraceDisplayObselOccurrences.prototype = {
 
 };
 
-
-
-
-
-
-
+module.exports = TraceDisplayObselOccurrences;

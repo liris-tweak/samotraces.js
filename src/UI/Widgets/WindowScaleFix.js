@@ -1,6 +1,10 @@
-Samotraces.UI.Widgets.WindowScaleFix = function(html_id,time_window,is_javascript_date) {
+var Widget = require("./Widget.js");
+var $ = require("jquery");
+var d3 = require("d3");
+
+var WindowScaleFix = function(html_id,time_window,is_javascript_date) {
 		// WidgetBasicTimeForm is a Widget
-		Samotraces.UI.Widgets.Widget.call(this,html_id);
+		Widget.call(this,html_id);
         this.add_class('Widget-WindowScale');
 		$(window).resize(this.draw.bind(this));
         this.window = time_window;
@@ -15,7 +19,8 @@ Samotraces.UI.Widgets.WindowScaleFix = function(html_id,time_window,is_javascrip
 		// update slider's position
 		this.draw();
 		};
-	Samotraces.UI.Widgets.WindowScaleFix.prototype = {
+
+WindowScaleFix.prototype = {
 	init_DOM: function() {
 		// create the slider
 		//this.svg = d3.select("#"+this.id).append("svg");
@@ -39,3 +44,5 @@ Samotraces.UI.Widgets.WindowScaleFix = function(html_id,time_window,is_javascrip
 		this.svgAxis.call(this.xAxis);
 	},
 };
+
+module.exports = WindowScaleFix;

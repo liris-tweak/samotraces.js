@@ -40,9 +40,12 @@
     "grunt-contrib-jshint": "~0.11.2",
     "grunt-contrib-watch": "^0.6.1",
     "grunt-jscs": "^1.8.0",
-    "jshint": "2.7.0"
+    "jshint": "2.7.0",
+    "grunt-jsdoc": "^0.6.7",
+    "d3": "^3.5.6",
+    "jquery": "^2.1.4",
+    "jquery-mousewheel": "^3.1.13",
+    "jsdoc": "^3.3.2"
   },
-  "dependencies": {
-    "jquery": "^2.1.4"
-  }
+  "dependencies": {}
 }

@@ -127,4 +127,37 @@ These include :
 - Selector objects, that store a selection of other objects (Traces, Obsels, etc.)
 ({@link Samotraces.Selector|Selector}).
 
+## For developers
+This project use ```grunt``` as Task-Runner/build tool, ```npm``` for dependency management, `browserify` for bundling all modules to distribuables files, and ```jsdoc``` for the documentation. 
 
+Please be sure to have ```node```, ```npm```, and ```grunt``` installed on your operating system.
+```node``` and ```npm``` should be installed with your distribution package manager (``` apt-get, yum, pacman [...]```) if possible and if the version packaged for your distribution is the actual stable ```Node.js``` version. If not, no problem, you can download and install node (since v0.12, ```npm``` is packaged inside ```node```, so you don't need to install it separatly) [here](https://nodejs.org/download/).
+
+Then, install ```grunt```, as a global executable.
+
+```$ [sudo] npm install -g grunt-cli```
+
+Ok, you now can move to the `get dependencies` step.
+
+### Get Dependencies
+
+Assuming you have `node`, `npm`, `grunt` properly installed.
+
+Then, you must fetch the developers dependencies of the project:
+```$ npm install -d```
+Please don't forget the `-d` that mean to download `devDependencies` listed in `package.json` instead of the `dependencies`.
+
+### build
+Just run 
+
+``` $ grunt ```
+
+This will do fo you the folowwing tasks:
+
+- (grunt jshint) -> detect errors and potential problems in your JavaScript code
+- (grunt jscs) -> a code style linter for programmatically enforcing your style guide
+- (grunt jsdoc) -> generate the documentation 
+- (grunt browserify:vendor) -> bundle all dependencies of Samotraces.js into `dist/` directory
+- (grunt browserify:app) -> bundle Samotraces.js sources into `dist/` directory
+- (grunt connect) -> open a small http server to help you to see the documentation and examples.
+- (grunt watch) -> a task for automatically relaunch browserify:app if you edit a file into the src directory (if you are writing a new feature, you can just save your file and refresh your browser to get an updated version)
