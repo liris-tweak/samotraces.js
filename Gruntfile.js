@@ -50,14 +50,14 @@ module.exports = function(grunt) {
         dest: "dist/samotraces.js"
       },
       vendor: {
-          options: {
-              alias: [
-                  "jquery"
-              ]
-          },
-          external: null,
-          src: ".",
-          dest: "dist/vendors.js"
+        options: {
+          alias: [
+            "jquery"
+          ]
+        },
+        external: null,
+        src: ".",
+        dest: "dist/vendors.js"
       }
     },
     watch: {
@@ -75,6 +75,15 @@ module.exports = function(grunt) {
         verbose: true, // If you need output with rule names http://jscs.info/overview.html#verbose
         requireCurlyBraces: [ "if" ]
       }
+    },
+    jsdoc : {
+      dist : {
+        jsdoc: './node_modules/.bin/jsdoc',
+        options: {
+          destination: 'doc',
+          configure: 'conf-jsdoc.json',
+        }
+      }
     }
   });
   grunt.loadNpmTasks("grunt-contrib-watch");
@@ -82,6 +91,7 @@ module.exports = function(grunt) {
   grunt.loadNpmTasks("grunt-contrib-connect");
   grunt.loadNpmTasks("grunt-browserify");
   grunt.loadNpmTasks("grunt-jscs");
+  grunt.loadNpmTasks('grunt-jsdoc');
   // grunt.registerTask("default", ["jshint", "jscs", "browserify", "connect", "watch"]);
-  grunt.registerTask("default", ["jshint", "browserify:vendor", "browserify:app", "connect", "watch"]);
+  grunt.registerTask("default", ["jshint", "jsdoc", "browserify:vendor", "browserify:app", "connect", "watch"]);
 };
