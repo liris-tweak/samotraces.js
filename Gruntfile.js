@@ -29,7 +29,7 @@ module.exports = function(grunt) {
         "notypeof": true,
         "shadow": true,
         "undef": true,
-        "singleGroups": true,
+        "singleGroups": false,
         "unused": true,
         "nonew": true,
         "strict": true

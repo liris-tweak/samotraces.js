@@ -24,100 +24,88 @@ var EventHandler = require("./EventHandler.js");
  */
 
 
- var Model = function (uri,id) {
- 		if(id === undefined) { id = uri; }
-        EventHandler.call(this);
-        KTBSResource.call(this,id,uri,'Model',"");
-        this.list_Types_Obsles = []
-        //if (data !== 'null')
-       //{ this.list_Types_Obsles= this.list_obsels(data);}
-        this.force_state_refresh();
+var Model = function(uri, id) {
+  if (id === undefined) { id = uri; }
+  EventHandler.call(this);
+  KTBSResource.call(this, id, uri, 'Model', "");
+  this.list_Types_Obsles = []
+  //if (data !== 'null')
+  //{ this.list_Types_Obsles= this.list_obsels(data);}
+  this.force_state_refresh();
 
 };
 
 Model.prototype = {
 
-	_on_state_refresh_: function(data){
+  _on_state_refresh_: function(data) {
 
 
-		console.log (data);
-		this.list_Types_Obsles= this.list_obsels(data["@graph"]);
-	},
-	list_obsels: function(data) {
-	ListeObselType=[];
-	M=this;
-		data.forEach(function(el,key) {
-		var obs = {attributes: []};
-		if (el["@type"]=="ObselType")
-		    {
-		        obs.id=el["@id"];
-		        obs.type = el["@id"].substr(1);
-		        obs.coche=false;
-		        //obs[key] = el[key]
-		        if (el['hasSuperObselType'])
-		        {
-		        obs.hasSuperObselType=el['hasSuperObselType']
-		        }
-		        ListeObselType.push(obs);
-		        M.trigger('Model:Draw_obsel',obs);
-		        console.log ('triger')
-		    }
-		 else if (el["@type"]=="AttributeType")
+    console.log (data);
+    this.list_Types_Obsles = this.list_obsels(data["@graph"]);
+  },
+  list_obsels: function(data) {
+    ListeObselType = [];
+    M = this;
+    data.forEach(function(el, key) {
+      var obs = {attributes: []};
+      if (el["@type"] == "ObselType")      {
+        obs.id = el["@id"];
+        obs.type = el["@id"].substr(1);
+        obs.coche = false;
+        //obs[key] = el[key]
+        if (el['hasSuperObselType'])        {
+          obs.hasSuperObselType = el['hasSuperObselType']
+        }
+        ListeObselType.push(obs);
+        M.trigger('Model:Draw_obsel', obs);
+        console.log ('triger')
+      }      else if (el["@type"] == "AttributeType")      {
+        obs = M.GetObselType(el["hasAttributeObselType"], ListeObselType);
+        el['coche'] = false;
+        obs.attributes.push(el);
 
-		 {
-		    obs=M.GetObselType(el["hasAttributeObselType"],ListeObselType);
-		    el['coche']=false;
-		    obs.attributes.push(el);
+      }
 
-		 }
+    });
+    ListeObselType.forEach(function(o) {
+      if (o.hasSuperObselType)      {
 
-		});
-		ListeObselType.forEach(function(o){
-		if (o.hasSuperObselType)
-		{
+        o.attributes = M.getAttributes (o.hasSuperObselType[0])
+      }
 
-		o.attributes= M.getAttributes (o.hasSuperObselType[0])
-		}
+    })
+    return ListeObselType;
 
-		})
-		return ListeObselType;
+  },
 
-	},
+  GetObselType: function(id, ListeObselType)  {
+    var obs = [];
+    ListeObselType.forEach(function(o)    {
 
-GetObselType :function (id,ListeObselType)
-		            {
-		            var obs=[];
-		             ListeObselType.forEach(function(o)
-		              {
+      if (o["id"] == id)      {
 
-		                  if (o["id"]==id)
-		                  {
+        obsR = o;
 
-		                  obsR=o;
+      }
 
-		                  }
-
-		              }
-		              )
-		               return obsR;
-		            },
+    }
+    )
+    return obsR;
+  },
 
 
 
 
-getAttributes :function (ident)
-		            {
+  getAttributes: function(ident)  {
 
-		             ListeObselType.forEach(function(o)
-		              {
+    ListeObselType.forEach(function(o)    {
 
-		                   if (o.id===ident)
-                            {Att = o.attributes}
+      if (o.id === ident)                                  {Att = o.attributes}
 
-		              }
-		              )
-		               return Att;
-		            }
+    }
+    )
+    return Att;
+  }
 
 
 };
