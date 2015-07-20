@@ -1,0 +1,161 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <title>JSDoc: Source: core/KTBS.Base.js</title>
+
+    <script src="scripts/prettify/prettify.js"> </script>
+    <script src="scripts/prettify/lang-css.js"> </script>
+    <!--[if lt IE 9]>
+      <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+    <link type="text/css" rel="stylesheet" href="styles/prettify-tomorrow.css">
+    <link type="text/css" rel="stylesheet" href="styles/jsdoc-default.css">
+</head>
+
+<body>
+
+<div id="main">
+
+    <h1 class="page-title">Source: core/KTBS.Base.js</h1>
+
+    
+
+
+
+    
+    <section>
+        <article>
+            <pre class="prettyprint source linenums"><code>var KTBSResource = require("./KTBS.Resource.js");
+
+/**
+ * @class Javascript KTBS.Base Object that is bound to a KTBS.
+ * @author Benoît Mathern
+ * @requires jQuery framework (see &lt;a href="http://jquery.com">jquery.com&lt;/a>)
+ * @constructor
+ * @augments Samotraces.EventHandler
+ * @augments Samotraces.KTBS.Resource
+ * @description
+ * Samotraces.KTBS.Base is a Javascript KTBS base
+ * object that is bound to a KTBS. This Object implements the KTBS API.
+ * Methods are available to get the
+ * list of traces available in the KTBS base. Access a
+ * specific trace, etc.
+ *
+ * @todo Fully implement KTBS API
+ *
+ * @param {String}	uri	URI of the Base to load.
+ * @param {String}	[id]	ID of the Base to load.
+ */
+var Base = function Base(uri,id) {
+	// KTBS.Base is a Resource
+	if(id === undefined) { id = uri; }
+	KTBSResource.call(this,id,uri,'Base',"");
+	this.traces = [];
+	this.models = [];
+	this.force_state_refresh();
+};
+
+Base.prototype = {
+	get: function(id) {},
+	/**
+	 * Gets the list of traces available in the base.
+	 * @returns {Array.&lt;String>} Array of the ID of the traces available in the Base.
+	 */
+	list_traces: function() {
+		return this.traces;
+	},
+	/**
+	 * @todo METHOD NOT IMPLEMENTED
+	 */
+	list_models: function() { return this.models; },
+	/**
+	 * Create a stored trace in the KTBS
+	 * @param id {String} ID of the created trace
+	 * @param [model] {Model} Model of the trace
+	 * @param [origin] {Origin} Origin of the trace
+	 * @param [default_subject] {String} Default subject of the trace
+	 * @param [label] {String} Label of the trace
+	 */
+	create_stored_trace: function(id,model,origin,default_subject,label) {
+		var new_trace = {
+			"@context":	"http://liris.cnrs.fr/silex/2011/ktbs-jsonld-context",
+			"@type":	"StoredTrace",
+			"@id":		id+"/"
+		};
+		new_trace.hasModel = (model==undefined)?"http://liris.cnrs.fr/silex/2011/simple-trace-model":model;
+		new_trace.origin = (origin==undefined)?"1970-01-01T00:00:00Z":origin;
+//			if(origin==undefined) new_trace.origin = origin;
+		if(default_subject==undefined) new_trace.default_subject = default_subject;
+		if(label==undefined) new_trace.label = label;
+		$.ajax({
+			url: this.uri,
+			type: 'POST',
+			contentType: 'application/json',
+			data: JSON.stringify(new_trace),
+			success: this.force_state_refresh.bind(this),
+			error: function(jqXHR,textStatus,error) {
+				console.log('query error');
+				console.log([jqXHR,textStatus,error]);
+			}
+		});
+	},
+
+	/**
+	 * @todo METHOD NOT IMPLEMENTED
+	 */
+	create_computed_trace: function(id,method,parameters,sources,label) {},
+	/**
+	 * @todo METHOD NOT IMPLEMENTED
+	 */
+	create_model: function(id,parents,label) {},
+	/**
+	 * @todo METHOD NOT IMPLEMENTED
+	 */
+	create_method: function(id,parent,parameters,label) {},
+///////////
+	/**
+	 * Overloads the {@link Samotraces.KTBS.Resouce#_on_state_refresh_} method.
+	 * @private
+	 */
+	_on_state_refresh_: function(data) {
+	//	console.log(data);
+		this._check_change_('label',data["http://www.w3.org/2000/01/rdf-schema#label"],'base:update');
+		this._check_change_('traces', data.contains, 'base:update');
+	},
+/////////// ADDED / API
+	/**
+	 * Gets a trace from its ID
+	 * @param id {String} ID of the trace to get.
+	 * @return {Samotraces.KTBS.Trace} The retrieved Trace.
+	 */
+	get_trace: function(id) {
+		return new Samotraces.KTBS.Trace(this.uri+id+'/',id);
+	},
+////////////
+};
+
+module.exports = Base;
+</code></pre>
+        </article>
+    </section>
+
+
+
+
+</div>
+
+<nav>
+    <h2><a href="index.html">Home</a></h2><h3>Classes</h3><ul><li><a href="Base.html">Base</a></li><li><a href="ImportTrace.html">ImportTrace</a></li><li><a href="KTBS.html">KTBS</a></li><li><a href="KTBSObsel.html">KTBSObsel</a></li><li><a href="KTBSResource.html">KTBSResource</a></li><li><a href="KTBSTrace.html">KTBSTrace</a></li><li><a href="ListBases.html">ListBases</a></li><li><a href="ListModelInBases.html">ListModelInBases</a></li><li><a href="ListTracesInBases.html">ListTracesInBases</a></li><li><a href="LocalTrace.html">LocalTrace</a></li><li><a href="Model.html">Model</a></li><li><a href="global.html#Obsel">Obsel</a></li><li><a href="ObselInspector.html">ObselInspector</a></li><li><a href="ObselTypeInspector.html">ObselTypeInspector</a></li><li><a href="ReadableTimeForm.html">ReadableTimeForm</a></li><li><a href="Samotraces.Trace.html">Trace</a></li><li><a href="global.html#Selector">Selector</a></li><li><a href="TimeForm.html">TimeForm</a></li><li><a href="TimePlayer.html">TimePlayer</a></li><li><a href="Timer.html">Timer</a></li><li><a href="TimeSlider.html">TimeSlider</a></li><li><a href="global.html#TimeWindow">TimeWindow</a></li><li><a href="TraceDisplayIcons.html">TraceDisplayIcons</a></li><li><a href="TraceDisplayObselOccurrences.html">TraceDisplayObselOccurrences</a></li><li><a href="TraceDisplayZoomContext.html">TraceDisplayZoomContext</a></li><li><a href="WindowScale.html">WindowScale</a></li><li><a href="WindowSlider.html">WindowSlider</a></li></ul><h3>Events</h3><ul><li><a href="LocalTrace.html#event:trace:create:obsel">trace:create:obsel</a></li><li><a href="LocalTrace.html#event:trace:edit:obsel">trace:edit:obsel</a></li><li><a href="LocalTrace.html#event:trace:remove:obsel">trace:remove:obsel</a></li><li><a href="LocalTrace.html#event:trace:update">trace:update</a></li><li><a href="Samotraces.Selector.html#event:selection:add">selection:add</a></li><li><a href="Samotraces.Selector.html#event:selection:empty">selection:empty</a></li><li><a href="Samotraces.Selector.html#event:selection:remove">selection:remove</a></li><li><a href="Samotraces.Timer.html#event:timer:play:update">timer:play:update</a></li><li><a href="Samotraces.Timer.html#event:timer:update">timer:update</a></li><li><a href="Samotraces.TimeWindow.html#event:tw:update">tw:update</a></li><li><a href="Samotraces.Trace.html#event:trace:create:obsel">trace:create:obsel</a></li><li><a href="Samotraces.Trace.html#event:trace:edit:obsel">trace:edit:obsel</a></li><li><a href="Samotraces.Trace.html#event:trace:remove:obsel">trace:remove:obsel</a></li><li><a href="Samotraces.Trace.html#event:trace:update">trace:update</a></li></ul><h3>Mixins</h3><ul><li><a href="EventHandler.html">EventHandler</a></li><li><a href="Widget.html">Widget</a></li></ul><h3>Tutorials</h3><ul><li><a href="tutorial-tuto1_using_samotraces.html">Tutorial 1: using Samotraces</a></li><li><a href="tutorial-tuto_generating_doc.html">Generating Samotraces.js documentation</a></li><li><a href="tutorial-using_classes.html">Using classes in Samotraces.js</a></li></ul><h3><a href="global.html">Global</a></h3>
+</nav>
+
+<br class="clear">
+
+<footer>
+    Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.3.2</a> on Mon Jul 20 2015 11:27:17 GMT+0200 (CEST)
+</footer>
+
+<script> prettyPrint(); </script>
+<script src="scripts/linenumber.js"> </script>
+</body>
+</html>

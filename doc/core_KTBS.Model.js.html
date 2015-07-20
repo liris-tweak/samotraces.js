@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="utf-8">
-    <title>JSDoc: Tutorial: Generating Samotraces.js documentation</title>
+    <title>JSDoc: Source: core/KTBS.Model.js</title>
 
     <script src="scripts/prettify/prettify.js"> </script>
     <script src="scripts/prettify/lang-css.js"> </script>
@@ -17,25 +17,146 @@
 
 <div id="main">
 
-    <h1 class="page-title">Tutorial: Generating Samotraces.js documentation</h1>
+    <h1 class="page-title">Source: core/KTBS.Model.js</h1>
 
-    <section>
-
-<header>
     
 
-    <h2>Generating Samotraces.js documentation</h2>
-</header>
 
-<article>
-    <h3>Installation</h3><p>First, install jsdoc3 on your computer:
-<a href="https://github.com/jsdoc3/jsdoc">https://github.com/jsdoc3/jsdoc</a></p>
-<p>Then, clone the docstrap template adapted for Samotraces.js:</p>
-<pre class="prettyprint source"><code>git clone https://github.com/bmathern/docstrap PATH-TO-DOCSTRAP</code></pre><h3>Running the documentation</h3><p>Run the following command to generate the doc from the root of your Samotraces.js repository:</p>
-<pre class="prettyprint source"><code>PATH-TO-JSDOC/jsdoc -c conf.json -t PATH-TO-DOCSTRAP/template ./src/ ./readme.md</code></pre>
-</article>
 
-</section>
+    
+    <section>
+        <article>
+            <pre class="prettyprint source linenums"><code>var KTBSResource = require("./KTBS.Resource.js");
+var EventHandler = require("./EventHandler.js");
+
+/**
+ * @summary Trace object that is synchronised to a KTBS.
+ * @class Javascript Model Object that is bound to a KTBS Model.
+ * @author Benoît Mathern / DERBEL Fatma
+ * @requires jQuery framework (see &lt;a href="http://jquery.com">jquery.com&lt;/a>)
+ * @constructor
+ * @augments Samotraces.EventHandler
+ * @augments Samotraces.KTBS.Resource
+ * @description
+ * Samotraces.KTBS.Modelis a Javascript Trace object
+ * that is bound to a KTBS Model. This Object implements the KTBS API.
+ * Methods are available to get
+ * the Liste of type of Obsels from the KTBS Model, .
+ *
+ *
+ *
+ * @todo Fully implement KTBS API
+ *
+ * @param {String}	uri	URI of the KTBS trace to load.
+ * @param {String}	[id]	ID of the KTBS trace to load.
+ */
+
+
+ var Model = function (uri,id) {
+ 		if(id === undefined) { id = uri; }
+        EventHandler.call(this);
+        KTBSResource.call(this,id,uri,'Model',"");
+        this.list_Types_Obsles = []
+        //if (data !== 'null')
+       //{ this.list_Types_Obsles= this.list_obsels(data);}
+        this.force_state_refresh();
+
+};
+
+Model.prototype = {
+
+	_on_state_refresh_: function(data){
+
+
+		console.log (data);
+		this.list_Types_Obsles= this.list_obsels(data["@graph"]);
+	},
+	list_obsels: function(data) {
+	ListeObselType=[];
+	M=this;
+		data.forEach(function(el,key) {
+		var obs = {attributes: []};
+		if (el["@type"]=="ObselType")
+		    {
+		        obs.id=el["@id"];
+		        obs.type = el["@id"].substr(1);
+		        obs.coche=false;
+		        //obs[key] = el[key]
+		        if (el['hasSuperObselType'])
+		        {
+		        obs.hasSuperObselType=el['hasSuperObselType']
+		        }
+		        ListeObselType.push(obs);
+		        M.trigger('Model:Draw_obsel',obs);
+		        console.log ('triger')
+		    }
+		 else if (el["@type"]=="AttributeType")
+
+		 {
+		    obs=M.GetObselType(el["hasAttributeObselType"],ListeObselType);
+		    el['coche']=false;
+		    obs.attributes.push(el);
+
+		 }
+
+		});
+		ListeObselType.forEach(function(o){
+		if (o.hasSuperObselType)
+		{
+
+		o.attributes= M.getAttributes (o.hasSuperObselType[0])
+		}
+
+		})
+		return ListeObselType;
+
+	},
+
+GetObselType :function (id,ListeObselType)
+		            {
+		            var obs=[];
+		             ListeObselType.forEach(function(o)
+		              {
+
+		                  if (o["id"]==id)
+		                  {
+
+		                  obsR=o;
+
+		                  }
+
+		              }
+		              )
+		               return obsR;
+		            },
+
+
+
+
+getAttributes :function (ident)
+		            {
+
+		             ListeObselType.forEach(function(o)
+		              {
+
+		                   if (o.id===ident)
+                            {Att = o.attributes}
+
+		              }
+		              )
+		               return Att;
+		            }
+
+
+};
+
+module.exports = Model;
+</code></pre>
+        </article>
+    </section>
+
+
+
 
 </div>
 

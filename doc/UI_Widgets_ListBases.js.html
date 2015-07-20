@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="utf-8">
-    <title>JSDoc: Tutorial: Generating Samotraces.js documentation</title>
+    <title>JSDoc: Source: UI/Widgets/ListBases.js</title>
 
     <script src="scripts/prettify/prettify.js"> </script>
     <script src="scripts/prettify/lang-css.js"> </script>
@@ -17,25 +17,127 @@
 
 <div id="main">
 
-    <h1 class="page-title">Tutorial: Generating Samotraces.js documentation</h1>
+    <h1 class="page-title">Source: UI/Widgets/ListBases.js</h1>
 
-    <section>
-
-<header>
     
 
-    <h2>Generating Samotraces.js documentation</h2>
-</header>
 
-<article>
-    <h3>Installation</h3><p>First, install jsdoc3 on your computer:
-<a href="https://github.com/jsdoc3/jsdoc">https://github.com/jsdoc3/jsdoc</a></p>
-<p>Then, clone the docstrap template adapted for Samotraces.js:</p>
-<pre class="prettyprint source"><code>git clone https://github.com/bmathern/docstrap PATH-TO-DOCSTRAP</code></pre><h3>Running the documentation</h3><p>Run the following command to generate the doc from the root of your Samotraces.js repository:</p>
-<pre class="prettyprint source"><code>PATH-TO-JSDOC/jsdoc -c conf.json -t PATH-TO-DOCSTRAP/template ./src/ ./readme.md</code></pre>
-</article>
 
-</section>
+    
+    <section>
+        <article>
+            <pre class="prettyprint source linenums"><code>var $ = require("jquery");
+var Widget = require("./Widget.js");
+var EventHandler = require("../../core/EventHandler.js");
+
+/**
+ * @class Generic Widget for visualising the available bases of a KTBS.
+ * @author Benoît Mathern
+ * @constructor
+ * @augments Samotraces.Widgets.Widget
+ * @description
+ * TODO ecrire description
+ * @todo ECRIRE LA DESCRIPTION
+ * @param {String}	html_id
+ *     Id of the DIV element where the widget will be
+ *     instantiated
+ * @param {Samotraces.Lib.KTBS} ktbs
+ *     KTBS to bind to.
+ * @param {Samotraces.Lib.EventHandler.EventConfig} [events]
+ *     Events to listen to and their corresponding callbacks.
+ */
+var ListBases = function(html_id, ktbs, events) {
+	// WidgetBasicTimeForm is a Widget
+	Widget.call(this,html_id);
+	EventHandler.call(this,events);
+	this.add_class('Widget-ListBases');
+
+	this.ktbs = ktbs;
+	ktbs.on('ktbs:update',this.refresh.bind(this));
+
+	this.init_DOM();
+};
+
+ListBases.prototype = {
+	init_DOM: function() {
+		//this.element.innerHTML = "";
+		//$(this.element).append('&lt;h2>KTBS root: '+this.ktbs.get_uri()+'&lt;/h2>');
+/*
+		var title = document.createElement('h2');
+		var title_text = document.createTextNode('KTBS root: '+this.ktbs.get_uri());
+		title.appendChild(title_text);
+		this.element.appendChild(title);
+*/
+		this.datalist_element = document.createElement('ul');
+		this.element.appendChild(this.datalist_element);
+
+		this.add_button = document.createElement('button');
+		$(this.add_button).append('New base');
+		this.element.appendChild(this.add_button);
+		$(this.add_button).click(this.open_form.bind(this));
+	},
+	open_form: function() {
+
+		this.add_button.disabled = true;
+
+		this.form = {};
+
+		this.form.input_id = document.createElement('input');
+		this.form.input_id.size = 20;
+		this.form.text1 = document.createTextNode(' Base ID: ');
+		this.form.input_label = document.createElement('input');
+		this.form.input_label.size = 20;
+		this.form.text2 = document.createTextNode(' label: ');
+		this.form.button = document.createElement('button');
+		$(this.form.button).append('create');
+
+		$(this.element).append(this.form.text1);
+		$(this.element).append(this.form.input_id);
+		$(this.element).append(this.form.text2);
+		$(this.element).append(this.form.input_label);
+		$(this.element).append(this.form.button);
+
+		$(this.form.button).click(this.create_base.bind(this));
+
+	},
+	create_base: function(e) {
+		if($(this.form.input_id).val() !== "") {
+			console.log("Creating a new base...");
+			this.ktbs.create_base($(this.form.input_id).val(),$(this.form.input_label).val());
+		} else {
+			console.log("Empty base name... No base created");
+		}
+		
+		for( var k in this.form ) {
+			$(this.form[k]).remove();
+		}
+		this.add_button.disabled = false;
+	},
+	refresh: function() {
+		// clear
+		this.datalist_element.innerHTML = '';
+		var li_element;
+		this.ktbs.list_bases().forEach(function(b) {
+				li_element = document.createElement('li');
+				li_link = document.createElement('button');
+				li_link.setAttribute("class","base");
+				li_link.appendChild(document.createTextNode(b));
+				li_element.appendChild(li_link);
+				li_element.addEventListener('click',(function() {this.trigger('ui:click:base',b)}).bind(this));
+				this.datalist_element.appendChild(li_element);
+			},this);
+		this.trigger("ListBase");
+
+	},
+};
+
+module.exports = ListBases;
+</code></pre>
+        </article>
+    </section>
+
+
+
 
 </div>
 

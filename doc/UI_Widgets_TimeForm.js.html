@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="utf-8">
-    <title>JSDoc: Tutorial: Generating Samotraces.js documentation</title>
+    <title>JSDoc: Source: UI/Widgets/TimeForm.js</title>
 
     <script src="scripts/prettify/prettify.js"> </script>
     <script src="scripts/prettify/lang-css.js"> </script>
@@ -17,25 +17,112 @@
 
 <div id="main">
 
-    <h1 class="page-title">Tutorial: Generating Samotraces.js documentation</h1>
+    <h1 class="page-title">Source: UI/Widgets/TimeForm.js</h1>
 
-    <section>
-
-<header>
     
 
-    <h2>Generating Samotraces.js documentation</h2>
-</header>
 
-<article>
-    <h3>Installation</h3><p>First, install jsdoc3 on your computer:
-<a href="https://github.com/jsdoc3/jsdoc">https://github.com/jsdoc3/jsdoc</a></p>
-<p>Then, clone the docstrap template adapted for Samotraces.js:</p>
-<pre class="prettyprint source"><code>git clone https://github.com/bmathern/docstrap PATH-TO-DOCSTRAP</code></pre><h3>Running the documentation</h3><p>Run the following command to generate the doc from the root of your Samotraces.js repository:</p>
-<pre class="prettyprint source"><code>PATH-TO-JSDOC/jsdoc -c conf.json -t PATH-TO-DOCSTRAP/template ./src/ ./readme.md</code></pre>
-</article>
 
-</section>
+    
+    <section>
+        <article>
+            <pre class="prettyprint source linenums"><code>var Widget = require("./Widget.js");
+
+/**
+ * @summary Widget for visualising the current time as a number.
+ * @class Widget for visualising the current time as a number.
+ * @author Benoît Mathern
+ * @constructor
+ * @mixes Samotraces.UI.Widgets.Widget
+ * @see Samotraces.UI.Widgets.ReadableTimeForm
+ * @description
+ * Samotraces.UI.Widgets.TimeForm is a generic
+ * Widget to visualise the current time.
+ *
+ * The time is displayed as a number. See
+ * {@link Samotraces.Widgets.TimeForm} to convert
+ * raw time (in ms from the 01/01/1970) to a human readable
+ * format.
+ * 
+ * This widget observes a Samotraces.Lib.Timer object.
+ * When the timer changes the new time is displayed.
+ * This widget also allow to change the time of the timer.
+ * 
+ * @param {String}	html_id
+ *     Id of the DIV element where the widget will be
+ *     instantiated
+ * @param {Samotraces.Timer} timer
+ *     Timer object to observe.
+ */
+var TimeForm = function(html_id,timer) {
+	// WidgetBasicTimeForm is a Widget
+	Widget.call(this,html_id);
+
+	this.timer = timer;
+	this.timer.on('timer:update',this.refresh.bind(this));
+	this.timer.on('timer:play:update',this.refresh.bind(this));
+
+	this.init_DOM();
+	this.refresh({data: this.timer.time});
+};
+
+TimeForm.prototype = {
+	init_DOM: function() {
+
+		var p_element = document.createElement('p');
+
+		var text_node = document.createTextNode('Current time: ');
+		p_element.appendChild(text_node);
+
+		this.input_element = document.createElement('input');
+		this.input_element.setAttribute('type','text');
+		this.input_element.setAttribute('name','time');
+		this.input_element.setAttribute('size',15);
+		this.input_element.setAttribute('value',this.timer.time);
+		p_element.appendChild(this.input_element);
+
+		var submit_element = document.createElement('input');
+		submit_element.setAttribute('type','submit');
+		submit_element.setAttribute('value','Update time');
+		p_element.appendChild(submit_element);
+
+		this.form_element = document.createElement('form');
+		this.form_element.addEventListener('submit', this.build_callback('submit'));
+
+		this.form_element.appendChild(p_element);
+
+		this.element.appendChild(this.form_element);
+	},
+
+	refresh: function(e) {
+		this.input_element.value = e.data;
+	},
+
+	build_callback: function(event) {
+		var timer = this.timer;
+		var input_element = this.input_element;
+		switch(event) {
+			case 'submit':
+				return function(e) {
+					//console.log('WidgetBasicTimeForm.submit');
+					e.preventDefault();
+					timer.set(input_element.value);
+					return false;
+				};
+			default:
+				return function() {};
+		}
+	}
+
+};
+
+module.exports = TimeForm;
+</code></pre>
+        </article>
+    </section>
+
+
+
 
 </div>
 

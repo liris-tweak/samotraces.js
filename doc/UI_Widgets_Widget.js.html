@@ -1,0 +1,198 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <title>JSDoc: Source: UI/Widgets/Widget.js</title>
+
+    <script src="scripts/prettify/prettify.js"> </script>
+    <script src="scripts/prettify/lang-css.js"> </script>
+    <!--[if lt IE 9]>
+      <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+    <link type="text/css" rel="stylesheet" href="styles/prettify-tomorrow.css">
+    <link type="text/css" rel="stylesheet" href="styles/jsdoc-default.css">
+</head>
+
+<body>
+
+<div id="main">
+
+    <h1 class="page-title">Source: UI/Widgets/Widget.js</h1>
+
+    
+
+
+
+    
+    <section>
+        <article>
+            <pre class="prettyprint source linenums"><code>var $ = require("jquery");
+require('jquery-mousewheel')($);
+
+/**
+ * @mixin
+ * @requires jQuery framework (see &lt;a href="http://jquery.com">jquery.com&lt;/a>)
+ * @requires jQuery Mouse Wheel plugin (see &lt;a href="https://github.com/brandonaaron/jquery-mousewheel">Mouse Wheel plugin&lt;/a>)
+ * @description
+ * All widgets should inherit from this Samotraces.UI.Widgets.Widget.
+ * 
+ * In order to use create a widget that inherits from the 
+ * Widget class, one mush include the following code in 
+ * the constructor of their widget.
+ * &lt;code>
+ * &lt;/code>
+ *
+ * @property {string} id Id of the HTML element the
+ * Widget is attached to.
+ * @property {HTMLElement} element HTML element the
+ * Widget is attached to.
+ */
+var Widget = (function() {
+	/**
+	 * Adds the given class to the HTML element to which
+	 * this Widget is attached to.
+	 * @memberof Samotraces.Widgets.Widget.prototype
+	 * @public
+	 * @method
+	 * @param {string} class_name Name of the class to add
+	 */
+	function add_class(class_name) {
+		this.element.className += ' '+class_name;
+	}
+
+	function unload() {
+		this.element.className = '';
+//		this.element.
+	}
+	/**
+	 * Creates a new behaviour (interaction possibility)
+	 * with the widget.
+	 * Two behaviours are implemented so far:
+	 * 1. 'changeTimeOnDrag'
+	 * 2. 'zommOnScroll'
+	 *
+	 * 1. 'changeTimeOnDrag' behaviour allows to change
+	 * a {@link Samotraces.Lib.Timer} on a drag-n-drop like event
+	 * (JavaScript 'mousedown', 'mousemove', 'mouseup' and 'mouseleave'
+	 * events). This allows to change the current time by dragging
+	 * a trace visualisation or a slider for instance.
+	 *
+	 * 2. 'changeTimeOnDrag' behaviour allows to change
+	 * a {@link Samotraces.Lib.TimeWindow} on a mouse scroll event
+	 * (JavaScript 'wheel' event)
+	 *
+	 * @memberof Samotraces.Widgets.Widget.prototype
+	 * @public
+	 * @method
+	 * @param {String} behaviourName Name of the behaviour
+	 *     ('changeTimeOnDrag' or 'zommOnScroll'). See description above.
+	 * @param {HTMLElement} eventTargetElement HTML Element on which
+	 *     an eventListener will be created (typically, the element you
+	 *     want to interact with).
+	 * @param {Object} opt Options that vary depending on the
+	 *     selected behaviour.
+	 * @param {Function} opt.onUpCallback
+	 *    (for 'changeTimeOnDrag' behaviour only)
+	 *    Callback that will be called when the 'mouseup' event will be
+	 *    triggered. The argument delta_x is passed to the callback
+	 *    and represents the offset of the x axis in pixels between the
+	 *    moment the mousedown event has been triggered and the moment
+	 *    the current mouseup event has been triggered.
+	 * @param {Function} opt.onMoveCallback
+	 *    (for 'changeTimeOnDrag' behaviour only)
+	 *    Callback that will be called when the 'mousemove' event will be
+	 *    triggered. The argument delta_x is passed to the callback
+	 *    and represents the offset of the x axis in pixels between the
+	 *    moment the mousedown event has been triggered and the moment
+	 *    the current mousemove event has been triggered.
+	 * @param {Samotraces.Lib.TimeWindow} opt.timeWindow
+	 *    (for 'zommOnScroll' behaviour only)
+	 *    {@link Samotraces.Lib.TimeWindow} object that will
+	 *    be edited when the zoom action is produced.
+	 */
+	function add_behaviour(behaviourName,eventTargetElement,opt) {
+
+		switch(behaviourName) {
+			case 'changeTimeOnDrag':
+				var mousedown,mouseup,mousemove;
+				var init_client_x;
+				mousedown = function(e) {
+				//	console.log('mousedown');
+					init_client_x = e.clientX;
+					eventTargetElement.addEventListener('mousemove',mousemove);
+					eventTargetElement.addEventListener('mouseup',mouseup);
+					eventTargetElement.addEventListener('mouseleave',mouseup);
+					return false;
+				};
+				mouseup = function(e) {
+				//	console.log('mouseup');
+					if(init_client_x !== undefined) {
+						var delta_x = (e.clientX - init_client_x);
+						opt.onUpCallback(delta_x);
+						eventTargetElement.removeEventListener('mousemove',mousemove);
+						eventTargetElement.removeEventListener('mouseup',mouseup);
+						eventTargetElement.removeEventListener('mouseleave',mouseup);
+					}
+					return false;
+				};
+				mousemove = function(e) {
+					var delta_x = (e.clientX - init_client_x);
+					opt.onMoveCallback(delta_x);
+					return false;
+				};
+				eventTargetElement.addEventListener('mousedown',mousedown);
+				break;	
+			case 'zommOnScroll':
+				wheel = function(e) {
+					var coef = Math.pow(0.8,e.deltaY);
+					opt.timeWindow.zoom(coef);
+	//				opt.onWheelCallback.call(opt.bind,coef);
+					e.preventDefault();
+					return false;
+				};
+				$(eventTargetElement).mousewheel(wheel);
+				break;
+			default:
+				break;
+		}
+	}
+	return function(id) {
+		// DOCUMENTED ABOVE
+		//this.id = id;
+		//this.element = document.getElementById(this.id);
+		this.element = id;
+		this.id = this.element.id;
+
+		this.add_class = add_class;
+		this.add_behaviour = add_behaviour;
+
+		// call method
+		this.add_class('Widget');
+		return this;
+	};
+})();
+
+module.exports = Widget;
+</code></pre>
+        </article>
+    </section>
+
+
+
+
+</div>
+
+<nav>
+    <h2><a href="index.html">Home</a></h2><h3>Classes</h3><ul><li><a href="Base.html">Base</a></li><li><a href="ImportTrace.html">ImportTrace</a></li><li><a href="KTBS.html">KTBS</a></li><li><a href="KTBSObsel.html">KTBSObsel</a></li><li><a href="KTBSResource.html">KTBSResource</a></li><li><a href="KTBSTrace.html">KTBSTrace</a></li><li><a href="ListBases.html">ListBases</a></li><li><a href="ListModelInBases.html">ListModelInBases</a></li><li><a href="ListTracesInBases.html">ListTracesInBases</a></li><li><a href="LocalTrace.html">LocalTrace</a></li><li><a href="Model.html">Model</a></li><li><a href="global.html#Obsel">Obsel</a></li><li><a href="ObselInspector.html">ObselInspector</a></li><li><a href="ObselTypeInspector.html">ObselTypeInspector</a></li><li><a href="ReadableTimeForm.html">ReadableTimeForm</a></li><li><a href="Samotraces.Trace.html">Trace</a></li><li><a href="global.html#Selector">Selector</a></li><li><a href="TimeForm.html">TimeForm</a></li><li><a href="TimePlayer.html">TimePlayer</a></li><li><a href="Timer.html">Timer</a></li><li><a href="TimeSlider.html">TimeSlider</a></li><li><a href="global.html#TimeWindow">TimeWindow</a></li><li><a href="TraceDisplayIcons.html">TraceDisplayIcons</a></li><li><a href="TraceDisplayObselOccurrences.html">TraceDisplayObselOccurrences</a></li><li><a href="TraceDisplayZoomContext.html">TraceDisplayZoomContext</a></li><li><a href="WindowScale.html">WindowScale</a></li><li><a href="WindowSlider.html">WindowSlider</a></li></ul><h3>Events</h3><ul><li><a href="LocalTrace.html#event:trace:create:obsel">trace:create:obsel</a></li><li><a href="LocalTrace.html#event:trace:edit:obsel">trace:edit:obsel</a></li><li><a href="LocalTrace.html#event:trace:remove:obsel">trace:remove:obsel</a></li><li><a href="LocalTrace.html#event:trace:update">trace:update</a></li><li><a href="Samotraces.Selector.html#event:selection:add">selection:add</a></li><li><a href="Samotraces.Selector.html#event:selection:empty">selection:empty</a></li><li><a href="Samotraces.Selector.html#event:selection:remove">selection:remove</a></li><li><a href="Samotraces.Timer.html#event:timer:play:update">timer:play:update</a></li><li><a href="Samotraces.Timer.html#event:timer:update">timer:update</a></li><li><a href="Samotraces.TimeWindow.html#event:tw:update">tw:update</a></li><li><a href="Samotraces.Trace.html#event:trace:create:obsel">trace:create:obsel</a></li><li><a href="Samotraces.Trace.html#event:trace:edit:obsel">trace:edit:obsel</a></li><li><a href="Samotraces.Trace.html#event:trace:remove:obsel">trace:remove:obsel</a></li><li><a href="Samotraces.Trace.html#event:trace:update">trace:update</a></li></ul><h3>Mixins</h3><ul><li><a href="EventHandler.html">EventHandler</a></li><li><a href="Widget.html">Widget</a></li></ul><h3>Tutorials</h3><ul><li><a href="tutorial-tuto1_using_samotraces.html">Tutorial 1: using Samotraces</a></li><li><a href="tutorial-tuto_generating_doc.html">Generating Samotraces.js documentation</a></li><li><a href="tutorial-using_classes.html">Using classes in Samotraces.js</a></li></ul><h3><a href="global.html">Global</a></h3>
+</nav>
+
+<br class="clear">
+
+<footer>
+    Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.3.2</a> on Mon Jul 20 2015 11:27:18 GMT+0200 (CEST)
+</footer>
+
+<script> prettyPrint(); </script>
+<script src="scripts/linenumber.js"> </script>
+</body>
+</html>

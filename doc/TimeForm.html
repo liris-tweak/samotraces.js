@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="utf-8">
-    <title>JSDoc: Tutorial: Generating Samotraces.js documentation</title>
+    <title>JSDoc: Class: TimeForm</title>
 
     <script src="scripts/prettify/prettify.js"> </script>
     <script src="scripts/prettify/lang-css.js"> </script>
@@ -17,25 +17,243 @@
 
 <div id="main">
 
-    <h1 class="page-title">Tutorial: Generating Samotraces.js documentation</h1>
+    <h1 class="page-title">Class: TimeForm</h1>
 
-    <section>
+    
+
+
+
+
+<section>
 
 <header>
     
-
-    <h2>Generating Samotraces.js documentation</h2>
+        <h2>
+        TimeForm
+        </h2>
+        
+            <div class="class-description"><p>Widget for visualising the current time as a number.</p></div>
+        
+    
 </header>
 
 <article>
-    <h3>Installation</h3><p>First, install jsdoc3 on your computer:
-<a href="https://github.com/jsdoc3/jsdoc">https://github.com/jsdoc3/jsdoc</a></p>
-<p>Then, clone the docstrap template adapted for Samotraces.js:</p>
-<pre class="prettyprint source"><code>git clone https://github.com/bmathern/docstrap PATH-TO-DOCSTRAP</code></pre><h3>Running the documentation</h3><p>Run the following command to generate the doc from the root of your Samotraces.js repository:</p>
-<pre class="prettyprint source"><code>PATH-TO-JSDOC/jsdoc -c conf.json -t PATH-TO-DOCSTRAP/template ./src/ ./readme.md</code></pre>
+    <div class="container-overview">
+    
+        
+
+    
+    <h2>Constructor</h2>
+    
+
+    <h4 class="name" id="TimeForm"><span class="type-signature"></span>new TimeForm<span class="signature">(html_id, timer)</span><span class="type-signature"></span></h4>
+
+    
+    <p class="summary">Widget for visualising the current time as a number.</p>
+    
+
+
+
+<div class="description">
+    <p>Samotraces.UI.Widgets.TimeForm is a generic
+Widget to visualise the current time.</p>
+<p>The time is displayed as a number. See
+Samotraces.Widgets.TimeForm to convert
+raw time (in ms from the 01/01/1970) to a human readable
+format.</p>
+<p>This widget observes a Samotraces.Lib.Timer object.
+When the timer changes the new time is displayed.
+This widget also allow to change the time of the timer.</p>
+</div>
+
+
+
+
+
+
+
+
+
+    <h5>Parameters:</h5>
+    
+
+<table class="params">
+    <thead>
+    <tr>
+        
+        <th>Name</th>
+        
+
+        <th>Type</th>
+
+        
+
+        
+
+        <th class="last">Description</th>
+    </tr>
+    </thead>
+
+    <tbody>
+    
+
+        <tr>
+            
+                <td class="name"><code>html_id</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">String</span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last"><p>Id of the DIV element where the widget will be
+    instantiated</p></td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>timer</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type"><a href="Samotraces.Timer.html">Samotraces.Timer</a></span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last"><p>Timer object to observe.</p></td>
+        </tr>
+
+    
+    </tbody>
+</table>
+
+
+
+
+
+
+<dl class="details">
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+        <dt class="mixes">Mixes In:</dt>
+
+        <dd class="mixes"><ul>
+        
+            <li>Samotraces.UI.Widgets.Widget</li>
+        
+        </ul></dd>
+    
+
+    
+
+    
+    <dt class="tag-author">Author:</dt>
+    <dd class="tag-author">
+        <ul>
+            <li>Benoît Mathern</li>
+        </ul>
+    </dd>
+    
+
+    
+
+    
+
+    
+
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="UI_Widgets_TimeForm.js.html">UI/Widgets/TimeForm.js</a>, <a href="UI_Widgets_TimeForm.js.html#line29">line 29</a>
+    </li></ul></dd>
+    
+
+    
+
+    
+    <dt class="tag-see">See:</dt>
+    <dd class="tag-see">
+        <ul>
+            <li>Samotraces.UI.Widgets.ReadableTimeForm</li>
+        </ul>
+    </dd>
+    
+
+    
+</dl>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+    
+    </div>
+
+    
+
+    
+
+    
+
+     
+
+    
+
+    
+
+    
+
+    
+
+    
 </article>
 
 </section>
+
+
+
 
 </div>
 

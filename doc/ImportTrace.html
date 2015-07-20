@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="utf-8">
-    <title>JSDoc: Tutorial: Generating Samotraces.js documentation</title>
+    <title>JSDoc: Class: ImportTrace</title>
 
     <script src="scripts/prettify/prettify.js"> </script>
     <script src="scripts/prettify/lang-css.js"> </script>
@@ -17,25 +17,264 @@
 
 <div id="main">
 
-    <h1 class="page-title">Tutorial: Generating Samotraces.js documentation</h1>
+    <h1 class="page-title">Class: ImportTrace</h1>
 
-    <section>
+    
+
+
+
+
+<section>
 
 <header>
     
-
-    <h2>Generating Samotraces.js documentation</h2>
+        <h2>
+        ImportTrace
+        </h2>
+        
+            <div class="class-description"><p>Widget for importing a trace from a CSV file.</p></div>
+        
+    
 </header>
 
 <article>
-    <h3>Installation</h3><p>First, install jsdoc3 on your computer:
-<a href="https://github.com/jsdoc3/jsdoc">https://github.com/jsdoc3/jsdoc</a></p>
-<p>Then, clone the docstrap template adapted for Samotraces.js:</p>
-<pre class="prettyprint source"><code>git clone https://github.com/bmathern/docstrap PATH-TO-DOCSTRAP</code></pre><h3>Running the documentation</h3><p>Run the following command to generate the doc from the root of your Samotraces.js repository:</p>
-<pre class="prettyprint source"><code>PATH-TO-JSDOC/jsdoc -c conf.json -t PATH-TO-DOCSTRAP/template ./src/ ./readme.md</code></pre>
+    <div class="container-overview">
+    
+        
+
+    
+    <h2>Constructor</h2>
+    
+
+    <h4 class="name" id="ImportTrace"><span class="type-signature"></span>new ImportTrace<span class="signature">(html_id, trace)</span><span class="type-signature"></span></h4>
+
+    
+    <p class="summary">Widget for importing a trace from a CSV file.</p>
+    
+
+
+
+<div class="description">
+    <p>The Samotraces.UI.Widgets.Basic.ImportTrace widget is a generic
+Widget to import a trace from a CSV file.</p>
+<p>This widget currently accept the following format:</p>
+<ol>
+<li>The CSV file can use either ',' or ';' as a value separator</li>
+<li>Each line represents an obsel</li>
+<li>The first column represents the time when the obsel occurs</li>
+<li>The second column represents the type of the obsel</li>
+<li>The following columns represent pairs of &quot;attribute&quot; / &quot;value&quot; columns</li>
+</ol>
+<p>The number of columns may vary from line to line.
+For example, a CSV file might look like this:</p>
+<pre>
+0,click,target,button2
+2,click,target,button1,value,toto
+3,focus,target,submit
+5,click,target,submit
+</pre>
+</div>
+
+
+
+
+
+
+
+
+
+    <h5>Parameters:</h5>
+    
+
+<table class="params">
+    <thead>
+    <tr>
+        
+        <th>Name</th>
+        
+
+        <th>Type</th>
+
+        
+
+        
+
+        <th class="last">Description</th>
+    </tr>
+    </thead>
+
+    <tbody>
+    
+
+        <tr>
+            
+                <td class="name"><code>html_id</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">String</span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last"><p>Id of the DIV element where the widget will be
+    instantiated</p></td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>trace</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type"><a href="Samotraces.Trace.html">Samotraces.Trace</a></span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last"><p>Trace object in which the obsels will be imported.</p></td>
+        </tr>
+
+    
+    </tbody>
+</table>
+
+
+
+
+
+
+<dl class="details">
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+    <dt class="tag-author">Author:</dt>
+    <dd class="tag-author">
+        <ul>
+            <li>Benoît Mathern</li>
+        </ul>
+    </dd>
+    
+
+    
+
+    
+
+    
+
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="UI_Widgets_ImportTrace.js.html">UI/Widgets/ImportTrace.js</a>, <a href="UI_Widgets_ImportTrace.js.html#line38">line 38</a>
+    </li></ul></dd>
+    
+
+    
+
+    
+    <dt class="tag-see">See:</dt>
+    <dd class="tag-see">
+        <ul>
+            <li>Samotraces.UI.Widgets.Basic.ImportTrace</li>
+        </ul>
+    </dd>
+    
+
+    
+    <dt class="tag-todo">To Do:</dt>
+    <dd class="tag-todo">
+        <ul>
+            <li>ATTENTION code qui vient d'ailleurs !</li>
+        
+            <li>DESCRIBE THE FORMAT OF THE CSV FILE.</li>
+        </ul>
+    </dd>
+    
+</dl>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+    
+    </div>
+
+    
+        <h3 class="subsection-title">Extends</h3>
+
+        
+
+
+    <ul>
+        <li>Samotraces.UI.Widgets.Widget</li>
+    </ul>
+
+
+    
+
+    
+
+    
+
+     
+
+    
+
+    
+
+    
+
+    
+
+    
 </article>
 
 </section>
+
+
+
 
 </div>
 

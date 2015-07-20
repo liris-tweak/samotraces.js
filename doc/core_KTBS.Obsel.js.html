@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="utf-8">
-    <title>JSDoc: Tutorial: Generating Samotraces.js documentation</title>
+    <title>JSDoc: Source: core/KTBS.Obsel.js</title>
 
     <script src="scripts/prettify/prettify.js"> </script>
     <script src="scripts/prettify/lang-css.js"> </script>
@@ -17,25 +17,53 @@
 
 <div id="main">
 
-    <h1 class="page-title">Tutorial: Generating Samotraces.js documentation</h1>
+    <h1 class="page-title">Source: core/KTBS.Obsel.js</h1>
 
-    <section>
-
-<header>
     
 
-    <h2>Generating Samotraces.js documentation</h2>
-</header>
 
-<article>
-    <h3>Installation</h3><p>First, install jsdoc3 on your computer:
-<a href="https://github.com/jsdoc3/jsdoc">https://github.com/jsdoc3/jsdoc</a></p>
-<p>Then, clone the docstrap template adapted for Samotraces.js:</p>
-<pre class="prettyprint source"><code>git clone https://github.com/bmathern/docstrap PATH-TO-DOCSTRAP</code></pre><h3>Running the documentation</h3><p>Run the following command to generate the doc from the root of your Samotraces.js repository:</p>
-<pre class="prettyprint source"><code>PATH-TO-JSDOC/jsdoc -c conf.json -t PATH-TO-DOCSTRAP/template ./src/ ./readme.md</code></pre>
-</article>
 
-</section>
+    
+    <section>
+        <article>
+            <pre class="prettyprint source linenums"><code>var KTBSResource = require("./KTBS.Resource.js");
+var Obsel = require("./Obsel.js");
+
+/**
+ * @class Samotraces.KTBS.Obsel is part of the Samotraces.KTBS implementation.
+ * @augments Samotraces.Obsel
+ * @augments Samotraces.KTBS.Resource
+ * @todo TODO update set_methods
+ * -> sync with KTBS instead of local change
+ */
+var KTBSObsel = function (param) {
+	KTBSResource.call(this,param.id,param.uri,'Obsel',param.label || "");
+
+	this._private_check_error(param,'trace');
+	this._private_check_error(param,'type');
+	this._private_check_default(param,'begin',	Date.now());
+	this._private_check_default(param,'end',		this.begin);
+	this._private_check_default(param,'attributes',	{});
+	this._private_check_undef(param,'relations',	[]); // TODO ajouter rel à l'autre obsel
+	this._private_check_undef(param,'inverse_relations',	[]); // TODO ajouter rel à l'autre obsel
+	this._private_check_undef(param,'source_obsels',		[]);
+}
+
+KTBSObsel.prototype = Obsel.prototype;
+
+/*
+Samotraces.KTBS.Obsel.prototype.get_ktbs_status = function() {
+	return this.ktbs_status
+};
+*/
+
+module.exports = KTBSObsel;
+</code></pre>
+        </article>
+    </section>
+
+
+
 
 </div>
 

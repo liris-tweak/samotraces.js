@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="utf-8">
-    <title>JSDoc: Tutorial: Generating Samotraces.js documentation</title>
+    <title>JSDoc: Source: UI/Widgets/TimeSlider.js</title>
 
     <script src="scripts/prettify/prettify.js"> </script>
     <script src="scripts/prettify/lang-css.js"> </script>
@@ -17,25 +17,94 @@
 
 <div id="main">
 
-    <h1 class="page-title">Tutorial: Generating Samotraces.js documentation</h1>
+    <h1 class="page-title">Source: UI/Widgets/TimeSlider.js</h1>
 
-    <section>
-
-<header>
     
 
-    <h2>Generating Samotraces.js documentation</h2>
-</header>
 
-<article>
-    <h3>Installation</h3><p>First, install jsdoc3 on your computer:
-<a href="https://github.com/jsdoc3/jsdoc">https://github.com/jsdoc3/jsdoc</a></p>
-<p>Then, clone the docstrap template adapted for Samotraces.js:</p>
-<pre class="prettyprint source"><code>git clone https://github.com/bmathern/docstrap PATH-TO-DOCSTRAP</code></pre><h3>Running the documentation</h3><p>Run the following command to generate the doc from the root of your Samotraces.js repository:</p>
-<pre class="prettyprint source"><code>PATH-TO-JSDOC/jsdoc -c conf.json -t PATH-TO-DOCSTRAP/template ./src/ ./readme.md</code></pre>
-</article>
 
-</section>
+    
+    <section>
+        <article>
+            <pre class="prettyprint source linenums"><code>var Widget = require("./Widget.js");
+var $ = require("jquery");
+
+/**
+ * @summary Widget for visualising a time slider.
+ * @class Widget for visualising a time slider.
+ * @author Benoît Mathern
+ * @constructor
+ * @mixes Samotraces.UI.Widgets.Widget
+ * @description
+ * Samotraces.UI.Widgets.d3Basic.TimeSlider is a generic
+ * Widget to visualise the current time in a temporal window
+ *
+ * @param {String}	divId
+ *     Id of the DIV element where the widget will be
+ *     instantiated
+ * @param time_window
+ *     TimeWindow object -> representing the wide window
+ *     (e.g., the whole trace)
+ * @param timer
+ *     Timeer object -> containing the current time
+ */
+var TimeSlider = function(html_id, time_window, timer) {
+	// WidgetBasicTimeForm is a Widget
+	Widget.call(this,html_id);
+
+	this.add_class('Widget-TimeSlider');
+	$(window).resize(this.draw.bind(this));
+
+	this.timer = timer;
+	this.timer.on('timer:update',this.draw.bind(this));
+	this.timer.on('timer:play:update',this.refresh.bind(this));
+
+	this.time_window = time_window;
+	this.time_window.on('tw:update',this.draw.bind(this));
+
+	// update slider style
+	this.slider_offset = 0;
+
+	this.init_DOM();
+	// update slider's position
+	this.draw();
+
+};
+
+TimeSlider.prototype = {
+	init_DOM: function() {
+		// create the slider
+		this.slider_element = document.createElement('div');
+		this.element.appendChild(this.slider_element);
+
+		// hand made drag&amp;drop
+		var widget = this;
+		this.add_behaviour('changeTimeOnDrag',this.slider_element,{
+				onUpCallback: function(delta_x) {
+					var new_time = widget.timer.time + delta_x*widget.time_window.get_width()/widget.element.clientWidth;
+					widget.timer.set(new_time);
+				},
+				onMoveCallback: function(offset) {
+					var offset = widget.slider_offset + offset;
+					widget.slider_element.setAttribute('style','left: '+offset+'px;');
+				},
+			});
+	},
+
+	draw: function() {
+		this.slider_offset = (this.timer.time - this.time_window.start)*this.element.clientWidth/this.time_window.get_width();
+		this.slider_element.setAttribute('style','left:'+this.slider_offset+'px; display: block;');
+	},
+
+};
+
+module.exports = TimeSlider;
+</code></pre>
+        </article>
+    </section>
+
+
+
 
 </div>
 

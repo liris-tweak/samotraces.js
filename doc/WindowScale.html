@@ -1,0 +1,331 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <title>JSDoc: Class: WindowScale</title>
+
+    <script src="scripts/prettify/prettify.js"> </script>
+    <script src="scripts/prettify/lang-css.js"> </script>
+    <!--[if lt IE 9]>
+      <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+    <link type="text/css" rel="stylesheet" href="styles/prettify-tomorrow.css">
+    <link type="text/css" rel="stylesheet" href="styles/jsdoc-default.css">
+</head>
+
+<body>
+
+<div id="main">
+
+    <h1 class="page-title">Class: WindowScale</h1>
+
+    
+
+
+
+
+<section>
+
+<header>
+    
+        <h2>
+        WindowScale
+        </h2>
+        
+            <div class="class-description"><p>Widget for visualising a time scale.</p></div>
+        
+    
+</header>
+
+<article>
+    <div class="container-overview">
+    
+        
+
+    
+    <h2>Constructor</h2>
+    
+
+    <h4 class="name" id="WindowScale"><span class="type-signature"></span>new WindowScale<span class="signature">(divId, timeWindow, isJavascriptDate<span class="signature-attributes">opt</span>)</span><span class="type-signature"></span></h4>
+
+    
+    <p class="summary">Widget for visualising a time scale.</p>
+    
+
+
+
+<div class="description">
+    <p>Samotraces.UI.Widgets.WindowScale is a generic
+Widget to visualise the temporal scale of a
+<a href="Samotraces.TimeWindow.html">TimeWindow</a>. This
+widget uses d3.js to calculate and display the scale.</p>
+<p>Note: unless the optional argument isJavascriptDate is defined,
+the widget will try to guess if time is displayed as numbers,
+or if time is displayed in year/month/day/hours/etc.
+This second option assumes that the time is represented in
+milliseconds since 1 January 1970 UTC.</p>
+</div>
+
+
+
+
+
+
+
+
+
+    <h5>Parameters:</h5>
+    
+
+<table class="params">
+    <thead>
+    <tr>
+        
+        <th>Name</th>
+        
+
+        <th>Type</th>
+
+        
+        <th>Attributes</th>
+        
+
+        
+
+        <th class="last">Description</th>
+    </tr>
+    </thead>
+
+    <tbody>
+    
+
+        <tr>
+            
+                <td class="name"><code>divId</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">String</span>
+
+
+            
+            </td>
+
+            
+                <td class="attributes">
+                
+
+                
+
+                
+                </td>
+            
+
+            
+
+            <td class="description last"><p>Id of the DIV element where the widget will be
+    instantiated</p></td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>timeWindow</code></td>
+            
+
+            <td class="type">
+            
+            </td>
+
+            
+                <td class="attributes">
+                
+
+                
+
+                
+                </td>
+            
+
+            
+
+            <td class="description last"><p>TimeWindowCenteredOnTime object</p></td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>isJavascriptDate</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">Boolean</span>
+
+
+            
+            </td>
+
+            
+                <td class="attributes">
+                
+                    &lt;optional><br>
+                
+
+                
+
+                
+                </td>
+            
+
+            
+
+            <td class="description last"><p>Boolean that describes if the scale represents a JavaScript Date object.
+    If set to true, the widget will display years, months, days, hours, minutes...
+    as if the time given was the number of milliseconds ellapsed since 1 January 1970 UTC.
+    If set to false, the widget will display the numbers without attempting
+    any conversion.
+    This argument is optional. If not set, the widget will try to guess:
+    If the number of the start of the given TimeWindow is above a billion, then
+    it is assumed that the JavaScript Date object has been used to represent time.
+    Otherwise, the numerical value of time will be displayed.</p></td>
+        </tr>
+
+    
+    </tbody>
+</table>
+
+
+
+
+
+
+<dl class="details">
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+        <dt class="mixes">Mixes In:</dt>
+
+        <dd class="mixes"><ul>
+        
+            <li>Samotraces.UI.Widgets.Widget</li>
+        
+        </ul></dd>
+    
+
+    
+
+    
+    <dt class="tag-author">Author:</dt>
+    <dd class="tag-author">
+        <ul>
+            <li>Benoît Mathern</li>
+        </ul>
+    </dd>
+    
+
+    
+
+    
+
+    
+
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="UI_Widgets_WindowScale.js.html">UI/Widgets/WindowScale.js</a>, <a href="UI_Widgets_WindowScale.js.html#line39">line 39</a>
+    </li></ul></dd>
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+
+<h5>Requires:</h5>
+<ul>
+    <li>module:d3.js</li>
+</ul>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+    
+    </div>
+
+    
+
+    
+        <h3 class="subsection-title">Requires</h3>
+
+        <ul>
+            <li>module:d3.js</li>
+        </ul>
+    
+
+    
+
+     
+
+    
+
+    
+
+    
+
+    
+
+    
+</article>
+
+</section>
+
+
+
+
+</div>
+
+<nav>
+    <h2><a href="index.html">Home</a></h2><h3>Classes</h3><ul><li><a href="Base.html">Base</a></li><li><a href="ImportTrace.html">ImportTrace</a></li><li><a href="KTBS.html">KTBS</a></li><li><a href="KTBSObsel.html">KTBSObsel</a></li><li><a href="KTBSResource.html">KTBSResource</a></li><li><a href="KTBSTrace.html">KTBSTrace</a></li><li><a href="ListBases.html">ListBases</a></li><li><a href="ListModelInBases.html">ListModelInBases</a></li><li><a href="ListTracesInBases.html">ListTracesInBases</a></li><li><a href="LocalTrace.html">LocalTrace</a></li><li><a href="Model.html">Model</a></li><li><a href="global.html#Obsel">Obsel</a></li><li><a href="ObselInspector.html">ObselInspector</a></li><li><a href="ObselTypeInspector.html">ObselTypeInspector</a></li><li><a href="ReadableTimeForm.html">ReadableTimeForm</a></li><li><a href="Samotraces.Trace.html">Trace</a></li><li><a href="global.html#Selector">Selector</a></li><li><a href="TimeForm.html">TimeForm</a></li><li><a href="TimePlayer.html">TimePlayer</a></li><li><a href="Timer.html">Timer</a></li><li><a href="TimeSlider.html">TimeSlider</a></li><li><a href="global.html#TimeWindow">TimeWindow</a></li><li><a href="TraceDisplayIcons.html">TraceDisplayIcons</a></li><li><a href="TraceDisplayObselOccurrences.html">TraceDisplayObselOccurrences</a></li><li><a href="TraceDisplayZoomContext.html">TraceDisplayZoomContext</a></li><li><a href="WindowScale.html">WindowScale</a></li><li><a href="WindowSlider.html">WindowSlider</a></li></ul><h3>Events</h3><ul><li><a href="LocalTrace.html#event:trace:create:obsel">trace:create:obsel</a></li><li><a href="LocalTrace.html#event:trace:edit:obsel">trace:edit:obsel</a></li><li><a href="LocalTrace.html#event:trace:remove:obsel">trace:remove:obsel</a></li><li><a href="LocalTrace.html#event:trace:update">trace:update</a></li><li><a href="Samotraces.Selector.html#event:selection:add">selection:add</a></li><li><a href="Samotraces.Selector.html#event:selection:empty">selection:empty</a></li><li><a href="Samotraces.Selector.html#event:selection:remove">selection:remove</a></li><li><a href="Samotraces.Timer.html#event:timer:play:update">timer:play:update</a></li><li><a href="Samotraces.Timer.html#event:timer:update">timer:update</a></li><li><a href="Samotraces.TimeWindow.html#event:tw:update">tw:update</a></li><li><a href="Samotraces.Trace.html#event:trace:create:obsel">trace:create:obsel</a></li><li><a href="Samotraces.Trace.html#event:trace:edit:obsel">trace:edit:obsel</a></li><li><a href="Samotraces.Trace.html#event:trace:remove:obsel">trace:remove:obsel</a></li><li><a href="Samotraces.Trace.html#event:trace:update">trace:update</a></li></ul><h3>Mixins</h3><ul><li><a href="EventHandler.html">EventHandler</a></li><li><a href="Widget.html">Widget</a></li></ul><h3>Tutorials</h3><ul><li><a href="tutorial-tuto1_using_samotraces.html">Tutorial 1: using Samotraces</a></li><li><a href="tutorial-tuto_generating_doc.html">Generating Samotraces.js documentation</a></li><li><a href="tutorial-using_classes.html">Using classes in Samotraces.js</a></li></ul><h3><a href="global.html">Global</a></h3>
+</nav>
+
+<br class="clear">
+
+<footer>
+    Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.3.2</a> on Mon Jul 20 2015 11:27:18 GMT+0200 (CEST)
+</footer>
+
+<script> prettyPrint(); </script>
+<script src="scripts/linenumber.js"> </script>
+</body>
+</html>

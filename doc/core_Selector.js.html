@@ -1,0 +1,213 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <title>JSDoc: Source: core/Selector.js</title>
+
+    <script src="scripts/prettify/prettify.js"> </script>
+    <script src="scripts/prettify/lang-css.js"> </script>
+    <!--[if lt IE 9]>
+      <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+    <link type="text/css" rel="stylesheet" href="styles/prettify-tomorrow.css">
+    <link type="text/css" rel="stylesheet" href="styles/jsdoc-default.css">
+</head>
+
+<body>
+
+<div id="main">
+
+    <h1 class="page-title">Source: core/Selector.js</h1>
+
+    
+
+
+
+    
+    <section>
+        <article>
+            <pre class="prettyprint source linenums"><code>var EventHandler = require("./EventHandler.js");
+
+/**
+ * Selector is a shortname for the
+ * {@link Samotraces.Selector}
+ * object.
+ * @typedef Selector
+ * @see Samotraces.Selector
+ */
+/**
+ * @summary Object that stores a selection of objects
+ * @class Object that stores a selection of objects
+ * @author Benoît Mathern
+ * @constructor
+ * @augments Samotraces.EventHandler
+ * @fires Samotraces.Selector#selection:add
+ * @fires Samotraces.Selector#selection:remove
+ * @fires Samotraces.Selector#selection:empty
+ * @description
+ * The {@link Samotraces.Selector|Selector} object
+ * is a Javascript object that stores a selection of Objects.
+ * This Object stores Objects that are selected and informs
+ * widgets or other objects (via the
+ * triggered events) when the selection changes.
+ * When first instanciated, the selection is empty.
+ *
+ * In order to select an object, the
+ * {@link Samotraces.Selector#select|Selector#select()}
+ * method has to be called.
+ * Similarly, in order to unselect an object, the
+ * {@link Samotraces.Selector#unselect|Selector#unselect()}
+ * method has to be called.
+ * The whole selection can be emptied at once with the
+ * {@link Samotraces.Selector#empty|Selector#empty()}
+ * method.
+ *
+ * @param {string} type - A string describing the type of
+ *     object to be selected ('Obsel', 'Trace', 'TimeWindow', etc.).
+ * @param {string} [selection_mode='single']
+ *     In 'single' mode, the selection contains one object maximum.
+ *     This means that adding an object to a non-empty selection
+ *     will replace the previously selected object with the new one.
+ *     In 'multiple' mode, the selection can be extended and objects
+ *     can be individually added or removed.
+ * @param {EventConfig}	[events]
+ *     Events to listen to and their corresponding callbacks.
+ */
+var Selector = function(type,selection_mode,events) {
+	// Adding the Observable trait
+	EventHandler.call(this,events);
+	this.mode = selection_mode || 'single'; // other option is 'multiple'
+	this.type = type;
+	this.selection = [];
+	// TODO: ajouter eventListener sur Trace si type = obsel
+	// -> Quand "trace:remove:obsel" -> vérifie si un obsel a
+	// été supprimé de la sélection.
+};
+
+Selector.prototype = {
+	/**
+	 * Method to call to select an Object.
+	 * @param {Object} object
+	 *     Object to add to the selection
+	 * @fires Samotraces.Selector#selection:add
+	 */
+	select: function(object) {
+		if(this.mode === 'multiple') {
+			this.selection.push(object);
+		} else {
+			this.selection = [object];
+		}
+		/**
+		 * Object selected event.
+		 * @event Samotraces.Selector#selection:add
+		 * @type {object}
+		 * @property {String} type - The type of the event (= "selection:add").
+		 * @property {Object} data - The selected object.
+		 */
+		this.trigger('selection:add',object);
+	},
+	/**
+	 * Method to empty the current selection.
+	 * @fires Samotraces.Selector#selection:empty
+	 */
+	empty: function() {
+		this.selection = [];
+		/**
+		 * Object unselected event.
+		 * @event Samotraces.Selector#selection:empty
+		 * @type {object}
+		 * @property {String} type - The type of the event (= "selection:empty").
+		 */
+		this.trigger('selection:empty');
+	},
+	/**
+	 * Method that checks if the selection is empty
+	 * @returns {Boolean} Returns true if the selection and empty
+	 *     and false if the selection is not empty.
+	 */
+	is_empty: function() {
+		return (this.selection.length === 0);
+	},
+	/**
+	 * Gets the current selection
+	 * @returns {Array} Array of selected objects
+	 */
+	get_selection: function() {
+		return this.selection;
+	},
+	/**
+	 * Method to call to remove an Object from the selection.
+	 * @param {Object} object
+	 *     Object to remove from the selection
+	 * @fires Samotraces.Selector#selection:remove
+	 */
+	unselect: function(object) {
+		if(this.mode === 'multiple') {
+			var found = false;
+			this.selection = this.selection.filter(function(el) {
+				if(el === object) {
+					found = true;
+					return false;
+				} else {
+					return true;
+				}
+			});
+			if(!found) { return false; }
+		} else {
+			this.selection = [];
+		}
+		/**
+		 * Object unselected event.
+		 * @event Samotraces.Selector#selection:remove
+		 * @type {object}
+		 * @property {String} type - The type of the event (= "selection:remove").
+		 */
+		this.trigger('selection:remove',object);
+		return true;
+	},
+	/**
+	 * Method to call to toggle the selection of an Object.
+	 * If the Object was previously unselected, it becomes selected.
+	 * If the Object was previously selected, it becomes unselected.
+	 * @param {Object} object
+	 *     Object to toggle from the selection
+	 */
+	toggle: function(object) {
+		if(this.mode === 'multiple') {
+			if(!this.unselect(object)) {
+				this.select(object);
+			}
+		} else {
+			if(this.selection.length == 0 || this.selection[0] !== object) {
+				this.select(object);
+			} else {
+				this.unselect(object);
+			}
+		}
+	}
+};
+
+module.exports = Selector;
+</code></pre>
+        </article>
+    </section>
+
+
+
+
+</div>
+
+<nav>
+    <h2><a href="index.html">Home</a></h2><h3>Classes</h3><ul><li><a href="Base.html">Base</a></li><li><a href="ImportTrace.html">ImportTrace</a></li><li><a href="KTBS.html">KTBS</a></li><li><a href="KTBSObsel.html">KTBSObsel</a></li><li><a href="KTBSResource.html">KTBSResource</a></li><li><a href="KTBSTrace.html">KTBSTrace</a></li><li><a href="ListBases.html">ListBases</a></li><li><a href="ListModelInBases.html">ListModelInBases</a></li><li><a href="ListTracesInBases.html">ListTracesInBases</a></li><li><a href="LocalTrace.html">LocalTrace</a></li><li><a href="Model.html">Model</a></li><li><a href="global.html#Obsel">Obsel</a></li><li><a href="ObselInspector.html">ObselInspector</a></li><li><a href="ObselTypeInspector.html">ObselTypeInspector</a></li><li><a href="ReadableTimeForm.html">ReadableTimeForm</a></li><li><a href="Samotraces.Trace.html">Trace</a></li><li><a href="global.html#Selector">Selector</a></li><li><a href="TimeForm.html">TimeForm</a></li><li><a href="TimePlayer.html">TimePlayer</a></li><li><a href="Timer.html">Timer</a></li><li><a href="TimeSlider.html">TimeSlider</a></li><li><a href="global.html#TimeWindow">TimeWindow</a></li><li><a href="TraceDisplayIcons.html">TraceDisplayIcons</a></li><li><a href="TraceDisplayObselOccurrences.html">TraceDisplayObselOccurrences</a></li><li><a href="TraceDisplayZoomContext.html">TraceDisplayZoomContext</a></li><li><a href="WindowScale.html">WindowScale</a></li><li><a href="WindowSlider.html">WindowSlider</a></li></ul><h3>Events</h3><ul><li><a href="LocalTrace.html#event:trace:create:obsel">trace:create:obsel</a></li><li><a href="LocalTrace.html#event:trace:edit:obsel">trace:edit:obsel</a></li><li><a href="LocalTrace.html#event:trace:remove:obsel">trace:remove:obsel</a></li><li><a href="LocalTrace.html#event:trace:update">trace:update</a></li><li><a href="Samotraces.Selector.html#event:selection:add">selection:add</a></li><li><a href="Samotraces.Selector.html#event:selection:empty">selection:empty</a></li><li><a href="Samotraces.Selector.html#event:selection:remove">selection:remove</a></li><li><a href="Samotraces.Timer.html#event:timer:play:update">timer:play:update</a></li><li><a href="Samotraces.Timer.html#event:timer:update">timer:update</a></li><li><a href="Samotraces.TimeWindow.html#event:tw:update">tw:update</a></li><li><a href="Samotraces.Trace.html#event:trace:create:obsel">trace:create:obsel</a></li><li><a href="Samotraces.Trace.html#event:trace:edit:obsel">trace:edit:obsel</a></li><li><a href="Samotraces.Trace.html#event:trace:remove:obsel">trace:remove:obsel</a></li><li><a href="Samotraces.Trace.html#event:trace:update">trace:update</a></li></ul><h3>Mixins</h3><ul><li><a href="EventHandler.html">EventHandler</a></li><li><a href="Widget.html">Widget</a></li></ul><h3>Tutorials</h3><ul><li><a href="tutorial-tuto1_using_samotraces.html">Tutorial 1: using Samotraces</a></li><li><a href="tutorial-tuto_generating_doc.html">Generating Samotraces.js documentation</a></li><li><a href="tutorial-using_classes.html">Using classes in Samotraces.js</a></li></ul><h3><a href="global.html">Global</a></h3>
+</nav>
+
+<br class="clear">
+
+<footer>
+    Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.3.2</a> on Mon Jul 20 2015 11:27:18 GMT+0200 (CEST)
+</footer>
+
+<script> prettyPrint(); </script>
+<script src="scripts/linenumber.js"> </script>
+</body>
+</html>

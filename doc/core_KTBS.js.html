@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="utf-8">
-    <title>JSDoc: Tutorial: Generating Samotraces.js documentation</title>
+    <title>JSDoc: Source: core/KTBS.js</title>
 
     <script src="scripts/prettify/prettify.js"> </script>
     <script src="scripts/prettify/lang-css.js"> </script>
@@ -17,25 +17,109 @@
 
 <div id="main">
 
-    <h1 class="page-title">Tutorial: Generating Samotraces.js documentation</h1>
+    <h1 class="page-title">Source: core/KTBS.js</h1>
 
-    <section>
-
-<header>
     
 
-    <h2>Generating Samotraces.js documentation</h2>
-</header>
 
-<article>
-    <h3>Installation</h3><p>First, install jsdoc3 on your computer:
-<a href="https://github.com/jsdoc3/jsdoc">https://github.com/jsdoc3/jsdoc</a></p>
-<p>Then, clone the docstrap template adapted for Samotraces.js:</p>
-<pre class="prettyprint source"><code>git clone https://github.com/bmathern/docstrap PATH-TO-DOCSTRAP</code></pre><h3>Running the documentation</h3><p>Run the following command to generate the doc from the root of your Samotraces.js repository:</p>
-<pre class="prettyprint source"><code>PATH-TO-JSDOC/jsdoc -c conf.json -t PATH-TO-DOCSTRAP/template ./src/ ./readme.md</code></pre>
-</article>
 
-</section>
+    
+    <section>
+        <article>
+            <pre class="prettyprint source linenums"><code>var KTBSResource = require("./KTBS.Resource.js");
+
+/**
+ * @summary Javascript KTBS Object that is bound to a KTBS.
+ * @class Javascript KTBS Object that is bound to a KTBS.
+ * @author Benoît Mathern
+ * @requires jQuery framework (see &lt;a href="http://jquery.com">jquery.com&lt;/a>)
+ * @constructor
+ * @augments Samotraces.EventHandler
+ * @augments Samotraces.KTBS.Resource
+ * @description
+ * Samotraces.KTBS is a Javascript KTBS object that
+ * is bound to a KTBS. This Object implemetns the KTBS API.
+ * Methods are available to get the list of bases
+ * available in the KTBS. Access a specific base, etc.
+ *
+ * @param {String}	uri	URI of the KTBS to load.
+ */
+var KTBS = function KTBS(uri) {
+	// KTBS is a Resource
+	KTBSResource.call(this,uri,uri,'KTBS',"");
+	this.bases = [];
+	this.builtin_methods = [];
+	this.force_state_refresh();
+};
+
+KTBS.prototype = {
+/////////// OFFICIAL API
+	/**
+	 * @todo METHOD NOT IMPLEMENTED
+	 */
+	list_builtin_methods: function() {},
+	/**
+	 * @todo METHOD NOT IMPLEMENTED
+	 */
+	get_builtin_method: function() {},
+	/**
+	 * Returns the array of the URI of the bases contained in the KTBS
+	 * @returns {Array&lt;String>} Array of URI of bases.
+	 */
+	list_bases: function() {
+		return this.bases;
+	},
+	/**
+	 * @summary Returns the KTBS.Base with the given ID.
+	 * @returns Samotraces.KTBS.Base Base corresponding to the given ID
+	 * @param id {String} URI of the base
+	 */
+	get_base: function(id) {
+		return new Samotraces.KTBS.Base(this.uri+id,id);
+	},
+	/**
+	 * Create a new base.
+	 * @param id {String} URI of the base (optional)
+	 * @param label {String} Label of the base (optional)
+	 */
+	create_base: function(id, label) {
+		var new_base = {
+    		"@context":	"http://liris.cnrs.fr/silex/2011/ktbs-jsonld-context",
+			"@type":	"Base",
+			"@id":		id+"/",
+			"label":	label
+		};
+		$.ajax({
+			url: this.uri,
+			type: 'POST',
+			contentType: 'application/json',
+			data: JSON.stringify(new_base),
+			success: this.force_state_refresh.bind(this),
+			error: function(jqXHR,textStatus,error) {
+				console.log('query error');
+				console.log([jqXHR,textStatus,error]);
+			}
+		});
+	},
+///////////
+	/**
+	 * Overloads the {@link Samotraces.KTBS.Resouce#_on_state_refresh_} method.
+	 * @private
+	 */
+	_on_state_refresh_: function(data) {
+	console.log(data);
+		this._check_change_('bases', data.hasBase, 'ktbs:update');
+		this._check_change_('builtin_methods', data.hasBuildinMethod, 'ktbs:update');
+	},
+};
+
+module.exports = KTBS;
+</code></pre>
+        </article>
+    </section>
+
+
+
 
 </div>
 
