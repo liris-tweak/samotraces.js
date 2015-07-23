@@ -1,3 +1,5 @@
+var Widget = require("./Widget.js");
+
 /**
  * @summary Widget for playing/pausing a timer and controlling videos.
  * @class Widget for playing/pausing a timer and controlling videos.
@@ -23,9 +25,9 @@
  *     Array of VideoConfig, that defines the set of
  *     videos that will be synchronised on the timer.
  */
-Samotraces.UI.Widgets.TimePlayer = function(html_id,timer,videos) {
+var TimePlayer = function(html_id,timer,videos) {
 	// WidgetBasicTimeForm is a Widget
-	Samotraces.UI.Widgets.Widget.call(this,html_id);
+	Widget.call(this,html_id);
 
 	/**
 	 * @typedef Samotraces.Widgets.TimePlayer.VideoConfig
@@ -58,13 +60,13 @@ Samotraces.UI.Widgets.TimePlayer = function(html_id,timer,videos) {
 	this.onUpdateTime({data: this.timer.time});
 };
 
-Samotraces.UI.Widgets.TimePlayer.prototype = {
+TimePlayer.prototype = {
 	init_DOM: function() {
 
 		var p_element = document.createElement('p');
 
 		this.play_button = document.createElement('img');
-		this.play_button.setAttribute('src','images/control_play.png');
+		//this.play_button.setAttribute('src','images/control_play.png');
 
 		p_element.appendChild(this.play_button);
 
@@ -102,3 +104,4 @@ Samotraces.UI.Widgets.TimePlayer.prototype = {
 	},
 };
 
+module.exports = TimePlayer;

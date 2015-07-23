@@ -1,3 +1,6 @@
+var Widget = require("./Widget.js");
+var $ = require("jquery");
+
 /**
  * @summary Widget for visualising a window slider.
  * @class Widget for visualising a window slider.
@@ -18,9 +21,9 @@
  *     TimeWindow object -> representing the small window
  *     (e.g., the current time window being visualised with another widget)
  */
-Samotraces.UI.Widgets.WindowSlider = function(html_id,wide_window,slider_window) {
+var WindowSlider = function(html_id, wide_window, slider_window) {
 	// WidgetBasicTimeForm is a Widget
-	Samotraces.Widgets.Widget.call(this,html_id);
+	Widget.call(this,html_id);
 
 	this.add_class('Widget-WindowSlider');
 	$(window).resize(this.draw.bind(this));
@@ -40,7 +43,7 @@ Samotraces.UI.Widgets.WindowSlider = function(html_id,wide_window,slider_window)
 	this.draw();
 };
 
-Samotraces.UI.Widgets.WindowSlider.prototype = {
+WindowSlider.prototype = {
 	init_DOM: function() {
 
 		// create the slider
@@ -73,4 +76,4 @@ Samotraces.UI.Widgets.WindowSlider.prototype = {
 
 };
 
-
+module.exports = WindowSlider;

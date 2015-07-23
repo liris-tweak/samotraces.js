@@ -343,7 +343,7 @@ KTBSTrace.prototype = {
       }
     }
     //console.log(data,obs);
-    var o = new Obsel(obs);
+    var o = new KTBSObsel(obs);
     if (!this._check_obsel_loaded_(o)) { // TODO first approximation
       this.trigger('trace:create_obsel', o);
     }

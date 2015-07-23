@@ -1,7 +1,11 @@
-Samotraces.UI.Widgets.TraceDisplayIconsFix = function(divId,traceINITIA,time_window,time_window_Zoom,options) {
+var Widget = require("./Widget.js");
+var $ = require("jquery");
+var d3 = require("d3");
+
+var TraceDisplayIconsFix = function(divId, traceINITIA, time_window, time_window_Zoom, options) {
 		options = options || {};
 		// WidgetBasicTimeForm is a Widget
-		Samotraces.UI.Widgets.Widget.call(this,divId);
+		Widget.call(this,divId);
 		this.add_class('Widget-TraceDisplayIcons');
 		$(window).resize(this.refresh_x.bind(this));
 		this.trace = traceINITIA;
@@ -32,7 +36,8 @@ Samotraces.UI.Widgets.TraceDisplayIconsFix = function(divId,traceINITIA,time_win
 		this.draw();
 
 	};
-Samotraces.UI.Widgets.TraceDisplayIconsFix.prototype = {
+
+TraceDisplayIconsFix.prototype = {
 		init_DOM: function() {
 			
 				var div_elmt = d3.select(this.element);
@@ -171,3 +176,5 @@ Samotraces.UI.Widgets.TraceDisplayIconsFix.prototype = {
 			
 		},
 		};
+
+module.exports = TraceDisplayIconsFix;

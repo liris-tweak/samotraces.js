@@ -1,6 +1,8 @@
- Samotraces.UI.Widgets.IntervalTimeForm = function(html_id,timeWindow) {
+var Widget = require("./Widget.js");
+ 
+var IntervalTimeForm = function(html_id,timeWindow) {
 		// WidgetBasicTimeForm is a Widget
-		Samotraces.UI.Widgets.Widget.call(this,html_id);
+		Widget.call(this,html_id);
 		this.add_class('Widget-ReadableTimeForm');
 		this.window= timeWindow;
 		this.window.on('tw:update',this.refresh.bind(this));
@@ -10,7 +12,8 @@
 		this.init_DOM();
 		this.refresh();
 	};
-	Samotraces.UI.Widgets.IntervalTimeForm.prototype = {
+
+IntervalTimeForm.prototype = {
 		init_DOM: function() {
 
 			var p_element = document.createElement('p');
@@ -176,3 +179,5 @@
 			}
 		}
 	};
+
+module.exports = IntervalTimeForm;

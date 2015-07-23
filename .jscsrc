@@ -1,5 +1,6 @@
 {
   "validateIndentation": 2,
   "validateQuoteMarks": true,
+  "maximumLineLength": 120,
   "preset": "node-style-guide"
 }

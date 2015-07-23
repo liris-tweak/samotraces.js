@@ -1,0 +1,74 @@
+{
+  "source": {
+    "include": [       
+      "src/core/EventHandler.js",
+      "src/core/KTBS.Base.js",
+      "src/core/KTBS.js",
+      "src/core/KTBS.Model.js",
+      "src/core/KTBS.Obsel.js",
+      "src/core/KTBS.Resource.js",
+      "src/core/KTBS.Trace.js",
+      "src/core/LocalTrace.js",
+      "src/core/Obsel.js",
+      "src/core/Selector.js",
+      "src/core/Timer.js",
+      "src/core/TimeWindow.js",
+      "src/core/Trace.js",
+      "src/UI/Widgets/DisplayModel.js",
+      "src/UI/Widgets/ImportTrace.js",
+      "src/UI/Widgets/IntervalTimeForm.js",
+      "src/UI/Widgets/ListBases.js",
+      "src/UI/Widgets/ListModelInBases.js",
+      "src/UI/Widgets/ListTracesInBases.js",
+      "src/UI/Widgets/ObselInspector.js",
+      "src/UI/Widgets/ObselTypeInspector.js",
+      "src/UI/Widgets/ReadableTimeForm.js",
+      "src/UI/Widgets/TimeForm.js",
+      "src/UI/Widgets/TimePlayer.js",
+      "src/UI/Widgets/TimeSlider.js",
+      "src/UI/Widgets/TraceDisplayIconsFix.js",
+      "src/UI/Widgets/TraceDisplayIcons.js",
+      "src/UI/Widgets/TraceDisplayIconsZoom.js",
+      "src/UI/Widgets/TraceDisplayObselOccurrences.js",
+      "src/UI/Widgets/TraceDisplayText.js",
+      "src/UI/Widgets/TraceDisplayZoomContext.js",
+      "src/UI/Widgets/Widget.js",
+      "src/UI/Widgets/WindowScaleFix.js",
+      "src/UI/Widgets/WindowScale.js",
+      "src/UI/Widgets/WindowSlider.js",
+      "src/main.js",
+      "README.md"
+    ],
+    "includePattern": ".+\\.js(doc)?$",
+    "excludePattern": "(^|\\/|\\\\)_"
+  },
+  "opts": {
+    "recurse": true,
+    "destination": "./doc/",
+    "tutorials": "./doc/tutorials/",
+    "verbose": true
+  },
+  "tags" : {
+    "allowUnknownTags" : true
+  },
+  "plugins" : ["plugins/markdown"],
+  "templates" : {
+    "cleverLinks" : false,
+    "monospaceLinks" : false,
+    "default" : {
+      "outputSourceFiles" : true
+    },
+    "systemName" : "Samotraces.js",
+    "footer" : "",
+    "copyright" : "",
+    "navType" : "vertical",
+    "theme" : "cerulean",
+    "linenums" : true,
+    "collapseSymbols" : false,
+    "inverseNav" : true
+  },
+  "markdown" : {
+    "parser" : "gfm",
+    "hardwrap" : true
+  }
+}

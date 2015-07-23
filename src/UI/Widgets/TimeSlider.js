@@ -1,3 +1,6 @@
+var Widget = require("./Widget.js");
+var $ = require("jquery");
+
 /**
  * @summary Widget for visualising a time slider.
  * @class Widget for visualising a time slider.
@@ -17,9 +20,9 @@
  * @param timer
  *     Timeer object -> containing the current time
  */
-Samotraces.UI.Widgets.TimeSlider = function(html_id,time_window,timer) {
+var TimeSlider = function(html_id, time_window, timer) {
 	// WidgetBasicTimeForm is a Widget
-	Samotraces.UI.Widgets.Widget.call(this,html_id);
+	Widget.call(this,html_id);
 
 	this.add_class('Widget-TimeSlider');
 	$(window).resize(this.draw.bind(this));
@@ -40,7 +43,7 @@ Samotraces.UI.Widgets.TimeSlider = function(html_id,time_window,timer) {
 
 };
 
-Samotraces.UI.Widgets.TimeSlider.prototype = {
+TimeSlider.prototype = {
 	init_DOM: function() {
 		// create the slider
 		this.slider_element = document.createElement('div');
@@ -67,4 +70,4 @@ Samotraces.UI.Widgets.TimeSlider.prototype = {
 
 };
 
-
+module.exports = TimeSlider;
