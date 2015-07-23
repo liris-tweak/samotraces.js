@@ -3,6 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <title></title>
+  <div id = "modelshow"> </div>
   <script type="application/javascript" src="/dist/samotraces.js"></script>
 </head>
 <body>
@@ -66,12 +67,25 @@
       ""); // Let"s supose this cat is a KTBS...
 
     console.log(anObject);
-
+    var options = {
+           url: function(o) {
+             var path = "../../lib/Images/";
+             switch(o["type"]) {
+               case 'Ouverture_Page':
+               return path+'Orange.png';
+               default:
+               return path+'help.png';
+             }
+           }
+         };
     var ktbs = new Samotraces.KTBS.KTBS("http://localhost:8001/");
     console.log(ktbs);
 
     var model = new Samotraces.KTBS.Model("http://localhost:8001/base1/model1");
     console.log(model);
+
+    Mod = new Samotraces.UI.Widgets.DisplayModel ("modelshow",model,options)
+
 
     var base = new Samotraces.KTBS.Base("http://localhost:8001/base1/");
     console.log(base);
