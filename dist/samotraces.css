@@ -7,6 +7,47 @@ div.Widget {
 	overflow: hidden;
 }
 
+/**********************
+ brush
+ **********************/
+
+.brush .extent {
+  stroke: #000;
+  fill-opacity: .125;
+  shape-rendering: crispEdges;
+}
+.grid-background {
+  fill: #ddd;
+}
+
+.grid line,
+.grid path {
+  fill: none;
+  stroke: #fff;
+  shape-rendering: crispEdges;
+}
+
+.grid .minor.tick line {
+  stroke-opacity: .5;
+}
+.axis text {
+  font: 11px sans-serif;
+}
+
+.axis path {
+  display: none;
+}
+
+.axis line {
+  fill: none;
+  stroke: #000;
+  shape-rendering: crispEdges;
+}
+
+.scroll {
+overflow-y: scroll;
+
+}
 
 /**********************
  WidgetWindowScale
@@ -75,6 +116,14 @@ div.Widget-ObselInspector span {
 	cursor: pointer;
 }
 
+div.Widget-ObselInspectorType {
+    margin: auto;
+    width: 60%;
+    border: 1px solid #484;
+    margin-top: 50px;
+    float: right;
+}
+
 div.Widget-ObselInspector img {
 	opacity: 0.4;
 	cursor: pointer;
@@ -128,4 +177,12 @@ div.Widget-TimeSlider div {
 	top: 0px;
 	display: none;
 	cursor: pointer;
+}
+
+/**********************
+ Widget-TraceModel
+ **********************/
+div.Widget-TraceModel {
+	float: left;
+	width: 40%;
 }

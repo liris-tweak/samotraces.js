@@ -38,9 +38,6 @@ var Model = function(uri, id) {
 Model.prototype = {
 
   _on_state_refresh_: function(data) {
-
-
-    console.log (data);
     this.list_Types_Obsles = this.list_obsels(data["@graph"]);
   },
   list_obsels: function(data) {
@@ -57,8 +54,8 @@ Model.prototype = {
           obs.hasSuperObselType = el['hasSuperObselType']
         }
         ListeObselType.push(obs);
-        M.trigger('Model:Draw_obsel', obs);
-        console.log ('triger')
+        //M.trigger('Model:Draw_obsel', obs);
+        //console.log ('triger')
       }      else if (el["@type"] == "AttributeType")      {
         obs = M.GetObselType(el["hasAttributeObselType"], ListeObselType);
         el['coche'] = false;
@@ -74,6 +71,8 @@ Model.prototype = {
       }
 
     })
+
+    M.trigger('Model:listeType', ListeObselType);
     return ListeObselType;
 
   },
