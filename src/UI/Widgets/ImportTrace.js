@@ -37,7 +37,7 @@ var Widget = require("./Widget.js");
 
 var ImportTrace = function(htmlElement, trace) {
   "use strict";
-  
+
   // ImportTrace is a Widget
   Widget.call(this, htmlElement);
   this.trace = trace;
@@ -47,10 +47,10 @@ var ImportTrace = function(htmlElement, trace) {
 ImportTrace.prototype = {
   init_DOM: function() {
     "use strict";
-    
+
     var p_element = document.createElement('p');
     var text_node = document.createTextNode('Import a trace: ');
-    
+
     p_element.appendChild(text_node);
     this.input_element = document.createElement('input');
     this.input_element.setAttribute('type', 'file');

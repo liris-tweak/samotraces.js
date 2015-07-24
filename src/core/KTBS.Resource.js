@@ -20,8 +20,8 @@ var KTBSResource = (function() {
   	 *     'Trace','StoredTrace','ComputedTrace' or 'Obsel').
   	 */
   function get_resource_type() {
-		"use strict";
-		return this.type; }
+    "use strict";
+  return this.type; }
 
   // RESOURCE API
   /**
