@@ -4,6 +4,7 @@
   <title></title>
   <script type="application/javascript" src="/dist/vendors.js"></script>
   <script type="application/javascript" src="/dist/samotraces.js"></script>
+  <script type="application/javascript" src="/node_modules/jquery/dist/jquery.js"></script>
   <link rel="stylesheet" type="text/css" href="/dist/samotraces.css">
 </head>
 <body>
@@ -26,7 +27,8 @@
   <div id="window-scale"></div>
   <div id="window-scale-fix"></div>
   <div id="window-slider"></div>
-
+  <div id="window-model"></div>
+  <div id="obselTypeinspector"></div>
   <script type="text/javascript">
     /* global Samotraces */
     (function() {
@@ -81,7 +83,7 @@
       console.log(model);
       var base = new Samotraces.Ktbs.Base("http://localhost:8001/base1/");
       console.log(base);
-      var trace = new Samotraces.Ktbs.Trace("http://localhost:8001/base1/t01/");
+      var trace = new Samotraces.Ktbs.Trace("http://localhost:8001/base1/test/");
       console.log(trace);
       var obsels = trace.list_obsels(0, Math.pow(2, 16));
       console.log(obsels);
@@ -122,7 +124,7 @@
       var timeFormElement = document.querySelector("#time-form");
       var timeForm = new Samotraces.Ui.Widgets.TimeForm(timeFormElement, timer);
       console.log(timeForm);
-      //var timeSliderElement = document.querySelector("#time-slider");
+      //var timeSliderElement800= document.querySelector("#time-slider");
       //var timeSlider = new Samotraces.Ui.Widgets.TimeSlider(timeSliderElement, timeWindow, timer);
       //console.log(timeSlider);
       var trace3 = new Samotraces.LocalTrace();
@@ -134,6 +136,7 @@
       console.log(traceDisplayIcons);
       // TODO : dont know what is the time_window_Zoom argument (4th argument of TraceDisplayIconsFix)
       // cannot test it
+
       var traceDisplayIconsFixElement = document.querySelector("#trace-display-icons-fix");
       var traceDisplayIconsFix = new Samotraces.Ui.Widgets.TraceDisplayIconsFix(traceDisplayIconsFixElement, trace3, timeWindow);
       console.log(traceDisplayIconsFix);
@@ -154,9 +157,9 @@
       var traceDisplayZoomContext = new Samotraces.Ui.Widgets.TraceDisplayZoomContext(traceDisplayZoomContextElement, trace3, timeWindow1, timeWindow2, {}, {});
       console.log(traceDisplayZoomContext);
       // TODO : not sure of what this widget is doing
-      var displayModelElement = document.querySelector("#display-model");
-      var displayModel = new Samotraces.Ui.Widgets.DisplayModel(displayModelElement, model, {});
-      console.log(displayModel);
+      //var displayModelElement = document.querySelector("#display-model");
+      //var displayModel = new Samotraces.Ui.Widgets.DisplayModel(displayModelElement, model, {});
+      //console.log(displayModel);
 
       var windowScaleElement = document.querySelector("#window-scale");
       var windowScale = new Samotraces.Ui.Widgets.WindowScale(windowScaleElement, timeWindow);
@@ -171,6 +174,18 @@
       var smallWindow = new Samotraces.TimeWindow({start: 4, end: 12});
       var windowSlider = new Samotraces.Ui.Widgets.WindowSlider(windowSliderElement, wideWindow, smallWindow);
       console.log(windowSlider);
+      var model = new Samotraces.Ktbs.Model("http://localhost:8001/base1/model1");
+      console.log(model);
+      var windowModelElement = document.querySelector("#window-model");
+      var Mod = new Samotraces.Ui.Widgets.DisplayModel (windowModelElement,model,{});
+      var current_obseltype	= new Samotraces.Selector('obsel');
+      var ObselTypeInspector = document.querySelector("#obselTypeinspector");
+      var ObselTypeInspector = new Samotraces.Ui.Widgets.ObselTypeInspector(ObselTypeInspector,current_obseltype);
+      $(document).on('click','image',function(e) {
+          var obs =  e.target.__data__; // TODO replace me by ...$.data
+          console.log(obs);
+          current_obseltype.select(obs);
+      })
 
     })();
   </script>
