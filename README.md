@@ -127,7 +127,18 @@ These include :
 - Selector objects, that store a selection of other objects (Traces, Obsels, etc.)
 ({@link Samotraces.Selector|Selector}).
 
+## samotraces.js for the Impatient
+If you just want to use samotraces.js in your project:
+
+```bower install https://github.com/liris-tweak/samotraces.js.git```
+
+``` <script type="text/javascript" src="bower_components/samotracesjs/dist/vendors-min.js"></script>
+<script type="text/javascript" src="bower_components/samotracesjs/dist/samotraces-min.js"></script> 
+```
+
+
 ## For developers
+
 This project use ```grunt``` as Task-Runner/build tool, ```npm``` for dependency management, `browserify` for bundling all modules to distribuables files, and ```jsdoc``` for the documentation. 
 
 Please be sure to have ```node```, ```npm```, and ```grunt``` installed on your operating system.
