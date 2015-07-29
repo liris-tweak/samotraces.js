@@ -37,14 +37,31 @@ module.exports = function(grunt) {
       }
     },
     browserify: {
-      app: {
+      distDebug: {
         options: {
           external: [
-            "jquery"
+            "jquery",
+            "jquery-mousewheel",
+            "d3"
           ],
           browserifyOptions: {
             debug: true,
-            standalone: "Samotraces" // expose the lib as Node/CJS, AMD, Glob --> TODO REMOVE ME
+            standalone: "Samotraces"
+          }
+        },
+        src: "src/main.js",
+        dest: "dist/samotraces-debug.js"
+      },
+      distNoDebug: {
+        options: {
+          external: [
+            "jquery",
+            "jquery-mousewheel",
+            "d3"
+          ],
+          browserifyOptions: {
+            debug: false,
+            standalone: "Samotraces"
           }
         },
         src: "src/main.js",
@@ -53,7 +70,9 @@ module.exports = function(grunt) {
       vendor: {
         options: {
           alias: [
-            "jquery"
+            "jquery",
+            "jquery-mousewheel",
+            "d3",
           ]
         },
         external: null,
@@ -67,6 +86,14 @@ module.exports = function(grunt) {
           "src/**/*.js"
         ],
         tasks: ["browserify:app"]
+      }
+    },
+    uglify: {
+      myTarget: {
+        files: {
+          'dist/samotraces.min.js': ['dist/samotraces.js'],
+          'dist/vendors.min.js': ['dist/vendors.js'],
+        }
       }
     },
     jscs: {
@@ -91,8 +118,9 @@ module.exports = function(grunt) {
   grunt.loadNpmTasks("grunt-contrib-jshint");
   grunt.loadNpmTasks("grunt-contrib-connect");
   grunt.loadNpmTasks("grunt-browserify");
+  grunt.loadNpmTasks('grunt-contrib-uglify');
   grunt.loadNpmTasks("grunt-jscs");
   grunt.loadNpmTasks('grunt-jsdoc');
-  // grunt.registerTask("default", ["jshint", "jscs", "browserify", "connect", "watch"]);
-  grunt.registerTask("default", ["jshint", "jsdoc", "browserify:vendor", "browserify:app", "connect", "watch"]);
+  grunt.registerTask("default", ["jshint", "jsdoc", "browserify:vendor", "browserify:distDebug", "browserify:distNoDebug", "uglify"]);
+  grunt.registerTask("serve", ["jshint", "jsdoc", "browserify:vendor", "browserify:distDebug", "browserify:distNoDebug", "uglify", "connect", "watch"]);
 };

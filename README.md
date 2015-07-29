@@ -154,10 +154,21 @@ Just run
 
 This will do fo you the folowwing tasks:
 
-- (grunt jshint) -> detect errors and potential problems in your JavaScript code
+- (grunt jshint) -> detect errors and potential problems in the JavaScript code of Samotraces
 - (grunt jscs) -> a code style linter for programmatically enforcing your style guide
 - (grunt jsdoc) -> generate the documentation 
 - (grunt browserify:vendor) -> bundle all dependencies of Samotraces.js into `dist/` directory
-- (grunt browserify:app) -> bundle Samotraces.js sources into `dist/` directory
+- (grunt browserify:distDebug) -> bundle Samotraces.js sources into `dist/samotraces-debug.js` directory with sources map for quickly debug in a browser
+- (grunt browserify:distNoDebug) -> bundle Samotraces.js sources into `dist/samotraces.js`
+- (grunt uglify) -> produce a minified version of samotraces.js and vendors.js, respectively samotraces-min.js and vendors-min.js
+
+### build and run a small HTTP server to see in live the modification you are doing
+
+```
+$ grunt serve
+```
+
+This task will do the same as the default task and these two:
+
 - (grunt connect) -> open a small http server to help you to see the documentation and examples.
 - (grunt watch) -> a task for automatically relaunch browserify:app if you edit a file into the src directory (if you are writing a new feature, you can just save your file and refresh your browser to get an updated version)
