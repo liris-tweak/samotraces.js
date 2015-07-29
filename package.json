@@ -1,6 +1,6 @@
 {
   "name": "samotracesjs",
-  "version": "0.9.3",
+  "version": "0.9.4",
   "description": "samotracesjs",
   "main": ".",
   "scripts": {
@@ -18,8 +18,18 @@
   ],
   "contributors": [
     {
-      "name": "Raphael Cazenave-Leveque",
-      "email": "raphael.cazenave@gmail.com",
+      "name": "Amélie Cordier",
+      "email": "",
+      "url": ""
+    },
+    {
+      "name": "Benoît Mathern",
+      "email": "",
+      "url": ""
+    },
+    {
+      "name": "Raphael Cazenave-Lévêque",
+      "email": "",
       "url": ""
     },
     {

@@ -1,8 +1,10 @@
 {
   "name": "samotraces.js",
-  "version": "0.9.3",
+  "version": "0.9.4",
   "homepage": "https://github.com/fderbel/samotraces.js",
   "authors": [
+    "Amélie Cordier <>",
+    "Benoît Mathern <>",
     "Fatma Derbel <derbelfatma@gmail.com>",
     "Raphael Cazenave-Leveque <raphael.cazenave@gmail.com>"
   ],
