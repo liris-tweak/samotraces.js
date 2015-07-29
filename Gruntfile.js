@@ -91,8 +91,8 @@ module.exports = function(grunt) {
     uglify: {
       myTarget: {
         files: {
-          'dist/samotraces.min.js': ['dist/samotraces.js'],
-          'dist/vendors.min.js': ['dist/vendors.js'],
+          'dist/samotraces-min.js': ['dist/samotraces.js'],
+          'dist/vendors-min.js': ['dist/vendors.js'],
         }
       }
     },
