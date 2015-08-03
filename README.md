@@ -130,10 +130,15 @@ These include :
 ## samotraces.js for the Impatient
 If you just want to use samotraces.js in your project:
 
-```bower install https://github.com/liris-tweak/samotraces.js.git```
+```
+bower install https://github.com/liris-tweak/samotraces.js.git
+```
 
-``` <script type="text/javascript" src="bower_components/samotracesjs/dist/vendors-min.js"></script>
+```
+
+<script type="text/javascript" src="bower_components/samotracesjs/dist/vendors-min.js"></script>
 <script type="text/javascript" src="bower_components/samotracesjs/dist/samotraces-min.js"></script> 
+
 ```
 
 
