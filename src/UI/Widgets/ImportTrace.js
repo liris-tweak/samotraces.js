@@ -107,6 +107,7 @@ ImportTrace.prototype = {
       			};*/
       reader.readAsText(file);
       this.display_element.appendChild(content_el);
+      this.trace.trigger ("beforLoadFile");
     }
   },
 
@@ -122,6 +123,7 @@ ImportTrace.prototype = {
   },
   parse_csv: function(text, trace) {
     "use strict";
+
     //function csvToArray() from
     // http://stackoverflow.com/questions/1293147/javascript-code-to-parse-csv-data
 
@@ -203,7 +205,7 @@ ImportTrace.prototype = {
     var csv = csvToArray(text, sep);
     csv.pop(); // remove the last line... Why?...
     //	console.log('fichier parsé');
-    csv.map(function(line) {
+    csv.map(function(line,j) {
       var o_attr = {};
       o_attr.begin = line.shift();
       o_attr.type = line.shift();
@@ -213,6 +215,9 @@ ImportTrace.prototype = {
           o_attr.attributes[line[2 * i]] = line[2 * i + 1];
         }
       }
+      if (j===0) {trace.trigger ("firstObselLocal",o_attr)};
+      if (j===csv.length-1) {trace.trigger ("LastObselLocal",o_attr)};
+
       trace.create_obsel(o_attr);
     });
   }
