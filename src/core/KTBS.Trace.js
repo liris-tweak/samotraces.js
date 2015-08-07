@@ -178,6 +178,7 @@ KTBSTrace.prototype = {
     var d = dataRecu.length - Number(1);
     var DataO = dataRecu.slice (i, end);
     console.log ('_on_refresh_obsel_list_group');
+    var that = this;
     DataO.forEach(function(el) {
       count ++;
       this._parse_get_obsel_(el);
@@ -188,7 +189,11 @@ KTBSTrace.prototype = {
         end = Number(i) + Number(100);
         if (end > dataRecu.length) {end = dataRecu.length - Number(1);}
         setTimeout(function() {
-          if ((i <= d) && (end <= d))          {Objet._on_refresh_obsel_list_group(dataRecu, i, end);}
+          if ((i <= d) && (end <= d)) {
+            Objet._on_refresh_obsel_list_group(dataRecu, i, end);
+          } else {
+            that.trigger('trace:updateCompleted');
+          }
         }, 2000);
 
         $("#waiting").hide();
