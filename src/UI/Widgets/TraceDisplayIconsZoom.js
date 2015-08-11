@@ -17,7 +17,6 @@ var TraceDisplayIconsZoom = function(divId, trace, time_window, options) {
   this.init_DOM();
   // this.data = this.trace.list_obsels(time_window.start,time_window.end);
   this.data = this.trace.obsel_list;
-  this.options = {};
   var this_widget = this;
   var bind_function = function(val_or_fun) {
     if (val_or_fun instanceof Function) {
@@ -26,13 +25,20 @@ var TraceDisplayIconsZoom = function(divId, trace, time_window, options) {
       return val_or_fun;
     }
   };
-  this.options.x = bind_function(options.x || function(o) {
+  /*this.options.x = bind_function(options.x || function(o) {
     return this.calculate_x(o.get_begin()) - 8;
   });
   this.options.y = bind_function(options.y || 17);
   this.options.width = bind_function(options.width || 16);
   this.options.height = bind_function(options.height || 16);
   this.options.url = bind_function(options.url || 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAAABHNCSVQICAgIfAhkiAAAAAlwSFlzAAAG7AAABuwBHnU4NQAAABl0RVh0U29mdHdhcmUAd3d3Lmlua3NjYXBlLm9yZ5vuPBoAAAKsSURBVDiNrZNLaFNpFMd/33fvTa5tYpuq0yatFWugRhEXw9AuhJEZBCkiqJWCIErrxp241C6L6650M/WBowunoyCDCjKrGYZ0IbiwxkdUbGyaPmgSm8d9f25MbXUlzH95zv/8OOdwjlBKsVajU1kEtJiavNBsaKcBqq5/3fKDSwrKY33JdX7RAIxOZQGM3bHIymCyPZhZqT8p2d4sQGtY7+yObvhxMjsvp4uVKOA2QEIpxehUFl2IvuFUZ3rZcu/+9X7RWqg7Jxw/QAFhTdLRFJoY6N4SazONo1czs/2eUlNjfUn0Risne+Pp9yv18TvZwrl9iVb2J2JEQhoKKNke6UJ55LfMB4aSHeMne+Ppay/yAkBcTL9ma7Np7Yu3/n1lOjdQ8wLO793GzlgzFdcjYujoUpAt17j8LIfjB5zdvfXBv3OlX3NVy5SAOJVKhP94M29UXB8FFGoWE89nufTkHQ9nFlEKejZuoLe1iYrr8+fbee9UKhEGhB6SYrBoudPLtnsAQCnF768Kq1v2AxAC6l7AsuUCsGS5h4uWOx2SYlBqQoyUHW/O9gO+1i9dbfyciKGA/wol3pTrANh+QNnx5jQhRuQ3VZ+1Z1OUg92biZkG/+SL3Hu7gPfVzQBIX6mJlpAeD2vrWds3mth+wOtSlUczS1RdfzUX1iQtIT3uKzWhO4GajJnGnc2mcf+j4x1umJ4uVShUbRSwUHPWwdvCxuOYaRxwAjUpAXUjk7eP9bTrEUNbNf30Q5ThXV0c6WknGvoSjxgax3e0uzcyeRtQcqwvSa5qmaYuB4aSHeMNiEJgahJ9zWQRQ2Mo2TFu6nIgV7XMdZd48+Vc/3CqM30m1XX3wcxi8d3H2sitl3mUACkEyZam24e2bTHbTOPc1cxsf6Pu/3mmtfred/4ESQNKXG8VACoAAAAASUVORK5CYII=');
+
+  */
+  this.options = {};
+  this.options.x = bind_function(options.x || function(o) {
+    return this.calculate_x(o.get_begin()) - 8;
+  });
+  this.stylesheet = options ;
   this.draw();
 	};
 
@@ -102,6 +108,61 @@ TraceDisplayIconsZoom.prototype = {
           break;
       }
     }
+    var that = this;
+    var getIconPath = function () {
+      // ``self```is the widget instance
+      var self = that;
+
+      // ``this`` is the DOM element where d3 is setting things
+
+      var type = this.__data__.type;
+      if (self.stylesheet[type]) {
+        return self.stylesheet[type].icon;
+      } else {
+        return self.stylesheet.default.icon;
+      }
+    }
+    var getWidth = function () {
+      // ``self```is the widget instance
+      var self = that;
+
+      // ``this`` is the DOM element where d3 is setting things
+
+      var type = this.__data__.type;
+      if (self.stylesheet[type]) {
+        return self.stylesheet[type].width;
+      } else {
+        return self.stylesheet.default.width;
+      }
+    }
+
+    var getHeight = function () {
+      // ``self```is the widget instance
+      var self = that;
+
+      // ``this`` is the DOM element where d3 is setting things
+
+      var type = this.__data__.type;
+      if (self.stylesheet[type]) {
+        return self.stylesheet[type].height;
+      } else {
+        return self.stylesheet.default.height;
+      }
+    }
+
+    var getY = function () {
+      // ``self```is the widget instance
+      var self = that;
+
+      // ``this`` is the DOM element where d3 is setting things
+
+      var type = this.__data__.type;
+      if (self.stylesheet[type]) {
+        return self.stylesheet[type].y;
+      } else {
+        return self.stylesheet.default.y;
+      }
+    }
 
     this.d3Obsels()
     .exit()
@@ -111,10 +172,10 @@ TraceDisplayIconsZoom.prototype = {
     .append('image')
     .attr('class', 'Samotraces-obsel')
     .attr('x', this.options.x)
-    .attr('y', this.options.y)
-    .attr('width', this.options.width)
-    .attr('height', this.options.height)
-    .attr('xlink:href', this.options.url);
+    .attr('y', getY)
+    .attr('width', getWidth)
+    .attr('height', getHeight)
+    .attr('xlink:href', getIconPath);
     // Storing obsel data with jQuery for accessibility from
     // events defined by users with jQuery
     $('image', this.element).each(function(i, el) {
