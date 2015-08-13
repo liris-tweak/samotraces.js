@@ -19,21 +19,18 @@ var d3 = require("d3");
 
 var DisplayModel = function(htmlElement, model, options) {
   "use strict";
-  options = options || {};
+  //options = options || {};
   Widget.call(this, htmlElement);
   this.add_class('Widget-TraceModel');
   this.model = model;
   this.model.on('Model:Draw_obsel', this.draw.bind(this));
   this.init_DOM();
-  this.options = {};
-  var wi = this ;
+  var this_widget = this;
   this.model.on('Model:listeType', function(e) {
-    wi.data = e.data;
-    wi.draw();
+    this_widget.data = e.data;
+    this_widget.draw();
 
   });
-
-  var this_widget = this;
   var bind_function = function(val_or_fun) {
     if (val_or_fun instanceof Function) {
       return val_or_fun.bind(this_widget);
@@ -43,11 +40,12 @@ var DisplayModel = function(htmlElement, model, options) {
   };
   var x = 0;
   var x1 = 16;
-  this.options.x_Img = bind_function(options.x || function() {
+  this.options = {};
+  this.options.y_Img = bind_function(options.x || function() {
     x = x + 16;
     return x;
   });
-  this.options.x_text = bind_function(options.x || function() {
+  this.options.y_text = bind_function(options.x || function() {
     x1 = x1 + 16;
     return x1;
   });
@@ -56,7 +54,7 @@ var DisplayModel = function(htmlElement, model, options) {
   //this.options.height = bind_function(options.height || 16);
   //this.options.url = bind_function(options.url || 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAAABHNCSVQICAgIfAhkiAAAAAlwSFlzAAAG7AAABuwBHnU4NQAAABl0RVh0U29mdHdhcmUAd3d3Lmlua3NjYXBlLm9yZ5vuPBoAAAKsSURBVDiNrZNLaFNpFMd/33fvTa5tYpuq0yatFWugRhEXw9AuhJEZBCkiqJWCIErrxp241C6L6650M/WBowunoyCDCjKrGYZ0IbiwxkdUbGyaPmgSm8d9f25MbXUlzH95zv/8OOdwjlBKsVajU1kEtJiavNBsaKcBqq5/3fKDSwrKY33JdX7RAIxOZQGM3bHIymCyPZhZqT8p2d4sQGtY7+yObvhxMjsvp4uVKOA2QEIpxehUFl2IvuFUZ3rZcu/+9X7RWqg7Jxw/QAFhTdLRFJoY6N4SazONo1czs/2eUlNjfUn0Risne+Pp9yv18TvZwrl9iVb2J2JEQhoKKNke6UJ55LfMB4aSHeMne+Ppay/yAkBcTL9ma7Np7Yu3/n1lOjdQ8wLO793GzlgzFdcjYujoUpAt17j8LIfjB5zdvfXBv3OlX3NVy5SAOJVKhP94M29UXB8FFGoWE89nufTkHQ9nFlEKejZuoLe1iYrr8+fbee9UKhEGhB6SYrBoudPLtnsAQCnF768Kq1v2AxAC6l7AsuUCsGS5h4uWOx2SYlBqQoyUHW/O9gO+1i9dbfyciKGA/wol3pTrANh+QNnx5jQhRuQ3VZ+1Z1OUg92biZkG/+SL3Hu7gPfVzQBIX6mJlpAeD2vrWds3mth+wOtSlUczS1RdfzUX1iQtIT3uKzWhO4GajJnGnc2mcf+j4x1umJ4uVShUbRSwUHPWwdvCxuOYaRxwAjUpAXUjk7eP9bTrEUNbNf30Q5ThXV0c6WknGvoSjxgax3e0uzcyeRtQcqwvSa5qmaYuB4aSHeMNiEJgahJ9zWQRQ2Mo2TFu6nIgV7XMdZd48+Vc/3CqM30m1XX3wcxi8d3H2sitl3mUACkEyZam24e2bTHbTOPc1cxsf6Pu/3mmtfred/4ESQNKXG8VACoAAAAASUVORK5CYII=');
 
-     this.stylesheet = options ;
+     this.stylesheet = options || {} ;
 
 
 };
@@ -180,8 +178,8 @@ DisplayModel.prototype = {
 
 
     var images_att =  images.attr('class', 'Samotraces-obsel')
-      .attr('y', getY)
-      .attr('x', '17')
+      .attr('y', this.options.y_Img)
+      .attr('x', 17)
       .attr('width', getWidth)
       .attr('height', getHeight)
       .attr('xlink:href', getIconPath);
@@ -193,7 +191,7 @@ DisplayModel.prototype = {
       .append("text");
     var textLabels = text
       .attr("x", '35')
-      .attr("y", this.options.x_text)
+      .attr("y", this.options.y_text)
       .text(function(d) { return d.type;})
       .attr("font-family", "sans-serif")
       .attr("font-size", "15px");
