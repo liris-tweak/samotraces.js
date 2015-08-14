@@ -21,8 +21,24 @@ var KTBSResource = (function() {
   	 */
   function get_resource_type() {
     "use strict";
-  return this.type; }
+    return this.type;
+  }
 
+  function getAbsoluteURLFromRlative(base, relative) {
+    var stack = base.split("/"),
+        parts = relative.split("/");
+    stack.pop(); // remove current file name (or empty string)
+                 // (omit if "base" is the current folder without trailing slash)
+    for (var i=0; i<parts.length; i++) {
+        if (parts[i] == ".")
+            continue;
+        if (parts[i] == "..")
+            stack.pop();
+        else
+            stack.push(parts[i]);
+    }
+    return stack.join("/");
+  }
   // RESOURCE API
   /**
   	 * @summary Returns the ID of the Resource.
@@ -35,7 +51,7 @@ var KTBSResource = (function() {
   	 * @memberof Samotraces.KTBS.Resource.prototype
   	 * @returns {String} Resource URI.
   	 */
-  function get_uri() { return this.uri; }
+  function get_uri() { return this.uri.replace('./', ''); }
   /**
   	 * @summary Forces the Resource to synchronise with the KTBS.
   	 * @memberof Samotraces.KTBS.Resource.prototype
@@ -189,6 +205,7 @@ var KTBSResource = (function() {
     this._check_change_ = _check_change_;
     this.start_auto_refresh = start_auto_refresh;
     this.stop_auto_refresh = stop_auto_refresh;
+    this.getAbsoluteURLFromRlative=getAbsoluteURLFromRlative;
     return this;
   };
 })();

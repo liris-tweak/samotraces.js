@@ -56,7 +56,11 @@ KTBSTrace.prototype = {
   	 * @returns {Model} Model of the trace.
   	 * @todo DEFINE WHAT IS A MODEL
   	 */
-  get_model: function() { "use strict"; return this.model_uri; },
+  get_model: function() {
+    "use strict";
+
+    return this.getAbsoluteURLFromRlative(this.get_uri(),this.model_uri);
+ },
   /**
   	 * @description
   	 * Gets the origin of the trace.
