@@ -49,7 +49,10 @@ KTBSTrace.prototype = {
   	 * Gets the base where the trace is stored.
   	 * @returns {String} URI of the base where the trace is stored.
   	 */
-  get_base: function() { "use strict";return this.base_uri; },
+  get_base: function() {
+    "use strict";
+    return this.getAbsoluteURLFromRlative(this.get_uri(),this.base_uri);
+  },
   /**
   	 * @description
   	 * Gets the model of the trace.
@@ -370,7 +373,7 @@ KTBSTrace.prototype = {
     this._check_change_('default_subject', data.hasDefaultSubject, '');
     this._check_change_('model_uri', data.hasModel, 'trace:model');
     this._check_change_('obsel_list_uri', data.hasObselList, 'trace:update');
-    this._check_change_('base_uri', data.inBase, '');
+    this._check_change_('base_uri', data.inBase, 'trace:base');
     this._check_change_('origin', data.origin, 'trace:update');
     this._check_change_('label', data.label, 'trace:update');
     this.trigger('trace:updateData', data);

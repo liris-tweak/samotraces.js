@@ -40,7 +40,9 @@ Base.prototype = {
   /**
   	 * @todo METHOD NOT IMPLEMENTED
   	 */
-  list_models: function() { return this.models; },
+  list_models: function() {
+    return this.models;
+  },
   /**
   	 * Create a stored trace in the KTBS
   	 * @param id {String} ID of the created trace
@@ -74,13 +76,47 @@ Base.prototype = {
   },
 
   /**
+  	 * Create a stored trace in the KTBS
+  	 * @param id {String} ID of the created trace
+  	 * @param [model] {Model} Model of the trace
+  	 * @param [origin] {Origin} Origin of the trace
+  	 * @param [default_subject] {String} Default subject of the trace
+  	 * @param [label] {String} Label of the trace
+  	 */
+  create_model: function(id) {
+      var doc = {
+      '@context': 'http://liris.cnrs.fr/silex/2011/ktbs-jsonld-context',
+      '@graph': [{
+        '@id': id,
+        '@type': 'TraceModel',
+        'inBase': './',
+        'hasUnit': 'millisecond'
+      }]
+    };
+    var new_model_data = JSON.stringify(doc);
+    $.ajax({
+      url: this.uri,
+      type: 'POST',
+      contentType: 'application/json',
+      data: new_model_data,
+      success: this.force_state_refresh.bind(this),
+      error: function(jqXHR, textStatus, error) {
+        console.log('query error');
+        console.log([jqXHR, textStatus, error]);
+      }
+    });
+  },
+
+  
+
+  /**
   	 * @todo METHOD NOT IMPLEMENTED
   	 */
   create_computed_trace: function(id, method, parameters, sources, label) {},
   /**
   	 * @todo METHOD NOT IMPLEMENTED
   	 */
-  create_model: function(id, parents, label) {},
+  //create_model: function(id, parents, label) {},
   /**
   	 * @todo METHOD NOT IMPLEMENTED
   	 */

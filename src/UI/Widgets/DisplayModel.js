@@ -64,7 +64,7 @@ DisplayModel.prototype = {
     "use strict";
     var div_elmt = d3.select(this.element);
     this.div_elmt = d3.select(this.element);
-    this.svg = div_elmt.append('svg').attr('height', '1000px');
+    this.svg = div_elmt.append('svg').attr('height', '500px');
     // create the (red) line representing current time
 
     this.x = 16;

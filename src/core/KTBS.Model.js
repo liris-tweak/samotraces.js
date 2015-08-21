@@ -29,8 +29,6 @@ var Model = function(uri, id) {
   EventHandler.call(this);
   KTBSResource.call(this, id, uri, 'Model', "");
   this.list_Types_Obsles = []
-  //if (data !== 'null')
-  //{ this.list_Types_Obsles= this.list_obsels(data);}
   this.force_state_refresh();
 
 };
@@ -92,21 +90,61 @@ Model.prototype = {
     return obsR;
   },
 
-
-
-
   getAttributes: function(ident)  {
 
     ListeObselType.forEach(function(o)    {
 
-      if (o.id === ident)                                  {Att = o.attributes}
+      if (o.id === ident)   {
+        Att = o.attributes
+      }
 
     }
     )
     return Att;
-  }
+  },
 
+  put_model: function(modeldata) {
+    var etag = this.get_etag();
+    /*var xhr = new XMLHttpRequest();
+    xhr.open('PUT', this.id, true);
+    xhr.setRequestHeader('Content-Type', 'application/json');
+    xhr.setRequestHeader('If-Match', etag);
+    xhr.onreadystatechange = function () {
+      if (xhr.readyState === 4) {
+        if(xhr.status === 200) {
+          console.log('OKOKOK');
 
+        } else {
+          console.log('erreur');
+        }
+      }
+    };
+    xhr.send(modeldata);
+  }*/
+
+  var that = this;
+  return new Promise(function(resolve, reject) {
+    // PUT
+    var xhr = new XMLHttpRequest();
+    xhr.open('PUT', that.id, true);
+    xhr.setRequestHeader('Content-Type', 'application/json');
+    xhr.setRequestHeader('If-Match', etag);
+    xhr.onreadystatechange = function () {
+      if (xhr.readyState === 4) {
+        if(xhr.status === 200) {
+          console.log('OKOKOK');
+          resolve(new Samotraces.Ktbs.Model(xhr.responseURL));
+        } else {
+          reject(xhr);
+        }
+      }
+    };
+    xhr.onerror = function() {
+      reject(Error('There was a network error.'));
+    };
+    xhr.send(modeldata);
+  });
+}
 };
 
 module.exports = Model;

@@ -46,13 +46,19 @@ var KTBSResource = (function() {
   	 * @returns {String} Resource ID.
   	 */
   function get_id() { return this.id; }
-  /**
+    /**
   	 * @summary Returns the URI of the Resource.
   	 * @memberof Samotraces.KTBS.Resource.prototype
   	 * @returns {String} Resource URI.
   	 */
   function get_uri() { return this.uri.replace('./', ''); }
   /**
+   * @summary Returns the URI of the Resource.
+   * @memberof Samotraces.KTBS.Resource.prototype
+   * @returns {String} Resource URI.
+   */
+function get_etag() { return this.etag; }
+    /**
   	 * @summary Forces the Resource to synchronise with the KTBS.
   	 * @memberof Samotraces.KTBS.Resource.prototype
   	 * @description
@@ -81,24 +87,23 @@ var KTBSResource = (function() {
             var SousD = D[i].split(';');
             if (SousD[1] === " rel=oauth_resource_server")            {
               link = SousD[0].substr(1, SousD[0].length - 2)
-
             }
-
             if (SousD[1] === " rel=successful_login_redirect")            {
               URLSuccess = SousD[0].substr(2, SousD[0].length - 3)
             }
-
           }
-
-
           win = window.open (link) ;
         }
       },
-      success: trc._on_state_refresh_.bind(trc),
+      success: function (data, textStatus, xhr){
+        trc.etag = xhr.getResponseHeader('ETag');
+        trc._on_state_refresh_(data);
+      }
 
+      //trc._on_state_refresh_.bind(trc),
     });
   }
-  /**
+    /**
   	 * @summary Forces the Resource to synchronise
   	 * with at a given refreshing rate.
   	 * @memberof Samotraces.KTBS.Resource.prototype
@@ -202,6 +207,7 @@ var KTBSResource = (function() {
     this.get_label = get_label;
     this.set_label = set_label;
     this.reset_label = reset_label;
+    this.get_etag = get_etag;
     // helper
     this.get_resource_type = get_resource_type;
     this._check_change_ = _check_change_;
