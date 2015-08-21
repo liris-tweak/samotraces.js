@@ -239,9 +239,11 @@ TraceDisplayIcons.prototype = {
     this.translate_offset = 0;
     this.svg_gp
     .attr('transform', 'translate(0,0)');
+    var that = this;
+
     this.d3Obsels()
     .attr('x', this.options.x)
-    .attr('y', this.options.y);
+    .attr('y', function(){ return (that.getValueAttributStyle(this.__data__.type,'y')); });
   },
 
   draw: function(e) {
@@ -257,61 +259,6 @@ TraceDisplayIcons.prototype = {
     }
 
     var that = this;
-    var getIconPath = function () {
-      // ``self```is the widget instance
-      var self = that;
-
-      // ``this`` is the DOM element where d3 is setting things
-
-      var type = this.__data__.type;
-      if (self.stylesheet[type]) {
-        return self.stylesheet[type].icon;
-      } else {
-        return self.stylesheet.default.icon;
-      }
-    }
-
-    var getWidth = function () {
-      // ``self```is the widget instance
-      var self = that;
-
-      // ``this`` is the DOM element where d3 is setting things
-
-      var type = this.__data__.type;
-      if (self.stylesheet[type]) {
-        return self.stylesheet[type].width;
-      } else {
-        return self.stylesheet.default.width;
-      }
-    }
-
-    var getHeight = function () {
-      // ``self```is the widget instance
-      var self = that;
-
-      // ``this`` is the DOM element where d3 is setting things
-
-      var type = this.__data__.type;
-      if (self.stylesheet[type]) {
-        return self.stylesheet[type].height;
-      } else {
-        return self.stylesheet.default.height;
-      }
-    }
-
-    var getY = function () {
-      // ``self```is the widget instance
-      var self = that;
-
-      // ``this`` is the DOM element where d3 is setting things
-
-      var type = this.__data__.type;
-      if (self.stylesheet[type]) {
-        return self.stylesheet[type].y;
-      } else {
-        return self.stylesheet.default.y;
-      }
-    }
     this.d3Obsels()
     .exit()
     .remove();
@@ -320,11 +267,10 @@ TraceDisplayIcons.prototype = {
     .append('image')
     .attr('class', 'Samotraces-obsel')
     .attr('x', this.options.x)
-    .attr('y', getY)
-    .attr('width', getWidth)
-    .attr('height', getHeight)
-    //.attr('xlink:href', this.options.url);
-    .attr('xlink:href', getIconPath);
+    .attr('y', function(){ return (that.getValueAttributStyle(this.__data__.type,'y')); })
+    .attr('width', function(){ return (that.getValueAttributStyle(this.__data__.type,'width')); })
+    .attr('height', function(){ return (that.getValueAttributStyle(this.__data__.type,'height')); })
+    .attr('xlink:href', function(){ return (that.getValueAttributStyle(this.__data__.type,'icon')); });
     // Storing obsel data with jQuery for accessibility from
     // events defined by users with jQuery
     $('image', this.element).each(function(i, el) {
@@ -337,6 +283,8 @@ TraceDisplayIcons.prototype = {
 
   obsel_redraw: function(e) {
     var obs = e.data;
+    var that = this;
+
     var sel = this.d3Obsels()
 			.filter(function(o) {
   //				console.log('data:id,obsel_edit_id',id,obs.get_id(),id == obs.get_id());
@@ -344,10 +292,10 @@ TraceDisplayIcons.prototype = {
 			})
 			.datum(obs)
 			.attr('x', this.options.x)
-			.attr('y', this.options.y)
-			.attr('width', this.options.width)
-			.attr('height', this.options.height)
-			.attr('xlink:href', this.options.url);
+			.attr('y',  function(){ return (that.getValueAttributStyle(this.__data__.type,'y')); })
+			.attr('width', function(){ return (that.getValueAttributStyle(this.__data__.type,'width')); })
+			.attr('height', function(){ return (that.getValueAttributStyle(this.__data__.type,'height'));})
+			.attr('xlink:href', function(){ return (that.getValueAttributStyle(this.__data__.type,'icon')); });
   },
 
   d3Obsels: function() {

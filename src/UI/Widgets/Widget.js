@@ -31,7 +31,16 @@ var Widget = (function() {
   function add_class(class_name) {
     this.element.className += ' ' + class_name;
   }
-
+  function getValueAttributStyle  (type,attribut) {
+    if (this.stylesheet[type]) {
+          if (this.stylesheet[type][attribut] !=="")
+              {return this.stylesheet[type][attribut];}
+          else
+            {return this.stylesheet['default'][attribut];}
+    } else {
+      return this.stylesheet['default'][attribut];
+    }
+  }
   function unload() {
     this.element.className = '';
     //		this.element.
@@ -142,6 +151,7 @@ var Widget = (function() {
 
     // call method
     this.add_class('Widget');
+    this.getValueAttributStyle = getValueAttributStyle;
     return this;
   };
 })();
