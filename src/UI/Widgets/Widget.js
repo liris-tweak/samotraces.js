@@ -33,7 +33,7 @@ var Widget = (function() {
   }
   function getValueAttributStyle  (type,attribut) {
     if (this.stylesheet[type]) {
-          if (this.stylesheet[type][attribut] !=="")
+          if ((this.stylesheet[type][attribut])&&(this.stylesheet[type][attribut] !==""))
               {return this.stylesheet[type][attribut];}
           else
             {return this.stylesheet['default'][attribut];}
