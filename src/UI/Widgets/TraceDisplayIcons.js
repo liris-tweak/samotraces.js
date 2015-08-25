@@ -95,7 +95,8 @@ var TraceDisplayIcons = function(divId, trace, time_window, options) {
   //	this.window.addEventListener('',this..bind(this));
 
   this.init_DOM();
-  this.data = this.trace.list_obsels();
+  this.data = this.trace.obsel_list;
+  //this.data = this.trace.list_obsels();
 
 
   /**
