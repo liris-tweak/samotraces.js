@@ -118,10 +118,10 @@ div.Widget-ObselInspector span {
 
 div.Widget-ObselInspectorType {
     margin: auto;
-    width: 60%;
+  /* width: 60%;*/
     border: 1px solid #484;
     margin-top: 50px;
-    float: right;
+  /*  float: right;*/
 }
 
 div.Widget-ObselInspector img {
@@ -183,6 +183,8 @@ div.Widget-TimeSlider div {
  Widget-TraceModel
  **********************/
 div.Widget-TraceModel {
-        float: left;
-        width: 40%;
+      
+}
+#modeldiv svg {
+    height: inherit;
 }
