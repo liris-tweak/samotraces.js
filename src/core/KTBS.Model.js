@@ -36,11 +36,13 @@ var Model = function(uri, id) {
 Model.prototype = {
 
   _on_state_refresh_: function(data) {
+    var etag = this.get_etag();
+    this.trigger('Model:get');
     this.list_Types_Obsles = this.list_obsels(data["@graph"]);
   },
   list_obsels: function(data) {
     ListeObselType = [];
-    M = this;
+    var M = this;
     data.forEach(function(el, key) {
       var obs = {attributes: []};
       if (el["@type"] == "ObselType")      {
@@ -104,26 +106,12 @@ Model.prototype = {
   },
 
   put_model: function(modeldata) {
-    var etag = this.get_etag();
-    /*var xhr = new XMLHttpRequest();
-    xhr.open('PUT', this.id, true);
-    xhr.setRequestHeader('Content-Type', 'application/json');
-    xhr.setRequestHeader('If-Match', etag);
-    xhr.onreadystatechange = function () {
-      if (xhr.readyState === 4) {
-        if(xhr.status === 200) {
-          console.log('OKOKOK');
+    this.force_state_refresh();
+    var that = this;
+    return new Promise(function(resolve, reject) {
+      that.on ('Model:get', function(){
+       var etag = that.etag;
 
-        } else {
-          console.log('erreur');
-        }
-      }
-    };
-    xhr.send(modeldata);
-  }*/
-
-  var that = this;
-  return new Promise(function(resolve, reject) {
     // PUT
     var xhr = new XMLHttpRequest();
     xhr.open('PUT', that.id, true);
@@ -133,7 +121,7 @@ Model.prototype = {
       if (xhr.readyState === 4) {
         if(xhr.status === 200) {
           console.log('OKOKOK');
-          resolve(new Samotraces.Ktbs.Model(xhr.responseURL));
+          resolve(new Samotraces.Ktbs.Model(that.id));
         } else {
           reject(xhr);
         }
@@ -143,6 +131,8 @@ Model.prototype = {
       reject(Error('There was a network error.'));
     };
     xhr.send(modeldata);
+
+  })
   });
 }
 };

@@ -65,6 +65,9 @@ ListTracesInBases.prototype = {
     this.form.input_label = document.createElement('input');
     this.form.input_label.size = 20;
     this.form.text2 = document.createTextNode(' label: ');
+    this.form.input_model = document.createElement('input');
+    this.form.input_model.size = 20;
+    this.form.text3 = document.createTextNode(' MODEL URI: ');
     this.form.button = document.createElement('button');
     $(this.form.button).append('create');
 
@@ -72,6 +75,8 @@ ListTracesInBases.prototype = {
     $(this.element).append(this.form.input_id);
     $(this.element).append(this.form.text2);
     $(this.element).append(this.form.input_label);
+    $(this.element).append(this.form.text3);
+    $(this.element).append(this.form.input_model);
     $(this.element).append(this.form.button);
 
     $(this.form.button).click(this.create_trace.bind(this));
@@ -80,7 +85,7 @@ ListTracesInBases.prototype = {
   create_trace: function(e) {
     if ($(this.form.input_id).val() !== "") {
       console.log("Creating a new trace...");
-      this.base.create_stored_trace($(this.form.input_id).val(), null, null, null, $(this.form.input_label).val());
+      this.base.create_stored_trace($(this.form.input_id).val(), $(this.form.input_model).val(), null, null, $(this.form.input_label).val());
     } else {
       console.log("Empty trace name... No trace created");
     }

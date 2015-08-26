@@ -57,8 +57,8 @@ Base.prototype = {
       "@type":	"StoredTrace",
       "@id":		id + "/"
     };
-    new_trace.hasModel = (model === undefined)?"http://liris.cnrs.fr/silex/2011/simple-trace-model":model;
-    new_trace.origin = (origin === undefined)?"1970-01-01T00:00:00Z":origin;
+    new_trace.hasModel = (model === undefined  || model ===  null)?"http://liris.cnrs.fr/silex/2011/simple-trace-model":model;
+    new_trace.origin = (origin === undefined || origin ===  null )?"1970-01-01T00:00:00Z":origin;
     //			if(origin==undefined) new_trace.origin = origin;
     if (default_subject === undefined) new_trace.default_subject = default_subject;
     if (label === undefined) new_trace.label = label;
@@ -107,7 +107,7 @@ Base.prototype = {
     });
   },
 
-  
+
 
   /**
   	 * @todo METHOD NOT IMPLEMENTED
