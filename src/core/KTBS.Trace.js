@@ -175,39 +175,34 @@ KTBSTrace.prototype = {
     var i = 0;
     var end = Number(i) + Number(100);
 
-    if (dataRecu.obsels) {this._on_refresh_obsel_list_group(dataRecu.obsels, i, end);}    else { this._on_refresh_obsel_list_group(dataRecu, i, end);}
+    if (dataRecu.obsels) {
+      this._on_refresh_obsel_list_group(dataRecu.obsels, i, end);
+    }
+    else {
+      this._on_refresh_obsel_list_group(dataRecu, i, end);
+    }
 
 
   },
   _on_refresh_obsel_list_group: function(dataRecu, i, end) {
     "use strict";
     var count = 0;
-    var d = dataRecu.length - Number(1);
-    var DataO = dataRecu.slice (i, end);
+    var d = dataRecu.length ;
+    var dataToDraw = dataRecu.slice (i, end);
     console.log ('_on_refresh_obsel_list_group');
-    var that = this;
-    DataO.forEach(function(el) {
-      count ++;
-      this._parse_get_obsel_(el);
-      var Objet = this;
-      if (count === DataO.length)      {
-        this.trigger('trace:updateT');
-        i = Number(i) + DataO.length + Number(1);
-        end = Number(i) + Number(100);
-        if (end > dataRecu.length) {end = dataRecu.length - Number(1);}
-        setTimeout(function() {
-          if ((i <= d) && (end <= d)) {
-            Objet._on_refresh_obsel_list_group(dataRecu, i, end);
-          } else {
-            that.trigger('trace:updateCompleted');
-          }
-        }, 2000);
-
-        $("#waiting").hide();
-
+      for (var j=0 ;  j < dataToDraw.length; j++){
+        this._parse_get_obsel_(dataToDraw[j]);
+        if (j === dataToDraw.length -1){
+          this.trigger('trace:updateT');
+          var i = Number(i) + dataToDraw.length + Number(1);
+          var end = (Number(i) + Number(100) > d)?dataRecu.length : Number(i) + Number(100)
+          if (i <= d)  {
+              this._on_refresh_obsel_list_group(dataRecu, i, end);
+            } else {
+              this.trigger('trace:updateCompleted');
+            }
+        }
       }
-    }, this);
-
   },
 
   _on_refresh_obsel_list_: function(data) {
