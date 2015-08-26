@@ -3452,7 +3452,6 @@ var KTBSResource = (function() {
    * @returns {String} Resource URI.
    */
 function get_etag() { return this.etag; }
-function get_status(){return this.notExist;}
     /**
   	 * @summary Forces the Resource to synchronise with the KTBS.
   	 * @memberof Samotraces.KTBS.Resource.prototype
@@ -3488,10 +3487,6 @@ function get_status(){return this.notExist;}
             }
           }
           win = window.open (link) ;
-        }
-        else if (XHR.status == '404'){
-          trc.notExist = true ;
-
         }
       },
       success: function (data, textStatus, xhr){
@@ -3607,7 +3602,6 @@ function get_status(){return this.notExist;}
     this.set_label = set_label;
     this.reset_label = reset_label;
     this.get_etag = get_etag;
-    this.get_status = get_status;
     // helper
     this.get_resource_type = get_resource_type;
     this._check_change_ = _check_change_;
