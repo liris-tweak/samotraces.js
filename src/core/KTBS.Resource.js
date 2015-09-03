@@ -67,8 +67,11 @@ function get_etag() { return this.etag; }
   	 * trigger the _on_state_refresh_ method of the Resource
   	 * on success.
   	 */
-  function force_state_refresh() {
-    url = this.uri;
+  function force_state_refresh(options, callback) {
+    var callback = callback || function () {};
+    var options = options || {'_on_state_refresh_': true}; // For backward compatibility
+
+    var url = this.uri;
     var trc = this ;
     $.ajax({
       url: url,
@@ -79,28 +82,33 @@ function get_etag() { return this.etag; }
       },
       error: function(XHR, textStatus, errorThrown) {
 
-        if (XHR.status == '401') {
+        if (XHR.status === '401') {
           console.log (XHR.getAllResponseHeaders());
-          Link = XHR.getResponseHeader('Link');
-          D = Link.split (',');
+          var Link = XHR.getResponseHeader('Link');
+          var D = Link.split (',');
           for (var i = 0;i < D.length;i++)          {
             var SousD = D[i].split(';');
+            var link;
+            var URLSuccess;
             if (SousD[1] === " rel=oauth_resource_server")            {
-              link = SousD[0].substr(1, SousD[0].length - 2)
+              link = SousD[0].substr(1, SousD[0].length - 2);
             }
             if (SousD[1] === " rel=successful_login_redirect")            {
-              URLSuccess = SousD[0].substr(2, SousD[0].length - 3)
+              URLSuccess = SousD[0].substr(2, SousD[0].length - 3);
             }
           }
-          win = window.open (link) ;
+          window.open (link) ;
         }
       },
       success: function (data, textStatus, xhr){
         trc.etag = xhr.getResponseHeader('ETag');
-        trc._on_state_refresh_(data);
+        if (options.callback) {
+          callback(data);
+        }
+        if (options._on_state_refresh_) {
+          trc._on_state_refresh_(data);
+        }
       }
-
-      //trc._on_state_refresh_.bind(trc),
     });
   }
     /**
