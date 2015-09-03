@@ -61,15 +61,19 @@ function get_etag() { return this.etag; }
     /**
   	 * @summary Forces the Resource to synchronise with the KTBS.
   	 * @memberof Samotraces.KTBS.Resource.prototype
+     * @param {Object} options 
+     *  'options._on_state_refresh_': true|false
+     *   enable or disable the old behavior of calling _on_state_refresh_ on the resource after synchronise completes
   	 * @description
   	 * Forces the Resource to synchronise with the KTBS.
   	 * This method triggers a Ajax query that will
   	 * trigger the _on_state_refresh_ method of the Resource
   	 * on success.
   	 */
-  function force_state_refresh(options, callback) {
-    var callback = callback || function () {};
-    var options = options || {'_on_state_refresh_': true}; // For backward compatibility
+  function force_state_refresh(options, success, reject) {
+    success = success || function () {};
+    reject = reject || function () {};
+    options = options || {'_on_state_refresh_': true}; // For backward compatibility
 
     var url = this.uri;
     var trc = this ;
@@ -99,12 +103,11 @@ function get_etag() { return this.etag; }
           }
           window.open (link) ;
         }
+        reject(XHR);
       },
       success: function (data, textStatus, xhr){
         trc.etag = xhr.getResponseHeader('ETag');
-        if (options.callback) {
-          callback(data);
-        }
+        success(data);
         if (options._on_state_refresh_) {
           trc._on_state_refresh_(data);
         }
