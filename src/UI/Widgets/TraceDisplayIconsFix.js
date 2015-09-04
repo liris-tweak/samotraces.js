@@ -175,7 +175,7 @@ TraceDisplayIconsFix.prototype = {
     .attr('y', function(){ return (that.getValueAttributStyle(this.__data__.type,'y')); });
 
     var f = this.element.getElementsByClassName("brush");
-    f.parentNode.removeChild(f);
+    f[0].parentNode.removeChild(f[0]);
     this.addbrush();
   },
 };
