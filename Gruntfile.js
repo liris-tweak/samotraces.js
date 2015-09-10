@@ -67,6 +67,32 @@ module.exports = function(grunt) {
         src: "src/main.js",
         dest: "dist/samotraces.js"
       },
+      coreDebug: {
+        options: {
+          external: [
+            "jquery"
+          ],
+          browserifyOptions: {
+            debug: true,
+            standalone: "SamotracesCore"
+          }
+        },
+        src: "src/core.js",
+        dest: "dist/samotraces-core-debug.js"
+      },
+      coreNoDebug: {
+        options: {
+          external: [
+            "jquery"
+          ],
+          browserifyOptions: {
+            debug: false,
+            standalone: "SamotracesCore"
+          }
+        },
+        src: "src/core.js",
+        dest: "dist/samotraces-core-min.js"
+      },
       vendor: {
         options: {
           alias: [
@@ -121,6 +147,6 @@ module.exports = function(grunt) {
   grunt.loadNpmTasks('grunt-contrib-uglify');
   grunt.loadNpmTasks("grunt-jscs");
   grunt.loadNpmTasks('grunt-jsdoc');
-  grunt.registerTask("default", ["jshint", "jsdoc", "browserify:vendor", "browserify:distDebug", "browserify:distNoDebug", "uglify"]);
-  grunt.registerTask("serve", ["jshint", "jsdoc", "browserify:vendor", "browserify:distDebug", "browserify:distNoDebug", "uglify", "connect", "watch"]);
+  grunt.registerTask("default", ["jshint", "jsdoc", "browserify:vendor", "browserify:distDebug", "browserify:distNoDebug", "uglify","coreDebug","coreNoDebug"]);
+  grunt.registerTask("serve", ["jshint", "jsdoc", "browserify:vendor", "browserify:distDebug", "browserify:distNoDebug", "uglify", "connect", "watch","coreDebug","coreNoDebug"]);
 };
