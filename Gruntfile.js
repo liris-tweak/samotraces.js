@@ -67,32 +67,20 @@ module.exports = function(grunt) {
         src: "src/main.js",
         dest: "dist/samotraces.js"
       },
-      coreDebug: {
-        options: {
-          external: [
-            "jquery"
-          ],
-          browserifyOptions: {
-            debug: true,
-            standalone: "SamotracesCore"
-          }
-        },
-        src: "src/core.js",
-        dest: "dist/samotraces-core-debug.js"
-      },
-      coreNoDebug: {
+      coreDebugg: {
         options: {
           external: [
             "jquery"
           ],
           browserifyOptions: {
             debug: false,
-            standalone: "SamotracesCore"
+            standalone: "Samotraces"
           }
         },
         src: "src/core.js",
-        dest: "dist/samotraces-core-min.js"
+        dest: "dist/samotraces-core-debug.js"
       },
+      
       vendor: {
         options: {
           alias: [
@@ -104,6 +92,17 @@ module.exports = function(grunt) {
         external: null,
         src: ".",
         dest: "dist/vendors.js"
+      },
+      vendorCore: {
+        options: {
+          alias: [
+            "jquery"
+            
+          ]
+        },
+        external: null,
+        src: ".",
+        dest: "dist/vendorsCore.js"
       }
     },
     watch: {
