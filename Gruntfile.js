@@ -6,7 +6,7 @@ module.exports = function(grunt) {
         options: {
           port: 8080,
           hostname: "*",
-          keepalive: true
+          livereload: true
         }
       }
     },
@@ -67,7 +67,7 @@ module.exports = function(grunt) {
         src: "src/main.js",
         dest: "dist/samotraces.js"
       },
-      coreDebugg: {
+      coreDebug: {
         options: {
           external: [
             "jquery"
@@ -80,7 +80,6 @@ module.exports = function(grunt) {
         src: "src/core.js",
         dest: "dist/samotraces-core-debug.js"
       },
-      
       vendor: {
         options: {
           alias: [
@@ -97,7 +96,7 @@ module.exports = function(grunt) {
         options: {
           alias: [
             "jquery"
-            
+
           ]
         },
         external: null,
@@ -110,7 +109,7 @@ module.exports = function(grunt) {
         files: [
           "src/**/*.js"
         ],
-        tasks: ["browserify:app"]
+        tasks: ["browserify:distDebug", "browserify:distNoDebug", "browserify:distNoDebug", "browserify:coreDebug"]
       }
     },
     uglify: {
@@ -146,6 +145,6 @@ module.exports = function(grunt) {
   grunt.loadNpmTasks('grunt-contrib-uglify');
   grunt.loadNpmTasks("grunt-jscs");
   grunt.loadNpmTasks('grunt-jsdoc');
-  grunt.registerTask("default", ["jshint", "jsdoc", "browserify:vendor", "browserify:distDebug", "browserify:distNoDebug", "uglify","coreDebug","coreNoDebug"]);
-  grunt.registerTask("serve", ["jshint", "jsdoc", "browserify:vendor", "browserify:distDebug", "browserify:distNoDebug", "uglify", "connect", "watch","coreDebug","coreNoDebug"]);
+  grunt.registerTask("default", ["jshint", "jsdoc", "browserify:distDebug", "browserify:distNoDebug", "browserify:distNoDebug", "browserify:coreDebug","browserify:vendor", "browserify:vendorCore","uglify"]);
+  grunt.registerTask("serve", ["browserify:distDebug", "browserify:distNoDebug", "browserify:distNoDebug", "browserify:coreDebug","browserify:vendor", "browserify:vendorCore","uglify", "connect", "watch"]);
 };
