@@ -1,6 +1,5 @@
 var KTBSResource = require("./KTBS.Resource.js");
 var KTBSObsel = require("./KTBS.Obsel.js");
-var $ = require("jquery");
 
 /**
  * @summary Trace object that is synchronised to a KTBS.
@@ -135,32 +134,48 @@ KTBSTrace.prototype = {
 
     //		$.getJSON(this.obsel_list_uri,this._on_refresh_obsel_list_.bind(this));
     var OBJ = this;
-    $.ajax({
-      url: this.obsel_list_uri,//+'.json',
-      type: 'GET',
-      dataType: 'json',
-      data: {minb: begin, maxb: end, reverse: reverse},
-      xhrFields: { withCredentials: true },
-      error: function(XHR) {
-        if (XHR.status === '401') {
-          var linkheader = XHR.getResponseHeader('Link');
-          var d = linkheader.split (',');
-          for (var i = 0;i < d.length;i++)          {
-            var sousD = d[i].split(';');
-            if (sousD[1] === " rel=oauth_resource_server")            {
-              var link = sousD[0].substr(1, sousD[0].length - 2);
-
-            }
-
-            if (sousD[1] === " rel=successful_login_redirect")            {
-              //	var	URLSuccess = sousD[0].substr(2,sousD[0].length-3);
-            }
-          }
-          window.open (link) ;
-        }
+    
+    var functionsByStatus = {
+      '200' : function (xhr) {
+        
+        var jsonResponse = JSON.parse(xhr.response);
+        if (jsonResponse.obsels.length > 0)
+        {OBJ.Before_on_refresh_obsel_list_ (jsonResponse);}
       },
-      success: function(data) {	if (data.obsels.length > 0)	{OBJ.Before_on_refresh_obsel_list_ (data);}	}
-    });
+      '401': function (xhr) {
+        console.log (xhr.getAllResponseHeaders());
+        var link = xhr.getResponseHeader('Link');
+        var d = link.split (',');
+        for (var i = 0;i < d.length;i++) {
+          var sousD = d[i].split(';');
+          var link;
+          var URLSuccess;
+          if (sousD[1] === " rel=oauth_resource_server") {
+            link = sousD[0].substr(1, sousD[0].length - 2);
+          }
+          if (sousD[1] === " rel=successful_login_redirect") {
+            URLSuccess = sousD[0].substr(2, sousD[0].length - 3);
+          }
+        }
+        window.open (link) ;
+      }
+    };
+    var that = this;
+    var xhr = new XMLHttpRequest();
+    xhr.open('GET', that.obsel_list_uri, true);
+    xhr.setRequestHeader('Content-Type', 'application/json');
+    xhr.onreadystatechange = function () {
+      if (xhr.readyState === 4) {
+        var process = functionsByStatus[xhr.status] || function() {
+          console.log("Not Yet Implemented");
+        };
+        process(xhr);
+      }
+    };
+    xhr.onerror = function(e) {
+      console.log("Error Status: " + e.target.status);
+    };
+    xhr.send(null);
     return this.obsel_list.filter(function(o) {
       if (end && o.get_begin() > end) { return false; }
       if (begin && o.get_end() < begin) { return false; }
@@ -491,13 +506,25 @@ KTBSTrace.prototype = {
           this.trigger('trace:create_obsel', o);
         }
       }
-      $.ajax({
-        url: this.uri,
-        type: 'POST',
-        contentType: 'application/json',
-        success: _on_create_obsel_success_.bind(this),
-        data: JSON.stringify(json_obsel)
-      });
+      
+      var that = this;
+      var xhr = new XMLHttpRequest();
+      xhr.open('POST', that.id, true);
+      xhr.setRequestHeader('Content-Type', 'application/json');
+      xhr.onreadystatechange = function () {
+        if (xhr.readyState === 4) {
+          if(xhr.status === 201) {
+            console.log('OKPost');
+            that._on_create_obsel_success();
+          } else {
+            console.log('Post error');
+          }
+        }
+      };
+      xhr.onerror = function(e) {
+        console.log("Error Status: " + e.target.status);
+      };
+      xhr.send(JSON.stringify(json_obsel));
     }
   },
 
