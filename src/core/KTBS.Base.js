@@ -62,17 +62,25 @@ Base.prototype = {
     //			if(origin==undefined) new_trace.origin = origin;
     if (default_subject === undefined) new_trace.default_subject = default_subject;
     if (label === undefined) new_trace.label = label;
-    $.ajax({
-      url: this.uri,
-      type: 'POST',
-      contentType: 'application/json',
-      data: JSON.stringify(new_trace),
-      success: this.force_state_refresh.bind(this),
-      error: function(jqXHR, textStatus, error) {
-        console.log('query error');
-        console.log([jqXHR, textStatus, error]);
+  
+    var that = this;
+    var xhr = new XMLHttpRequest();
+    xhr.open('POST', that.id, true);
+    xhr.setRequestHeader('Content-Type', 'application/json');
+    xhr.onreadystatechange = function () {
+      if (xhr.readyState === 4) {
+        if(xhr.status === 201) {
+          console.log('OKPost');
+          that.force_state_refresh();
+        } else {
+          console.log('Post error');
+        }
       }
-    });
+    };
+    xhr.onerror = function(e) {
+      console.log("Error Status: " + e.target.status);
+    };
+    xhr.send(JSON.stringify(new_trace));
   },
 
   /**
@@ -94,17 +102,25 @@ Base.prototype = {
       }]
     };
     var new_model_data = JSON.stringify(doc);
-    $.ajax({
-      url: this.uri,
-      type: 'POST',
-      contentType: 'application/json',
-      data: new_model_data,
-      success: this.force_state_refresh.bind(this),
-      error: function(jqXHR, textStatus, error) {
-        console.log('query error');
-        console.log([jqXHR, textStatus, error]);
+
+    var that = this;
+    var xhr = new XMLHttpRequest();
+    xhr.open('POST', that.id, true);
+    xhr.setRequestHeader('Content-Type', 'application/json');
+    xhr.onreadystatechange = function () {
+      if (xhr.readyState === 4) {
+        if(xhr.status === 201) {
+          console.log('OKPost');
+          that.force_state_refresh();
+        } else {
+          console.log('Post error');
+        }
       }
-    });
+    };
+    xhr.onerror = function(e) {
+      console.log("Error Status: " + e.target.status);
+    };
+    xhr.send(new_model_data);
   },
 
 
