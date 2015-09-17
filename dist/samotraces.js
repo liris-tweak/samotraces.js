@@ -1964,7 +1964,7 @@ TraceDisplayIconsFix.prototype = {
     .attr('y', function(){ return (that.getValueAttributStyle(this.__data__.type,'y')); });
 
     var f = this.element.getElementsByClassName("brush");
-    f.parentNode.removeChild(f);
+    f[0].parentNode.removeChild(f[0]);
     this.addbrush();
   },
 };
@@ -3070,6 +3070,7 @@ module.exports = EventHandler;
 },{}],23:[function(require,module,exports){
 var KTBSResource = require("./KTBS.Resource.js");
 
+
 /**
  * @class Javascript KTBS.Base Object that is bound to a KTBS.
  * @author Benoît Mathern
@@ -3132,17 +3133,25 @@ Base.prototype = {
     //			if(origin==undefined) new_trace.origin = origin;
     if (default_subject === undefined) new_trace.default_subject = default_subject;
     if (label === undefined) new_trace.label = label;
-    $.ajax({
-      url: this.uri,
-      type: 'POST',
-      contentType: 'application/json',
-      data: JSON.stringify(new_trace),
-      success: this.force_state_refresh.bind(this),
-      error: function(jqXHR, textStatus, error) {
-        console.log('query error');
-        console.log([jqXHR, textStatus, error]);
+  
+    var that = this;
+    var xhr = new XMLHttpRequest();
+    xhr.open('POST', that.id, true);
+    xhr.setRequestHeader('Content-Type', 'application/json');
+    xhr.onreadystatechange = function () {
+      if (xhr.readyState === 4) {
+        if(xhr.status === 201) {
+          console.log('OKPost');
+          that.force_state_refresh();
+        } else {
+          console.log('Post error');
+        }
       }
-    });
+    };
+    xhr.onerror = function(e) {
+      console.log("Error Status: " + e.target.status);
+    };
+    xhr.send(JSON.stringify(new_trace));
   },
 
   /**
@@ -3164,17 +3173,25 @@ Base.prototype = {
       }]
     };
     var new_model_data = JSON.stringify(doc);
-    $.ajax({
-      url: this.uri,
-      type: 'POST',
-      contentType: 'application/json',
-      data: new_model_data,
-      success: this.force_state_refresh.bind(this),
-      error: function(jqXHR, textStatus, error) {
-        console.log('query error');
-        console.log([jqXHR, textStatus, error]);
+
+    var that = this;
+    var xhr = new XMLHttpRequest();
+    xhr.open('POST', that.id, true);
+    xhr.setRequestHeader('Content-Type', 'application/json');
+    xhr.onreadystatechange = function () {
+      if (xhr.readyState === 4) {
+        if(xhr.status === 201) {
+          console.log('OKPost');
+          that.force_state_refresh();
+        } else {
+          console.log('Post error');
+        }
       }
-    });
+    };
+    xhr.onerror = function(e) {
+      console.log("Error Status: " + e.target.status);
+    };
+    xhr.send(new_model_data);
   },
 
 
@@ -3393,7 +3410,6 @@ module.exports = KTBSObsel;
 
 },{"./KTBS.Resource.js":26,"./Obsel.js":30}],26:[function(require,module,exports){
 var EventHandler = require("./EventHandler.js");
-var $ = require("jquery");
 
 /**
  * @summary Resource Objects that is synchronised to a kTBS
@@ -3455,7 +3471,7 @@ function get_etag() { return this.etag; }
     /**
   	 * @summary Forces the Resource to synchronise with the KTBS.
   	 * @memberof Samotraces.KTBS.Resource.prototype
-     * @param {Object} options 
+     * @param {Object} options
      *  'options._on_state_refresh_': true|false
      *   enable or disable the old behavior of calling _on_state_refresh_ on the resource after synchronise completes
   	 * @description
@@ -3471,42 +3487,52 @@ function get_etag() { return this.etag; }
 
     var url = this.uri;
     var trc = this ;
-    $.ajax({
-      url: url,
-      type: 'GET',
-      dataType: 'json',
-      xhrFields: {
-        withCredentials: true
-      },
-      error: function(XHR, textStatus, errorThrown) {
 
-        if (XHR.status === '401') {
-          console.log (XHR.getAllResponseHeaders());
-          var Link = XHR.getResponseHeader('Link');
-          var D = Link.split (',');
-          for (var i = 0;i < D.length;i++)          {
-            var SousD = D[i].split(';');
-            var link;
-            var URLSuccess;
-            if (SousD[1] === " rel=oauth_resource_server")            {
-              link = SousD[0].substr(1, SousD[0].length - 2);
-            }
-            if (SousD[1] === " rel=successful_login_redirect")            {
-              URLSuccess = SousD[0].substr(2, SousD[0].length - 3);
-            }
-          }
-          window.open (link) ;
-        }
-        reject(XHR);
-      },
-      success: function (data, textStatus, xhr){
-        trc.etag = xhr.getResponseHeader('ETag');
-        success(data);
+    var functionsByStatus = {
+      '200' : function (xhr) {
+        trc.etag = xhr.getResponseHeader('ETag'); // TODO this cause 'Refused to get unsafe header "ETag"' on KTBS 0.3
+        var jsonResponse = JSON.parse(xhr.response);
+        success(jsonResponse);
         if (options._on_state_refresh_) {
-          trc._on_state_refresh_(data);
+          trc._on_state_refresh_(jsonResponse);
         }
+      },
+      '401': function (xhr) {
+        console.log (xhr.getAllResponseHeaders());
+        var link = xhr.getResponseHeader('Link');
+        var d = link.split (',');
+        for (var i = 0;i < d.length;i++) {
+          var sousD = d[i].split(';');
+          var link;
+          var URLSuccess;
+          if (sousD[1] === " rel=oauth_resource_server") {
+            link = sousD[0].substr(1, sousD[0].length - 2);
+          }
+          if (sousD[1] === " rel=successful_login_redirect") {
+            URLSuccess = sousD[0].substr(2, sousD[0].length - 3);
+          }
+        }
+        window.open (link) ;
       }
-    });
+    };
+
+    var xhr = new XMLHttpRequest();
+    xhr.open('GET', url, true);
+    xhr.setRequestHeader('Accept', 'application/json');
+    xhr.withCredentials = true;
+    xhr.onerror = function(e) {
+      console.log("Error Status: " + e.target.status);
+    };
+    xhr.onreadystatechange = function () {
+      if (xhr.readyState === 4) {
+        var process = functionsByStatus[xhr.status] || function() {
+          console.log("Not Yet Implemented");
+          reject(xhr);
+        };
+        process(xhr);
+      }
+    };
+    xhr.send(null);
   }
     /**
   	 * @summary Forces the Resource to synchronise
@@ -3551,14 +3577,20 @@ function get_etag() { return this.etag; }
     function refresh_parent() {
       //TROUVER UN MOYEN MALIN DE RAFRAICHIR LA LISTE DES BASES DU KTBS...
     }
-    $.ajax({
-      url: this.uri,
-      type: 'DELETE',
-      success: refresh_parent.bind(this),
-      error: function(jqXHR, textStatus, errorThrown) {
-        throw "Cannot delete " + this.get_resource_type() + " " + this.uri + ": " + textStatus + ' ' + JSON.stringify(errorThrown);
+    var that = this;
+    var xhr = new XMLHttpRequest();
+    xhr.open('DELETE', this.uri, true);
+    xhr.setRequestHeader('Accept', 'application/json');
+    xhr.withCredentials = true;
+    xhr.onerror = function() {
+      throw "Cannot delete " + this.get_resource_type() + " " + this.uri + ": " + xhr.status;
+    };
+    xhr.onreadystatechange = function () {
+      if (xhr.readyState === 4) {
+        refresh_parent.bind(that);
       }
-    });
+    };
+    xhr.send(null);
   }
   /**
   	 * @summary Returns the label of the Resource
@@ -3626,10 +3658,9 @@ function get_etag() { return this.etag; }
 
 module.exports = KTBSResource;
 
-},{"./EventHandler.js":22,"jquery":"jquery"}],27:[function(require,module,exports){
+},{"./EventHandler.js":22}],27:[function(require,module,exports){
 var KTBSResource = require("./KTBS.Resource.js");
 var KTBSObsel = require("./KTBS.Obsel.js");
-var $ = require("jquery");
 
 /**
  * @summary Trace object that is synchronised to a KTBS.
@@ -3764,32 +3795,48 @@ KTBSTrace.prototype = {
 
     //		$.getJSON(this.obsel_list_uri,this._on_refresh_obsel_list_.bind(this));
     var OBJ = this;
-    $.ajax({
-      url: this.obsel_list_uri,//+'.json',
-      type: 'GET',
-      dataType: 'json',
-      data: {minb: begin, maxb: end, reverse: reverse},
-      xhrFields: { withCredentials: true },
-      error: function(XHR) {
-        if (XHR.status === '401') {
-          var linkheader = XHR.getResponseHeader('Link');
-          var d = linkheader.split (',');
-          for (var i = 0;i < d.length;i++)          {
-            var sousD = d[i].split(';');
-            if (sousD[1] === " rel=oauth_resource_server")            {
-              var link = sousD[0].substr(1, sousD[0].length - 2);
-
-            }
-
-            if (sousD[1] === " rel=successful_login_redirect")            {
-              //	var	URLSuccess = sousD[0].substr(2,sousD[0].length-3);
-            }
-          }
-          window.open (link) ;
-        }
+    
+    var functionsByStatus = {
+      '200' : function (xhr) {
+        
+        var jsonResponse = JSON.parse(xhr.response);
+        if (jsonResponse.obsels.length > 0)
+        {OBJ.Before_on_refresh_obsel_list_ (jsonResponse);}
       },
-      success: function(data) {	if (data.obsels.length > 0)	{OBJ.Before_on_refresh_obsel_list_ (data);}	}
-    });
+      '401': function (xhr) {
+        console.log (xhr.getAllResponseHeaders());
+        var link = xhr.getResponseHeader('Link');
+        var d = link.split (',');
+        for (var i = 0;i < d.length;i++) {
+          var sousD = d[i].split(';');
+          var link;
+          var URLSuccess;
+          if (sousD[1] === " rel=oauth_resource_server") {
+            link = sousD[0].substr(1, sousD[0].length - 2);
+          }
+          if (sousD[1] === " rel=successful_login_redirect") {
+            URLSuccess = sousD[0].substr(2, sousD[0].length - 3);
+          }
+        }
+        window.open (link) ;
+      }
+    };
+    var that = this;
+    var xhr = new XMLHttpRequest();
+    xhr.open('GET', that.obsel_list_uri, true);
+    xhr.setRequestHeader('Content-Type', 'application/json');
+    xhr.onreadystatechange = function () {
+      if (xhr.readyState === 4) {
+        var process = functionsByStatus[xhr.status] || function() {
+          console.log("Not Yet Implemented");
+        };
+        process(xhr);
+      }
+    };
+    xhr.onerror = function(e) {
+      console.log("Error Status: " + e.target.status);
+    };
+    xhr.send(null);
     return this.obsel_list.filter(function(o) {
       if (end && o.get_begin() > end) { return false; }
       if (begin && o.get_end() < begin) { return false; }
@@ -4120,13 +4167,25 @@ KTBSTrace.prototype = {
           this.trigger('trace:create_obsel', o);
         }
       }
-      $.ajax({
-        url: this.uri,
-        type: 'POST',
-        contentType: 'application/json',
-        success: _on_create_obsel_success_.bind(this),
-        data: JSON.stringify(json_obsel)
-      });
+      
+      var that = this;
+      var xhr = new XMLHttpRequest();
+      xhr.open('POST', that.id, true);
+      xhr.setRequestHeader('Content-Type', 'application/json');
+      xhr.onreadystatechange = function () {
+        if (xhr.readyState === 4) {
+          if(xhr.status === 201) {
+            console.log('OKPost');
+            that._on_create_obsel_success();
+          } else {
+            console.log('Post error');
+          }
+        }
+      };
+      xhr.onerror = function(e) {
+        console.log("Error Status: " + e.target.status);
+      };
+      xhr.send(JSON.stringify(json_obsel));
     }
   },
 
@@ -4151,10 +4210,10 @@ KTBSTrace.prototype = {
 
 module.exports = KTBSTrace;
 
-},{"./KTBS.Obsel.js":25,"./KTBS.Resource.js":26,"jquery":"jquery"}],28:[function(require,module,exports){
+},{"./KTBS.Obsel.js":25,"./KTBS.Resource.js":26}],28:[function(require,module,exports){
 var KTBSResource = require("./KTBS.Resource.js");
 var KTBSBase = require("./KTBS.Base.js");
-var $ = require("jquery");
+
 
 /**
 * @summary Javascript KTBS Object that is bound to a KTBS.
@@ -4221,17 +4280,26 @@ KTBS.prototype = {
       "@id":		id + "/",
       "label":	label
     };
-    $.ajax({
-      url: this.uri,
-      type: 'POST',
-      contentType: 'application/json',
-      data: JSON.stringify(new_base),
-      success: this.force_state_refresh.bind(this),
-      error: function(jqXHR, textStatus, error) {
-        console.log('query error');
-        console.log([jqXHR, textStatus, error]);
+
+    
+    var that = this;
+    var xhr = new XMLHttpRequest();
+    xhr.open('POST', that.id, true);
+    xhr.setRequestHeader('Content-Type', 'application/json');
+    xhr.onreadystatechange = function () {
+      if (xhr.readyState === 4) {
+        if(xhr.status === 201) {
+          console.log('OKPost');
+          that.force_state_refresh();
+        } else {
+          console.log('Post error');
+        }
       }
-    });
+    };
+    xhr.onerror = function(e) {
+      console.log("Error Status: " + e.target.status);
+    };
+    xhr.send(JSON.stringify(new_base));
   },
   ///////////
   /**
@@ -4247,7 +4315,7 @@ KTBS.prototype = {
 
 module.exports = KTBS;
 
-},{"./KTBS.Base.js":23,"./KTBS.Resource.js":26,"jquery":"jquery"}],29:[function(require,module,exports){
+},{"./KTBS.Base.js":23,"./KTBS.Resource.js":26}],29:[function(require,module,exports){
 var Obsel = require("./Obsel.js");
 var EventHandler = require("./EventHandler.js");
 
@@ -4521,7 +4589,6 @@ LocalTrace.prototype = {
 module.exports = LocalTrace;
 
 },{"./EventHandler.js":22,"./Obsel.js":30}],30:[function(require,module,exports){
-var $ = require("jquery");
 
 /**
 * Obsel is a shortname for the
@@ -4805,7 +4872,10 @@ return this.type; },
   var rels = [];
   this.relations.forEach(function(r) {
     //var uniqueNames = [];
-    if ($.inArray(r.type, rels) === -1) {
+    // if ($.inArray(r.type, rels) === -1) {
+    //   rels.push(r.type);
+    // }
+    if (rels.indexOf(r.type) ===-1){
       rels.push(r.type);
     }
   });
@@ -4851,7 +4921,10 @@ return this.type; },
   var rels = [];
   this.inverse_relations.forEach(function(r) {
     //var uniqueNames = [];
-    if ($.inArray(r.type, rels) === -1) {
+    // if ($.inArray(r.type, rels) === -1) {
+    //   rels.push(r.type);
+    // }
+    if (rels.indexOf(r.type) ===-1){
       rels.push(r.type);
     }
   });
@@ -4975,7 +5048,7 @@ return this.type; },
 
 module.exports = Obsel;
 
-},{"jquery":"jquery"}],31:[function(require,module,exports){
+},{}],31:[function(require,module,exports){
 var EventHandler = require("./EventHandler.js");
 
 /**
