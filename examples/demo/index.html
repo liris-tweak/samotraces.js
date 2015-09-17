@@ -2,10 +2,8 @@
 <head>
   <meta charset="UTF-8">
   <title></title>
-  <script type="application/javascript" src="/dist/vendors.js"></script>
-  <script type="application/javascript" src="/dist/samotraces.js"></script>
-  <script type="application/javascript" src="/node_modules/jquery/dist/jquery.js"></script>
-  <link rel="stylesheet" type="text/css" href="/dist/samotraces.css">
+  <script type="application/javascript" src="/dist/samotraces-core-debug.js"></script>
+
 </head>
 <body>
 
@@ -13,19 +11,51 @@
     /* global Samotraces */
     (function() {
       "use strict";
-      var ktbs = new Samotraces.Ktbs.Ktbs("http://dsi-liris-silex.univ-lyon1.fr/m2ia/ktbs/");
+      var anObject = (function(spec) {
+        var that = {};
+        Samotraces.EventHandler.call(that);
+        that.purr = function() {
+          this.trigger("cat:purr", Date.now);
+          return "purr";
+        };
+        that.on("cat:purr", function() {
+          console.log("purrr?");
+        });
+        that.name = spec.name;
+        return that;
+      })({name: "Felix"});
+      anObject.purr();
+      Samotraces.Ktbs.Resource.call(anObject,
+        "http://localhost:8001/",
+        "http://localhost:8001/",
+        "KTBS",
+        ""); // Let"s supose this cat is a KTBS...
+      console.log(anObject);
+      var ktbs = new Samotraces.Ktbs.Ktbs("http://localhost:8001/");
+      console.log("==============liste base================================");
       ktbs.on('ktbs:update', function() {
         ktbs.list_bases().forEach(function(b) {
           console.log(b);
         });
       });
-      console.log(ktbs.list_bases());
-      // var model = new Samotraces.Ktbs.Model("http://localhost:8001/base42/model42/");
-      // console.log(model);
-      // var base = new Samotraces.Ktbs.Base("http://localhost:8001/base42/");
-      // console.log(base);
-      // var trace = new Samotraces.Ktbs.Trace("http://localhost:8001/base42/t4242/");
-      // console.log(trace);
+      //console.log(ktbs.list_bases());
+      ktbs.create_base("base4422214","labb");
+      
+      console.log("==============model================================");
+       var model = new Samotraces.Ktbs.Model("http://localhost:8001/base1/simple-trace-model");
+       console.log(model);
+         console.log("==============base================================");
+       var base = new Samotraces.Ktbs.Base("http://localhost:8001/base1/");
+       console.log(base);
+       base.create_model("model2221");
+       base.create_stored_trace("nnn1");
+         console.log("==============trace================================");
+       var trace = new Samotraces.Ktbs.Trace("http://localhost:8001/base1/essaiModel/");
+       console.log(trace);
+       
+         console.log("==============obsels================================");
+       var obsels = trace.list_obsels();
+       console.log(trace.obsel_list);
 
     })();
   </script>
