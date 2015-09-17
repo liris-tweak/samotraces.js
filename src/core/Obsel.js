@@ -1,4 +1,3 @@
-var $ = require("jquery");
 
 /**
 * Obsel is a shortname for the
@@ -282,7 +281,10 @@ return this.type; },
   var rels = [];
   this.relations.forEach(function(r) {
     //var uniqueNames = [];
-    if ($.inArray(r.type, rels) === -1) {
+    // if ($.inArray(r.type, rels) === -1) {
+    //   rels.push(r.type);
+    // }
+    if (rels.indexOf(r.type) ===-1){
       rels.push(r.type);
     }
   });
@@ -328,7 +330,10 @@ return this.type; },
   var rels = [];
   this.inverse_relations.forEach(function(r) {
     //var uniqueNames = [];
-    if ($.inArray(r.type, rels) === -1) {
+    // if ($.inArray(r.type, rels) === -1) {
+    //   rels.push(r.type);
+    // }
+    if (rels.indexOf(r.type) ===-1){
       rels.push(r.type);
     }
   });
