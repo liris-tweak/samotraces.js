@@ -1,6 +1,6 @@
 var KTBSResource = require("./KTBS.Resource.js");
 var KTBSBase = require("./KTBS.Base.js");
-var $ = require("jquery");
+
 
 /**
 * @summary Javascript KTBS Object that is bound to a KTBS.
@@ -67,17 +67,26 @@ KTBS.prototype = {
       "@id":		id + "/",
       "label":	label
     };
-    $.ajax({
-      url: this.uri,
-      type: 'POST',
-      contentType: 'application/json',
-      data: JSON.stringify(new_base),
-      success: this.force_state_refresh.bind(this),
-      error: function(jqXHR, textStatus, error) {
-        console.log('query error');
-        console.log([jqXHR, textStatus, error]);
+
+    
+    var that = this;
+    var xhr = new XMLHttpRequest();
+    xhr.open('POST', that.id, true);
+    xhr.setRequestHeader('Content-Type', 'application/json');
+    xhr.onreadystatechange = function () {
+      if (xhr.readyState === 4) {
+        if(xhr.status === 201) {
+          console.log('OKPost');
+          that.force_state_refresh();
+        } else {
+          console.log('Post error');
+        }
       }
-    });
+    };
+    xhr.onerror = function(e) {
+      console.log("Error Status: " + e.target.status);
+    };
+    xhr.send(JSON.stringify(new_base));
   },
   ///////////
   /**
