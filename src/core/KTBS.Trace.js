@@ -464,15 +464,16 @@ KTBSTrace.prototype = {
       return this.default_subject;
     },
     set_default_subject: function(subject) {},
-    create_obsel: function(params) {
+    create_obsel: function(params,model) {
       // LOCAL TRACE
       //var obs = new Samotraces.Obsel(obsel_params);
       // KTBS BOGUE
       "use strict";
+      var hasModel = (model === undefined  || model ===  null)?"http://liris.cnrs.fr/silex/2011/simple-trace-model#":model;
       var json_obsel = {
         "@context":	[
         "http://liris.cnrs.fr/silex/2011/ktbs-jsonld-context",
-               { "m": "http://liris.cnrs.fr/silex/2011/simple-trace-model#" }
+               { "m": hasModel }
         ],
         "@type":	"m:" + params.type, // fixed: "SimpleObsel", // TODO KTBS BUG TO FIX
         hasTrace:	"",
