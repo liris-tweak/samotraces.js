@@ -129,14 +129,36 @@ Base.prototype = {
   /**
   	 * @todo METHOD NOT IMPLEMENTED
   	 */
-  create_computed_trace: function(id, method, parameters, sources, label) {},
-  /**
-  	 * @todo METHOD NOT IMPLEMENTED
-  	 */
-  //create_model: function(id, parents, label) {},
-  /**
-  	 * @todo METHOD NOT IMPLEMENTED
-  	 */
+  create_computed_trace: function(id, method, parameters, sources) {
+    
+    
+    var new_trace = {
+      "@context":	"http://liris.cnrs.fr/silex/2011/ktbs-jsonld-context",
+      "@type":	"ComputedTrace",
+      "@id":		id + "/",
+      "hasMethod":		method,
+      "hasSource":		sources, // array
+      "parameter":		parameters  //array
+    };
+    var that = this;
+    var xhr = new XMLHttpRequest();
+    xhr.open('POST', that.id, true);
+    xhr.setRequestHeader('Content-Type', 'application/json');
+    xhr.onreadystatechange = function () {
+      if (xhr.readyState === 4) {
+        if(xhr.status === 201) {
+          console.log('OKPost');
+          that.force_state_refresh();
+        } else {
+          console.log('Post error');
+        }
+      }
+    };
+    xhr.onerror = function(e) {
+      console.log("Error Status: " + e.target.status);
+    };
+    xhr.send(JSON.stringify(new_trace));
+  },  
   create_method: function(id, parent, parameters, label) {},
   ///////////
   /**
