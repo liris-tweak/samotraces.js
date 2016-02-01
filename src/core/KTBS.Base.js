@@ -227,6 +227,7 @@ Base.prototype = {
     //	console.log(data);
     this._check_change_('label', data["http://www.w3.org/2000/01/rdf-schema#label"], 'base:update');
     this._check_change_('traces', data.contains, 'base:update');
+    this._check_change_('attributes', data, 'base:attrSet');
   },
   /////////// ADDED / API
   /**
