@@ -164,34 +164,43 @@ Base.prototype = {
   },  
 
   /**
-  	 * Create a stored trace in the KTBS
-  	 * @param id {String} ID of the created trace
-  	 * @param [model] {Model} Model of the trace
-  	 * @param [origin] {Origin} Origin of the trace
-  	 * @param [default_subject] {String} Default subject of the trace
-  	 * @param [label] {String} Label of the trace
-  	 */
-  create_model: function(id) {
-      var doc = {
+  * Create a TraceModel in the KTBS. 
+  * Returns a Promise, with the created TraceModel as a parameter.
+  * @param id {String} ID of the created TraceModel.
+  * @param [label] {String} Label of the TraceModel.
+  */
+  create_model: function(id, label) {
+    var doc = {
       '@context': 'http://liris.cnrs.fr/silex/2011/ktbs-jsonld-context',
       '@graph': [{
         '@id': id,
+        'label':label,
         '@type': 'TraceModel',
         'inBase': './',
         'hasUnit': 'millisecond'
       }]
     };
     var new_model_data = JSON.stringify(doc);
-    $.ajax({
-      url: this.uri,
-      type: 'POST',
-      contentType: 'application/json',
-      data: new_model_data,
-      success: this.force_state_refresh.bind(this),
-      error: function(jqXHR, textStatus, error) {
-        console.log('query error');
-        console.log([jqXHR, textStatus, error]);
-      }
+    var that = this;
+    return new Promise(function(resolve, reject) {
+      $.ajax({
+        url: that.uri,
+        type: 'POST',
+        contentType: 'application/json',
+        data: new_model_data,
+        success: function(){
+          that.force_state_refresh(
+            null,
+            resolve(new Samotraces.Ktbs.Model(that.uri + id )),
+            null  
+          );
+        },
+        error: function(jqXHR, textStatus, error) {
+          console.log('query error');
+          console.log([jqXHR, textStatus, error]);
+          reject([jqXHR, textStatus, error]);
+        }
+      });
     });
   },
 
