@@ -26,6 +26,7 @@ var Base = function Base(uri, id) {
   this.traces = [];
   this.models = [];
   this.force_state_refresh();
+  this.attributes = {};
 };
 
 Base.prototype = {
@@ -117,6 +118,50 @@ Base.prototype = {
       });
     });
   },
+  
+  /**
+  * Change the attributes of the Base. Add or change the attributes passed in parameter.
+  * Example of attributes :
+  * attributes = [ [attributes_name_1,attribute_value_1], [attribute_name_2,attribute_value_2], ...]; 
+  *
+  * Returns a Promise with the base as a parameter if the modification succeed.
+  * @param attributes {Array} Array of Array, with the name of the attribute in the 1st position, the value of the parameter in the 2nd position.
+  */
+  modify_attributes: function( attributes ){
+    var that = this;
+    return new Promise(function(resolve, reject) {
+      
+      that.force_state_refresh( {'_on_state_refresh_': true} , function(){
+        
+        var old_attributes = that.attributes;
+        for(var i = 0; i < attributes.length; i++){
+          old_attributes[attributes[i][0]] = attributes[i][1];
+        }
+        var modeldata = JSON.stringify(old_attributes);
+        
+        var etag = that.etag;
+        var xhr = new XMLHttpRequest();
+        xhr.open('PUT', that.uri, true);
+        xhr.setRequestHeader('Content-Type', 'application/json');
+        xhr.setRequestHeader('If-Match', etag);
+        xhr.onreadystatechange = function () {
+          if (xhr.readyState === 4) {
+            if(xhr.status === 200) {
+              resolve(new Samotraces.Ktbs.Base(that.uri, that.id));
+            } else {
+              reject(xhr);
+            }
+          }
+        };
+        xhr.onerror = function() {
+          reject(Error('There was a network error.'));
+        };
+        xhr.send(modeldata);
+      
+      } );
+    });
+    
+  },  
 
   /**
   	 * Create a stored trace in the KTBS
