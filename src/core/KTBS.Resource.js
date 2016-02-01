@@ -107,10 +107,11 @@ function get_etag() { return this.etag; }
       },
       success: function (data, textStatus, xhr){
         trc.etag = xhr.getResponseHeader('ETag');
-        success(data);
+        trc.trigger('getetag');
         if (options._on_state_refresh_) {
           trc._on_state_refresh_(data);
         }
+        success(data);
       }
     });
   }
