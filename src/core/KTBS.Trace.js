@@ -509,6 +509,35 @@ KTBSTrace.prototype = {
     del_parameter: function(key) {}
   },
 
+  /**
+  * Uploads an array of obsels to the trace.
+  * @param  {Array} obsels And array of obsel to post on the trace.
+  * @returns A Promise.
+  */
+  create_obsels: function(obsels){
+    
+    var new_obsels_data = JSON.stringify(obsels);
+    var that = this;
+    
+    return new Promise(function(resolve, reject) {
+      $.ajax({
+        url: that.uri,
+        type: 'POST',
+        contentType: 'application/json',
+        data: new_obsels_data,
+        success: function(){
+           resolve("obsels upload");
+        },
+        error: function(jqXHR, textStatus, error) {
+          console.log('query error');
+          console.log([jqXHR, textStatus, error]);
+          reject([jqXHR, textStatus, error]);
+        }
+      });
+    });
+    
+  },
+
   // TEMPORARY METHODS
   create_obsel: function(obsel_params) {
     "use strict";
