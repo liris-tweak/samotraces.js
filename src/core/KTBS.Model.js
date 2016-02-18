@@ -24,22 +24,16 @@ var EventHandler = require("./EventHandler.js");
  */
 
 
-var Model = function(uri, id) {
-  if (id === undefined) { id = uri; }
-  EventHandler.call(this);
-  KTBSResource.call(this, id, uri, 'Model', "");
-  this.list_Types_Obsles = []
-  this.force_state_refresh();
+var Model = function(uri, id, label) {
+  id = id || uri;
+  KTBSResource.call(this, id, uri, 'TraceModel', label || "");
+  this.list_type_obsels = [];
 
 };
 
 Model.prototype = {
 
-  _on_state_refresh_: function(data) {
-    var etag = this.get_etag();
-    this.trigger('Model:get');
-    this.list_Types_Obsles = this.list_obsels(data["@graph"]);
-  },
+  
   list_obsels: function(data) {
     ListeObselType = [];
     var M = this;
@@ -106,35 +100,37 @@ Model.prototype = {
   },
 
   put_model: function(modeldata) {
-    this.force_state_refresh();
     var that = this;
+    
     return new Promise(function(resolve, reject) {
-      that.on ('Model:get', function(){
-       var etag = that.etag;
-
-    // PUT
-    var xhr = new XMLHttpRequest();
-    xhr.open('PUT', that.id, true);
-    xhr.setRequestHeader('Content-Type', 'application/json');
-    xhr.setRequestHeader('If-Match', etag);
-    xhr.onreadystatechange = function () {
-      if (xhr.readyState === 4) {
-        if(xhr.status === 200) {
-          console.log('OKOKOK');
-          resolve(new Samotraces.Ktbs.Model(that.id));
-        } else {
-          reject(xhr);
+      var etag = that.etag;
+      var xhr = new XMLHttpRequest();
+      xhr.open('PUT', that.uri, true);
+      xhr.setRequestHeader('Content-Type', 'application/ld+json');
+      xhr.setRequestHeader('Accept', 'application/ld+json');
+      xhr.setRequestHeader('If-Match', etag);
+      xhr.onreadystatechange = function () {
+        if (xhr.readyState === 4) {
+          if(xhr.status === 200) {
+            that.etag = xhr.getResponseHeader('ETag');
+            that._on_state_refresh_(JSON.parse(xhr.response));
+            resolve();
+          } else {
+            reject(xhr);
+          }
         }
-      }
-    };
-    xhr.onerror = function() {
-      reject(Error('There was a network error.'));
-    };
-    xhr.send(modeldata);
+      };
+      xhr.onerror = function() {
+        reject(Error('There was a network error.'));
+      };
+      xhr.send(JSON.stringify(modeldata));
+    });
+  },
 
-  })
-  });
-}
+  _on_state_refresh_: function(data) {
+    this._check_change_('list_type_obsels', data["@graph"], 'model:update');
+  }
+
 };
 
 module.exports = Model;

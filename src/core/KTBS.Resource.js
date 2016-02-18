@@ -24,11 +24,11 @@ var KTBSResource = (function() {
     return this.type;
   }
 
-  function getAbsoluteURLFromRlative(base, relative) {
+  function getAbsoluteURLFromRelative(base, relative) {
     var stack = base.split("/"),
         parts = relative.split("/");
-    stack.pop(); // remove current file name (or empty string)
-                 // (omit if "base" is the current folder without trailing slash)
+        stack.pop(); // remove current file name (or empty string)
+                     // (omit if "base" is the current folder without trailing slash)
     for (var i=0; i<parts.length; i++) {
         if (parts[i] == ".")
             continue;
@@ -70,7 +70,9 @@ function get_etag() { return this.etag; }
   	 * trigger the _on_state_refresh_ method of the Resource
   	 * on success.
   	 */
+  /*  
   function force_state_refresh(options, success, reject) {
+    
     success = success || function () {};
     reject = reject || function () {};
     options = options || {'_on_state_refresh_': true}; // For backward compatibility
@@ -115,6 +117,51 @@ function get_etag() { return this.etag; }
       }
     });
   }
+  */
+  
+  function load( timeout ){
+    var that = this;
+    var delay = timeout || 15000;
+    this.loading_promise = this.loading_promise || new Promise(function(resolve, reject) {
+      
+      setTimeout(function() {
+        that.loading_promise = null;
+        reject("Promise timed-out after " + delay + "ms");
+      }, delay);
+      
+      var xhr = new XMLHttpRequest();
+      xhr.open('GET',that.uri,true);
+      xhr.setRequestHeader('Content-Type', 'application/json');
+      xhr.setRequestHeader('Accept', 'application/ld+json');
+      xhr.onreadystatechange = function () {
+        if (xhr.readyState === 4) {
+          if(xhr.status === 200) {
+            var response = JSON.parse(xhr.response);
+            that.etag = xhr.getResponseHeader('ETag');
+            that._on_state_refresh_(response);
+            that.loading_promise = null;
+            resolve(that);
+          }
+          else if(xhr.status === 304){
+            that.loading_promise = null;
+            resolve(that);
+          }
+          else {
+            that.loading_promise = null;
+            reject(xhr);
+          }
+        }
+      };
+      xhr.onerror = function() {
+        that.loading_promise = null;
+        reject(Error('There was a network error.'));
+      };
+      xhr.send();
+    });
+    
+    return this.loading_promise;
+  }
+  
     /**
   	 * @summary Forces the Resource to synchronise
   	 * with at a given refreshing rate.
@@ -208,12 +255,17 @@ function get_etag() { return this.etag; }
     // ATTRIBUTES
     this.id = id;
     this.uri = uri;
-    this.label = label;
-    this.type = type;
+    this.label = label || "";
+    this.type = type || "";
+    this.etag = "";
+    
+    
+    this.loading_promise = null;
+    
+    
     // API METHODS
     this.get_id = get_id;
     this.get_uri = get_uri;
-    this.force_state_refresh = force_state_refresh;
     this.get_read_only = get_read_only;
     this.remove = remove;
     this.get_label = get_label;
@@ -221,11 +273,12 @@ function get_etag() { return this.etag; }
     this.reset_label = reset_label;
     this.get_etag = get_etag;
     // helper
+    this.load = load;
     this.get_resource_type = get_resource_type;
     this._check_change_ = _check_change_;
     this.start_auto_refresh = start_auto_refresh;
     this.stop_auto_refresh = stop_auto_refresh;
-    this.getAbsoluteURLFromRlative=getAbsoluteURLFromRlative;
+    this.getAbsoluteURLFromRelative=getAbsoluteURLFromRelative;
     return this;
   };
 })();

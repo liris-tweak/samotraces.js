@@ -25,11 +25,11 @@ var $ = require("jquery");
  * @param {String}	uri	URI of the KTBS trace to load.
  * @param {String}	[id]	ID of the KTBS trace to load.
  */
-var KTBSTrace = function Trace(uri, id) {
+var KTBSTrace = function Trace(uri, id, type, label) {
   // KTBS.Trace is a Resource
   "use strict";
-  if (id === undefined) { id = uri; }
-  KTBSResource.call(this, id, uri, 'Base', "");
+  id = id || uri;
+  KTBSResource.call(this, id, uri, type, label || "");
 
   this.temp = {}; // attribute used to store actions made by the user on the trace while not knowing if they are allowed. e.g., create_obsel, when we don't know yet if the Trace is a StoredTrace because the KTBS didn't reply yet.
   this.default_subject = "";
@@ -39,7 +39,6 @@ var KTBSTrace = function Trace(uri, id) {
   this.origin = "";
   //this.origin_offset = (new Date(0)).getMilliseconds();
   this.obsel_list = []; this.traceSet = [];
-  this.force_state_refresh();
 };
 
 KTBSTrace.prototype = {
