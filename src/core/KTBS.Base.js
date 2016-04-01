@@ -57,6 +57,7 @@ Base.prototype = {
       var xhr = new XMLHttpRequest();
       xhr.open('POST',that.uri,true);
       xhr.setRequestHeader('Content-Type', 'application/json');
+      xhr.withCredentials = true;
       xhr.onreadystatechange = function () {
         if (xhr.readyState === 4) {
           if(xhr.status === 200 || xhr.status === 201) {
@@ -127,6 +128,110 @@ Base.prototype = {
     });
   },
   
+  iter_computed_traces: function(){
+    function IterablePromise(arrayLike, process) {
+      var that = this;
+      var lst = [];
+      var i = 0;
+      that.forEach = function(callback) {
+        if (i >= arrayLike.length) {
+          return Promise.resolve(lst);
+        } else {
+          return Promise.resolve(arrayLike[i++])
+          .then(process)
+          .then(function(x) { lst.push(x); return x; })
+          .then(callback)
+          .then(that.forEach.bind(that, callback))
+          ;
+        }
+      };
+      that.then = function(onFullfilled, onRejected) {
+        return that.forEach(function(){}).then(onFullfilled, onRejected);
+      };
+      that.catch = function(onRejected) {
+        return that.forEach(function(){}).catch(onRejected);
+      };
+    }
+    
+    function createBaseResource( traceUri ){
+      return new Samotraces.Ktbs.Trace( traceUri, null, 'ComputedTrace' );
+    }
+    
+    var traces_uri = [];
+    for(var j = 0 ; j < this.contains.length; j++){
+      if( this.contains[j]['@type'] === 'ComputedTrace' )
+        traces_uri.push( this.getAbsoluteURLFromRelative( this.uri, this.contains[j]['@id']) );
+    }
+    
+    return new IterablePromise(traces_uri, createBaseResource);
+    
+  },
+  
+  list_computed_traces: function(){
+    var that = this;
+    return new Promise( function(resolve, reject){
+      that.iter_stored_traces()
+          .then( function(x){
+            resolve(x);
+          })
+          .catch( function(err){
+            reject(err);
+          })
+    });
+  },
+  
+  iter_models: function(){
+    function IterablePromise(arrayLike, process) {
+      var that = this;
+      var lst = [];
+      var i = 0;
+      that.forEach = function(callback) {
+        if (i >= arrayLike.length) {
+          return Promise.resolve(lst);
+        } else {
+          return Promise.resolve(arrayLike[i++])
+          .then(process)
+          .then(function(x) { lst.push(x); return x; })
+          .then(callback)
+          .then(that.forEach.bind(that, callback))
+          ;
+        }
+      };
+      that.then = function(onFullfilled, onRejected) {
+        return that.forEach(function(){}).then(onFullfilled, onRejected);
+      };
+      that.catch = function(onRejected) {
+        return that.forEach(function(){}).catch(onRejected);
+      };
+    }
+    
+    function createBaseResource( traceUri ){
+      return new Samotraces.Ktbs.Model( traceUri, null );
+    }
+    
+    var traces_uri = [];
+    for(var j = 0 ; j < this.contains.length; j++){
+      if( this.contains[j]['@type'] === 'TraceModel' )
+        traces_uri.push( this.getAbsoluteURLFromRelative( this.uri, this.contains[j]['@id']) );
+    }
+    
+    return new IterablePromise(traces_uri, createBaseResource);
+    
+  },
+  
+  list_models: function(){
+    var that = this;
+    return new Promise( function(resolve, reject){
+      that.iter_stored_traces()
+          .then( function(x){
+            resolve(x);
+          })
+          .catch( function(err){
+            reject(err);
+          })
+    });
+  },
+  
   /**
   * Change the attributes of the Base. Add or change the attributes passed in parameter.
   * Example of attributes :
@@ -138,37 +243,45 @@ Base.prototype = {
   modify_attributes: function( attributes ){
     var that = this;
     return new Promise(function(resolve, reject) {
-      
-      that.force_state_refresh( {'_on_state_refresh_': true} , function(){
-        
-        var old_attributes = that.attributes;
-        for(var i = 0; i < attributes.length; i++){
-          old_attributes[attributes[i][0]] = attributes[i][1];
-        }
-        var modeldata = JSON.stringify(old_attributes);
-        
-        var etag = that.etag;
-        var xhr = new XMLHttpRequest();
-        xhr.open('PUT', that.uri, true);
-        xhr.setRequestHeader('Content-Type', 'application/json');
-        xhr.setRequestHeader('If-Match', etag);
-        xhr.onreadystatechange = function () {
-          if (xhr.readyState === 4) {
-            if(xhr.status === 200) {
-              resolve();
-            } else {
-              reject(xhr);
-            }
+      that.load()
+        .then( function(){
+          var old_attributes = that.attributes;
+          for(var i = 0; i < attributes.length; i++){
+            old_attributes[attributes[i][0]] = attributes[i][1];
           }
-        };
-        xhr.onerror = function() {
-          reject(Error('There was a network error.'));
-        };
-        xhr.send(modeldata);
-      
+
+          // Pour le inRoot qui bug
+          if(old_attributes['inRoot'] && old_attributes['inRoot'] === '..' )
+            old_attributes['inRoot'] = '../'; 
+
+          var modeldata = JSON.stringify(old_attributes);
+          
+          var etag = that.etag;
+          var xhr = new XMLHttpRequest();
+          xhr.open('PUT', that.uri, true);
+          xhr.setRequestHeader('Content-Type', 'application/ld+json');
+          xhr.setRequestHeader('If-Match', etag);
+          xhr.withCredentials = true;
+          xhr.onreadystatechange = function () {
+            if (xhr.readyState === 4) {
+              if(xhr.status === 200) {
+                that.etag = xhr.getResponseHeader('ETag');
+                that._on_state_refresh_( JSON.parse( xhr.response ) ); 
+                resolve( xhr.response );
+              } else {
+                reject(xhr);
+              }
+            }
+          };
+          xhr.onerror = function() {
+            reject(Error('There was a network error.'));
+          };
+          xhr.send(modeldata);
+        })
+        .catch( function(err){
+          console.log(err);
+        })
       } );
-    });
-    
   },  
 
   /**
@@ -195,10 +308,11 @@ Base.prototype = {
       var xhr = new XMLHttpRequest();
       xhr.open('POST',that.uri,true);
       xhr.setRequestHeader('Content-Type', 'application/json');
+      xhr.withCredentials = true;
       xhr.onreadystatechange = function () {
         if (xhr.readyState === 4) {
           if(xhr.status === 200 || xhr.status === 201) {
-            resolve( new Samotraces.Ktbs.Model( xhr.response.replace('>','').replace('<',''), null, 'StoredTrace' ) );
+            resolve( new Samotraces.Ktbs.Model( xhr.response.replace('>','').replace('<',''), null, 'TraceModel' ) );
           }
           else {
             reject(xhr);
@@ -235,7 +349,7 @@ Base.prototype = {
   _on_state_refresh_: function(data) {
     //	console.log(data);
     this._check_change_('label', data["label"], 'base:update');
-    this._check_change_('note', data["http://www.w3.org/2004/02/skos/core#note"], 'base:update');
+    this._check_change_('http://www.w3.org/2004/02/skos/core#note', data["http://www.w3.org/2004/02/skos/core#note"], 'base:update');
     this._check_change_('contains', data.contains, 'base:update');
     this._check_change_('attributes', data, 'base:attrSet');
   },

@@ -25,6 +25,11 @@ var KTBSResource = (function() {
   }
 
   function getAbsoluteURLFromRelative(base, relative) {
+
+    if(relative.indexOf('http://') > -1){
+      return relative;
+    }
+
     var stack = base.split("/"),
         parts = relative.split("/");
         stack.pop(); // remove current file name (or empty string)
@@ -133,14 +138,23 @@ function get_etag() { return this.etag; }
       xhr.open('GET',that.uri,true);
       xhr.setRequestHeader('Content-Type', 'application/json');
       xhr.setRequestHeader('Accept', 'application/ld+json');
+      xhr.withCredentials = true;
       xhr.onreadystatechange = function () {
         if (xhr.readyState === 4) {
           if(xhr.status === 200) {
-            var response = JSON.parse(xhr.response);
-            that.etag = xhr.getResponseHeader('ETag');
-            that._on_state_refresh_(response);
-            that.loading_promise = null;
-            resolve(that);
+            var response = undefined
+            try {
+              response = JSON.parse(xhr.response);
+              that.etag = xhr.getResponseHeader('ETag');
+              that._on_state_refresh_(response);
+              that.loading_promise = null;
+              resolve(that);
+            }
+            catch (e) {
+               reject(Error('This resource has some errors on server side.'));
+            }
+            
+            
           }
           else if(xhr.status === 304){
             that.loading_promise = null;
