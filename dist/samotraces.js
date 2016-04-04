@@ -1977,6 +1977,7 @@ var $ = require("jquery");
 var d3 = require("d3");
 
 var TraceDisplayIconsZoom = function(divId, trace, time_window, options) {
+
   options = options || {};
   // WidgetBasicTimeForm is a Widget
   Widget.call(this, divId);
@@ -1990,7 +1991,40 @@ var TraceDisplayIconsZoom = function(divId, trace, time_window, options) {
   //this.window.on('tw:translate',this.translate_x.bind(this));
   this.init_DOM();
   // this.data = this.trace.list_obsels(time_window.start,time_window.end);
-  this.data = this.trace.obsel_list;
+
+
+  this.data = [];
+
+  this.getObsels = function(index){
+    var that = this;
+    this.trace.list_obsels({'limit':'100'})
+      .then( function(list){
+        console.log('ET DE 100');
+        for(var i = 0; i < list.length; i++){
+
+          // AD HOC MODIF A CHANGER!!!!
+          list[i].id = list[i]['@id'];
+          list[i].trace = that.trace.uri;
+          list[i].type = list[i]['@type'];
+          delete list[i]['@id'];
+          delete list[i]['@type'];
+
+          that.data.push(  new Samotraces.Obsel( list[i] ) );
+        }
+        index = index + list.length;
+        that.draw();
+        if( list.length >= 99 )
+          that.getObsels(index);
+      })
+      .catch( function(err){
+        console.log(err);
+      })
+  }
+  var index = 0;
+  this.getObsels(index);
+
+
+
   var this_widget = this;
   var bind_function = function(val_or_fun) {
     if (val_or_fun instanceof Function) {
@@ -2012,9 +2046,11 @@ var TraceDisplayIconsZoom = function(divId, trace, time_window, options) {
   this.options.x = bind_function(options.x || function(o) {
     return this.calculate_x(o.get_begin()) - 8;
   });
-  this.stylesheet = options ;
-  this.draw();
-	};
+  this.stylesheet = options.ObselType ;
+
+  console.log( this.stylesheet);
+
+  };
 
 TraceDisplayIconsZoom.prototype = {
   init_DOM: function() {
@@ -2070,6 +2106,7 @@ TraceDisplayIconsZoom.prototype = {
 
   draw: function(e) {
 
+ /*
     if (e) {
       switch (e.type) {
         case "trace:update":
@@ -2082,7 +2119,10 @@ TraceDisplayIconsZoom.prototype = {
           break;
       }
     }
+*/
+
     var that = this;
+
 
     this.d3Obsels()
     .exit()
