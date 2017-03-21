@@ -3136,6 +3136,7 @@ var Base = function Base(uri, id, label) {
   KTBSResource.call(this, id, uri, 'Base', label);
   this.contains = [];
   this.attributes = {};
+  this._propertiesPromise = null
 };
 
 Base.prototype = {
@@ -3148,8 +3149,9 @@ Base.prototype = {
   	 * @param [origin] {Origin} Origin of the trace
   	 * @param [default_subject] {String} Default subject of the trace
   	 * @param [label] {String} Label of the trace
+     * @param [comment] {String} Comment of the trace
   	 */
-  create_stored_trace: function(id, model, origin, default_subject, label, note) {
+  create_stored_trace: function(id, model, origin, default_subject, label, comment) {
     var new_trace = {
       "@context":	"http://liris.cnrs.fr/silex/2011/ktbs-jsonld-context",
       "@type":	"StoredTrace",
@@ -3159,7 +3161,7 @@ Base.prototype = {
     new_trace.origin = origin || "1970-01-01T00:00:00Z";
     new_trace.default_subject = default_subject || "";
     new_trace.label = label || "";
-    new_trace["http://www.w3.org/2004/02/skos/core#note"] = note || "";
+    new_trace["rdfs:comment"] = comment || "";
 
     var that = this;
 
@@ -3238,6 +3240,62 @@ Base.prototype = {
     });
   },
 
+  load_properties: function(props, timeout){
+    var that = this;
+    var delay = timeout || 15000;
+
+
+    var targetURI = that.uri+'?prop=';
+
+    for(var i = 0; i < props.length; i++){
+      targetURI += props[i] ;
+      if( i < props.length - 1 )
+        targetURI += ","
+    }
+
+    if( !this._propertiesPromise ){
+      this._propertiesPromise = new Promise(function(resolve, reject) {
+
+        setTimeout(function() {
+          that._propertiesPromise = null;
+          reject("Promise timed-out after " + delay + "ms");
+        }, delay);
+
+        var xhr = new XMLHttpRequest();
+        xhr.open('GET',targetURI,true);
+        xhr.setRequestHeader('Content-Type', 'application/json');
+        xhr.setRequestHeader('Accept', 'application/ld+json');
+        xhr.withCredentials = true;
+        xhr.onreadystatechange = function () {
+          if (xhr.readyState === 4) {
+            if(xhr.status === 200) {
+              var response = undefined
+              try {
+                response = JSON.parse(xhr.response);
+                that.etag = xhr.getResponseHeader('ETag');
+                that._propertiesPromise = null;
+                resolve(response.contains);
+              }
+              catch (e) {
+                that._propertiesPromise = null;
+                reject(Error('This resource has some errors on server side.'));
+              }
+            }
+            else {
+              that._propertiesPromise = null;
+              reject(xhr);
+            }
+          }
+        };
+        xhr.onerror = function() {
+          that._propertiesPromise = null;
+          reject(Error('There was a network error.'));
+        };
+        xhr.send();
+      });
+    }
+    return this._propertiesPromise;
+  },
 
   iter_stored_traces: function(){
     function IterablePromise(arrayLike, process) {
@@ -3385,9 +3443,13 @@ Base.prototype = {
   list_models: function(){
     var that = this;
     return new Promise( function(resolve, reject){
+      var result = [];
       that.iter_stored_traces()
           .then( function(x){
-            resolve(x);
+            if(x)
+              result.push(x);
+            else
+              resolve(result);
           })
           .catch( function(err){
             reject(err);
@@ -3453,13 +3515,13 @@ Base.prototype = {
   * @param id {String} ID of the created TraceModel.
   * @param [label] {String} Label of the TraceModel.
   */
-  create_model: function(id, label, note, unit) {
+  create_model: function(id, label, comment, unit) {
     var doc = {
       '@context': 'http://liris.cnrs.fr/silex/2011/ktbs-jsonld-context',
       '@graph': [{
         '@id': id,
         'label':label || '',
-        'http://www.w3.org/2004/02/skos/core#note' : note || "",
+        'rdfs:comment' : comment || "",
         '@type': 'TraceModel',
         'inBase': './',
         'hasUnit': unit || 'millisecond'
@@ -3490,12 +3552,92 @@ Base.prototype = {
     });
   },
 
+  /**
+  * Create a BAse in this base ("Baseception").
+  * Returns a Promise, with the created Base as a parameter.
+  * @param id {String} ID of the created Base.
+  * @param {!optionnal} label {String} Label of the Base.
+  * @param {!optionnal} comment {String} Label of the Base.
+  */
+  create_base: function(id, label, comment) {
+    var doc = {
+      "@id": id + '/',
+      "@type": "Base",
+      "inBase": "./",
+      "label": label || "",
+      "http://www.w3.org/2000/01/rdf-schema#comment": comment || ""
+    };
+    var that = this;
+    return new Promise(function(resolve, reject) {
+
+      var xhr = new XMLHttpRequest();
+      xhr.open('POST',that.uri,true);
+      xhr.setRequestHeader('Content-Type', 'application/json');
+      xhr.withCredentials = true;
+      xhr.onreadystatechange = function () {
+        if (xhr.readyState === 4) {
+          if(xhr.status === 200 || xhr.status === 201) {
+            resolve( new Samotraces.Ktbs.Base( xhr.response.replace('>','').replace('<','') ) );
+          }
+          else {
+            reject(xhr);
+          }
+        }
+      };
+      xhr.onerror = function() {
+        reject(Error('There was a network error.'));
+      };
+
+      xhr.send( JSON.stringify(doc) );
+    });
+  },
+
 
 
   /**
   	 * @todo METHOD NOT IMPLEMENTED
   	 */
-  create_computed_trace: function(id, method, parameters, sources, label) {},
+  create_computed_trace: function(id, method, parameters, sources, label) {
+    var query = {
+      "@id": id,
+      "@type": "ComputedTrace",
+      "label": label,
+      "hasMethod": method,
+      "hasSource": sources,
+      "parameter": parameters
+    }
+    return new Promise(function(resolve, reject) {
+      var xhr = new XMLHttpRequest();
+      xhr.open('POST', this.uri, true);
+      xhr.setRequestHeader('Content-Type', 'application/json');
+      xhr.setRequestHeader('Accept', 'application/ld+json');
+      xhr.withCredentials = true;
+      xhr.onreadystatechange = function () {
+        if (xhr.readyState === 4) {
+          if(xhr.status === 200 || xhr.status === 201) {
+            try {
+              var response = JSON.parse(xhr.response);
+              resolve(response);
+            } catch (e) {
+              resolve( xhr.response );
+            } finally {
+              resolve( xhr.response );
+            }
+
+          }
+          else {
+            reject(xhr);
+          }
+        }
+      };
+      xhr.onerror = function() {
+        reject(Error('There was a network error.'));
+      };
+      var string_query = JSON.stringify(query);
+      console.log(string_query);
+      xhr.send(string_query);
+    }.bind(this));
+  },
   /**
   	 * @todo METHOD NOT IMPLEMENTED
   	 */
@@ -3512,7 +3654,8 @@ Base.prototype = {
   _on_state_refresh_: function(data) {
     //	console.log(data);
     this._check_change_('label', data["label"], 'base:update');
-    this._check_change_('http://www.w3.org/2004/02/skos/core#note', data["http://www.w3.org/2004/02/skos/core#note"], 'base:update');
+    var comment = data["http://www.w3.org/2000/01/rdf-schema#comment"] || "";
+    this._check_change_('comment', comment, 'base:update');
     this._check_change_('contains', data.contains, 'base:update');
     this._check_change_('attributes', data, 'base:attrSet');
   },
@@ -3561,12 +3704,15 @@ var Model = function(uri, id, label) {
   id = id || uri;
   KTBSResource.call(this, id, uri, 'TraceModel', label || "");
   this.list_type_obsels = [];
+  this.list_type_attributes = [];
+  this.model_properties = {};
+  this.graph = [];
   base_uri = "";
 };
 
 Model.prototype = {
 
-  
+
   list_obsels: function(data) {
     ListeObselType = [];
     var M = this;
@@ -3639,7 +3785,7 @@ Model.prototype = {
       '@context': 'http://liris.cnrs.fr/silex/2011/ktbs-jsonld-context',
       '@graph': input
     }
-    
+
     return new Promise(function(resolve, reject) {
       var etag = that.etag;
       var xhr = new XMLHttpRequest();
@@ -3670,14 +3816,34 @@ Model.prototype = {
 
     this._check_change_('list_type_obsels', data["@graph"], 'model:update');
 
+    var type_obsels = [];
+    var type_attributes = [];
+
     for(var i = 0;  i < data["@graph"].length; i++){
       if( data["@graph"][i]["@type"] === "TraceModel" ){
         this._check_change_('base_uri', this.getAbsoluteURLFromRelative(this.uri, data["@graph"][i].inBase), 'model:update');
         this._check_change_('@id', data["@graph"][i]["@id"], 'model:update');
         this._check_change_('label', data["@graph"][i]["label"], 'model:update');
-        this._check_change_('http://www.w3.org/2004/02/skos/core#note', data["@graph"][i]["http://www.w3.org/2004/02/skos/core#note"], 'model:update');
+        this._check_change_('http://www.w3.org/2000/01/rdf-schema#comment', data["@graph"][i]["http://www.w3.org/2000/01/rdf-schema#comment"], 'model:update');
+        this._check_change_('model_properties', data["@graph"][i]);
+      }
+      else if( data["@graph"][i]["@type"] === "ObselType" ){
+        data["@graph"][i]['@id'] = this.getAbsoluteURLFromRelative(this['@id'], data["@graph"][i]['@id']);
+        type_obsels.push(data["@graph"][i]);
+      }
+      else if( data["@graph"][i]["@type"] === "AttributeType" ){
+        data["@graph"][i]['@id'] = this.getAbsoluteURLFromRelative(this['@id'], data["@graph"][i]['@id']);
+        for(var j = 0; j < data["@graph"][i]['hasAttributeObselType'].length; j++){
+          data["@graph"][i]['hasAttributeObselType'][j] = this.getAbsoluteURLFromRelative(this['@id'], data["@graph"][i]['hasAttributeObselType'][j]);
+        }
+        type_attributes.push(data["@graph"][i]);
       }
     }
+
+    this._check_change_('list_type_attributes',type_attributes, 'model:update');
+    this._check_change_('list_type_obsels', type_obsels, 'model:update');
+
+    this._check_change_('graph', data["@graph"], 'model:update');
 
   }
 
@@ -3750,6 +3916,16 @@ var KTBSResource = (function() {
 
     if(relative.indexOf('http://') > -1){
       return relative;
+    }
+    if(relative.indexOf('#') === 0){
+      var position = base.indexOf('#');
+      if( position === -1){
+        return base + relative;
+      }
+      else{
+        var new_base = base.substring(0,position);
+        return new_base + relative;
+      }
     }
 
     var stack = base.split("/"),
@@ -3862,6 +4038,7 @@ function get_etag() { return this.etag; }
       xhr.setRequestHeader('Accept', 'application/ld+json');
       xhr.withCredentials = true;
       xhr.onreadystatechange = function () {
+
         if (xhr.readyState === 4) {
           if(xhr.status === 200) {
             var response = undefined
@@ -3924,6 +4101,7 @@ function get_etag() { return this.etag; }
         that.loading_promise = null;
         reject(Error('There was a network error.'));
       };
+
       xhr.send();
     });
 
@@ -3970,18 +4148,26 @@ function get_etag() { return this.etag; }
   	 *     WHEN A RESOURCE IS DELETED.
   	 */
   function remove() {
-    function refresh_parent() {
-      //TROUVER UN MOYEN MALIN DE RAFRAICHIR LA LISTE DES BASES DU KTBS...
-    }
-    $.ajax({
-      url: this.uri,
-      type: 'DELETE',
-      success: refresh_parent.bind(this),
-      error: function(jqXHR, textStatus, errorThrown) {
-        throw "Cannot delete " + this.get_resource_type() + " " + this.uri + ": " + textStatus + ' ' + JSON.stringify(errorThrown);
-      }
+
+    var that = this;
+    return new Promise(function(resolve, reject) {
+
+      var xhr = new XMLHttpRequest();
+      xhr.open('DELETE', that.uri, true);
+      xhr.setRequestHeader('Accept', 'application/json');
+      xhr.withCredentials = true;
+      xhr.onerror = function() {
+        reject( "Cannot delete " + that.get_resource_type() + " " + that.uri + ": " + xhr.status );
+      };
+      xhr.onreadystatechange = function () {
+        if (xhr.readyState === 4) {
+          resolve( xhr.response );
+        }
+      };
+      xhr.send(null);
     });
-  }
+
+    }
   /**
   	 * @summary Returns the label of the Resource
   	 */
@@ -4022,7 +4208,7 @@ function get_etag() { return this.etag; }
     // DOCUMENTED ABOVE
     // ATTRIBUTES
     this.id = id;
-    this.uri = uri;
+    this.uri = uri || id;
     this.label = label || "";
     this.type = type || "";
     this.etag = "";
@@ -4046,7 +4232,7 @@ function get_etag() { return this.etag; }
     this._check_change_ = _check_change_;
     this.start_auto_refresh = start_auto_refresh;
     this.stop_auto_refresh = stop_auto_refresh;
-    this.getAbsoluteURLFromRelative=getAbsoluteURLFromRelative;
+    this.getAbsoluteURLFromRelative = getAbsoluteURLFromRelative;
     return this;
   };
 })();
@@ -4147,7 +4333,7 @@ KTBSTrace.prototype = {
     /**
   * Change the attributes of the Base. Add or change the attributes passed in parameter.
   * Example of attributes :
-  * attributes = [ [attributes_name_1,attribute_value_1], [attribute_name_2,attribute_value_2], ...]; 
+  * attributes = [ [attributes_name_1,attribute_value_1], [attribute_name_2,attribute_value_2], ...];
   *
   * Returns a Promise with the base as a parameter if the modification succeed.
   * @param attributes {Array} Array of Array, with the name of the attribute in the 1st position, the value of the parameter in the 2nd position.
@@ -4166,7 +4352,7 @@ KTBSTrace.prototype = {
           console.log(old_attributes);
 
           var modeldata = JSON.stringify(old_attributes);
-          
+
           var etag = that.etag;
           var xhr = new XMLHttpRequest();
           xhr.open('PUT', that.uri, true);
@@ -4176,7 +4362,7 @@ KTBSTrace.prototype = {
             if (xhr.readyState === 4) {
               if(xhr.status === 200) {
                 that.etag = xhr.getResponseHeader('ETag');
-                that._on_state_refresh_( JSON.parse( xhr.response ) ); 
+                that._on_state_refresh_( JSON.parse( xhr.response ) );
                 resolve( xhr.response );
               } else {
                 reject(xhr);
@@ -4192,7 +4378,7 @@ KTBSTrace.prototype = {
           console.log(err);
         })
       } );
-  }, 
+  },
 
 
 
@@ -4284,16 +4470,66 @@ KTBSTrace.prototype = {
     });
   },*/
 
+  get_stats: function(){
+    return new Promise(function(resolve, reject) {
+      var xhr = new XMLHttpRequest();
+      xhr.open('GET', this.uri+'@stats', true);
+      xhr.setRequestHeader('Content-Type', 'application/json');
+      xhr.setRequestHeader('Accept', 'application/ld+json');
+      xhr.withCredentials = true;
+      xhr.onreadystatechange = function () {
+        if (xhr.readyState === 4) {
+          if(xhr.status === 200 || xhr.status === 201) {
+            var response = JSON.parse(xhr.response);
+            resolve( response );
+          }
+          else {
+            reject(xhr);
+          }
+        }
+      };
+      xhr.onerror = function() {
+        reject(Error('There was a network error.'));
+      };
+      xhr.send( null );
+    }.bind(this));
+  },
+
+  post_query: function(query){
+    return new Promise(function(resolve, reject) {
+      var xhr = new XMLHttpRequest();
+      xhr.open('POST', this.uri+'@obsels', true);
+      xhr.setRequestHeader('Content-Type', 'application/sparql-query');
+      xhr.setRequestHeader('Accept', 'application/ld+json');
+      xhr.withCredentials = true;
+      xhr.onreadystatechange = function () {
+        if (xhr.readyState === 4) {
+          if(xhr.status === 200 || xhr.status === 201) {
+            var response = JSON.parse(xhr.response);
+            resolve( response );
+          }
+          else {
+            reject(xhr);
+          }
+        }
+      };
+      xhr.onerror = function() {
+        reject(Error('There was a network error.'));
+      };
+      xhr.send( query );
+    }.bind(this));
+  },
+
   list_obsels: function(options, timeout){
     var that = this;
     var delay = timeout || 15000;
     this.obselLoadingPromise = this.obselLoadingPromise || new Promise(function(resolve, reject) {
-      
+
       setTimeout(function() {
         that.obselLoadingPromise = null;
         reject("Promise timed-out after " + delay + "ms");
       }, delay);
-      
+
       var xhr = new XMLHttpRequest();
 
 
@@ -4339,8 +4575,8 @@ KTBSTrace.prototype = {
             catch (e) {
                reject(Error('This resource has some errors on server side.'));
             }
-            
-            
+
+
           }
           else if(xhr.status === 304){
             that.obselLoadingPromise = null;
@@ -4359,7 +4595,7 @@ KTBSTrace.prototype = {
 
       xhr.send();
     });
-    
+
     return this.obselLoadingPromise;
   },
 
@@ -4717,10 +4953,10 @@ KTBSTrace.prototype = {
   * @returns A Promise.
   */
   create_obsels: function(obsels){
-    
+
     var new_obsels_data = JSON.stringify(obsels);
     var that = this;
-    
+
     return new Promise(function(resolve, reject) {
       $.ajax({
         url: that.uri,
@@ -4740,7 +4976,7 @@ KTBSTrace.prototype = {
         }
       });
     });
-    
+
   },
 
   // TEMPORARY METHODS
@@ -4783,7 +5019,7 @@ var KTBS = function KTBS(uri) {
   KTBSResource.call(this, uri, uri, 'KTBS', "");
   this.bases = [];
   this.builtin_methods = [];
-  
+
   var that = this;
 };
 
@@ -4797,7 +5033,7 @@ KTBS.prototype = {
   * @todo METHOD NOT IMPLEMENTED
 */
   get_builtin_method: function() {},
-  
+
   /**
   * @summary Returns the KTBS.Base with the given ID.
   * @returns Samotraces.KTBS.Base Base corresponding to the given ID
@@ -4834,18 +5070,18 @@ KTBS.prototype = {
     });
   },
   */
-  
-  
+
+
   create_base: function(id, label, note){
-    
+
     var new_base = {
       "@context":	"http://liris.cnrs.fr/silex/2011/ktbs-jsonld-context",
       "@type":	"Base",
       "@id":		id + "/",
       "label":	label || "",
-      "http://www.w3.org/2004/02/skos/core#note" : note || ""
+      "http://www.w3.org/2000/01/rdf-schema#comment" : note || ""
     }
-    
+
     var url = this.uri;
     return new Promise( function(resolve, reject){
       var xhr = new XMLHttpRequest();
@@ -4864,12 +5100,12 @@ KTBS.prototype = {
       xhr.onerror = function() {
         reject(Error('There was a network error.'));
       };
-      
+
       xhr.send( JSON.stringify(new_base) );
     })
-    
+
   },
-  
+
   iter_bases: function(){
     function IterablePromise(arrayLike, process) {
       var that = this;
@@ -4894,20 +5130,20 @@ KTBS.prototype = {
         return that.forEach(function(){}).catch(onRejected);
       };
     }
-    
+
     function createBaseResource( baseUri ){
       return new Samotraces.Ktbs.Base( baseUri );
     }
-    
+
     var bases_uri = [];
     for(var j = 0 ; j < this.bases.length; j++){
       bases_uri.push( this.uri + this.bases[j] );
     }
-    
+
     return new IterablePromise(bases_uri, createBaseResource);
-    
+
   },
-  
+
   list_bases: function(){
     var that = this;
     return new Promise( function(resolve, reject){
@@ -4920,8 +5156,8 @@ KTBS.prototype = {
           })
     });
   },
-  
-  
+
+
   ///////////
   /**
   * Overloads the {@link Samotraces.KTBS.Resouce#_on_state_refresh_} method.

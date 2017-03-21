@@ -29,6 +29,16 @@ var KTBSResource = (function() {
     if(relative.indexOf('http://') > -1){
       return relative;
     }
+    if(relative.indexOf('#') === 0){
+      var position = base.indexOf('#');
+      if( position === -1){
+        return base + relative;
+      }
+      else{
+        var new_base = base.substring(0,position);
+        return new_base + relative;
+      }
+    }
 
     var stack = base.split("/"),
         parts = relative.split("/");
@@ -140,6 +150,7 @@ function get_etag() { return this.etag; }
       xhr.setRequestHeader('Accept', 'application/ld+json');
       xhr.withCredentials = true;
       xhr.onreadystatechange = function () {
+
         if (xhr.readyState === 4) {
           if(xhr.status === 200) {
             var response = undefined
@@ -202,6 +213,7 @@ function get_etag() { return this.etag; }
         that.loading_promise = null;
         reject(Error('There was a network error.'));
       };
+
       xhr.send();
     });
 
@@ -248,18 +260,26 @@ function get_etag() { return this.etag; }
   	 *     WHEN A RESOURCE IS DELETED.
   	 */
   function remove() {
-    function refresh_parent() {
-      //TROUVER UN MOYEN MALIN DE RAFRAICHIR LA LISTE DES BASES DU KTBS...
-    }
-    $.ajax({
-      url: this.uri,
-      type: 'DELETE',
-      success: refresh_parent.bind(this),
-      error: function(jqXHR, textStatus, errorThrown) {
-        throw "Cannot delete " + this.get_resource_type() + " " + this.uri + ": " + textStatus + ' ' + JSON.stringify(errorThrown);
-      }
+
+    var that = this;
+    return new Promise(function(resolve, reject) {
+
+      var xhr = new XMLHttpRequest();
+      xhr.open('DELETE', that.uri, true);
+      xhr.setRequestHeader('Accept', 'application/json');
+      xhr.withCredentials = true;
+      xhr.onerror = function() {
+        reject( "Cannot delete " + that.get_resource_type() + " " + that.uri + ": " + xhr.status );
+      };
+      xhr.onreadystatechange = function () {
+        if (xhr.readyState === 4) {
+          resolve( xhr.response );
+        }
+      };
+      xhr.send(null);
     });
-  }
+
+    }
   /**
   	 * @summary Returns the label of the Resource
   	 */
@@ -300,7 +320,7 @@ function get_etag() { return this.etag; }
     // DOCUMENTED ABOVE
     // ATTRIBUTES
     this.id = id;
-    this.uri = uri;
+    this.uri = uri || id;
     this.label = label || "";
     this.type = type || "";
     this.etag = "";

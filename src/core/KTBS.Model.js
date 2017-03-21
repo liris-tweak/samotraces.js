@@ -28,12 +28,15 @@ var Model = function(uri, id, label) {
   id = id || uri;
   KTBSResource.call(this, id, uri, 'TraceModel', label || "");
   this.list_type_obsels = [];
+  this.list_type_attributes = [];
+  this.model_properties = {};
+  this.graph = [];
   base_uri = "";
 };
 
 Model.prototype = {
 
-  
+
   list_obsels: function(data) {
     ListeObselType = [];
     var M = this;
@@ -106,7 +109,7 @@ Model.prototype = {
       '@context': 'http://liris.cnrs.fr/silex/2011/ktbs-jsonld-context',
       '@graph': input
     }
-    
+
     return new Promise(function(resolve, reject) {
       var etag = that.etag;
       var xhr = new XMLHttpRequest();
@@ -137,14 +140,34 @@ Model.prototype = {
 
     this._check_change_('list_type_obsels', data["@graph"], 'model:update');
 
+    var type_obsels = [];
+    var type_attributes = [];
+
     for(var i = 0;  i < data["@graph"].length; i++){
       if( data["@graph"][i]["@type"] === "TraceModel" ){
         this._check_change_('base_uri', this.getAbsoluteURLFromRelative(this.uri, data["@graph"][i].inBase), 'model:update');
         this._check_change_('@id', data["@graph"][i]["@id"], 'model:update');
         this._check_change_('label', data["@graph"][i]["label"], 'model:update');
-        this._check_change_('http://www.w3.org/2004/02/skos/core#note', data["@graph"][i]["http://www.w3.org/2004/02/skos/core#note"], 'model:update');
+        this._check_change_('http://www.w3.org/2000/01/rdf-schema#comment', data["@graph"][i]["http://www.w3.org/2000/01/rdf-schema#comment"], 'model:update');
+        this._check_change_('model_properties', data["@graph"][i]);
+      }
+      else if( data["@graph"][i]["@type"] === "ObselType" ){
+        data["@graph"][i]['@id'] = this.getAbsoluteURLFromRelative(this['@id'], data["@graph"][i]['@id']);
+        type_obsels.push(data["@graph"][i]);
+      }
+      else if( data["@graph"][i]["@type"] === "AttributeType" ){
+        data["@graph"][i]['@id'] = this.getAbsoluteURLFromRelative(this['@id'], data["@graph"][i]['@id']);
+        for(var j = 0; j < data["@graph"][i]['hasAttributeObselType'].length; j++){
+          data["@graph"][i]['hasAttributeObselType'][j] = this.getAbsoluteURLFromRelative(this['@id'], data["@graph"][i]['hasAttributeObselType'][j]);
+        }
+        type_attributes.push(data["@graph"][i]);
       }
     }
+
+    this._check_change_('list_type_attributes',type_attributes, 'model:update');
+    this._check_change_('list_type_obsels', type_obsels, 'model:update');
+
+    this._check_change_('graph', data["@graph"], 'model:update');
 
   }
 

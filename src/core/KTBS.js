@@ -24,7 +24,7 @@ var KTBS = function KTBS(uri) {
   KTBSResource.call(this, uri, uri, 'KTBS', "");
   this.bases = [];
   this.builtin_methods = [];
-  
+
   var that = this;
 };
 
@@ -38,7 +38,7 @@ KTBS.prototype = {
   * @todo METHOD NOT IMPLEMENTED
 */
   get_builtin_method: function() {},
-  
+
   /**
   * @summary Returns the KTBS.Base with the given ID.
   * @returns Samotraces.KTBS.Base Base corresponding to the given ID
@@ -75,18 +75,18 @@ KTBS.prototype = {
     });
   },
   */
-  
-  
+
+
   create_base: function(id, label, note){
-    
+
     var new_base = {
       "@context":	"http://liris.cnrs.fr/silex/2011/ktbs-jsonld-context",
       "@type":	"Base",
       "@id":		id + "/",
       "label":	label || "",
-      "http://www.w3.org/2004/02/skos/core#note" : note || ""
+      "http://www.w3.org/2000/01/rdf-schema#comment" : note || ""
     }
-    
+
     var url = this.uri;
     return new Promise( function(resolve, reject){
       var xhr = new XMLHttpRequest();
@@ -105,12 +105,12 @@ KTBS.prototype = {
       xhr.onerror = function() {
         reject(Error('There was a network error.'));
       };
-      
+
       xhr.send( JSON.stringify(new_base) );
     })
-    
+
   },
-  
+
   iter_bases: function(){
     function IterablePromise(arrayLike, process) {
       var that = this;
@@ -135,20 +135,20 @@ KTBS.prototype = {
         return that.forEach(function(){}).catch(onRejected);
       };
     }
-    
+
     function createBaseResource( baseUri ){
       return new Samotraces.Ktbs.Base( baseUri );
     }
-    
+
     var bases_uri = [];
     for(var j = 0 ; j < this.bases.length; j++){
       bases_uri.push( this.uri + this.bases[j] );
     }
-    
+
     return new IterablePromise(bases_uri, createBaseResource);
-    
+
   },
-  
+
   list_bases: function(){
     var that = this;
     return new Promise( function(resolve, reject){
@@ -161,8 +161,8 @@ KTBS.prototype = {
           })
     });
   },
-  
-  
+
+
   ///////////
   /**
   * Overloads the {@link Samotraces.KTBS.Resouce#_on_state_refresh_} method.

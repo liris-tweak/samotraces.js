@@ -26,6 +26,7 @@ var Base = function Base(uri, id, label) {
   KTBSResource.call(this, id, uri, 'Base', label);
   this.contains = [];
   this.attributes = {};
+  this._propertiesPromise = null
 };
 
 Base.prototype = {
@@ -129,6 +130,62 @@ Base.prototype = {
     });
   },
 
+  load_properties: function(props, timeout){
+    var that = this;
+    var delay = timeout || 15000;
+
+
+    var targetURI = that.uri+'?prop=';
+
+    for(var i = 0; i < props.length; i++){
+      targetURI += props[i] ;
+      if( i < props.length - 1 )
+        targetURI += ","
+    }
+
+    if( !this._propertiesPromise ){
+      this._propertiesPromise = new Promise(function(resolve, reject) {
+
+        setTimeout(function() {
+          that._propertiesPromise = null;
+          reject("Promise timed-out after " + delay + "ms");
+        }, delay);
+
+        var xhr = new XMLHttpRequest();
+        xhr.open('GET',targetURI,true);
+        xhr.setRequestHeader('Content-Type', 'application/json');
+        xhr.setRequestHeader('Accept', 'application/ld+json');
+        xhr.withCredentials = true;
+        xhr.onreadystatechange = function () {
+          if (xhr.readyState === 4) {
+            if(xhr.status === 200) {
+              var response = undefined
+              try {
+                response = JSON.parse(xhr.response);
+                that.etag = xhr.getResponseHeader('ETag');
+                that._propertiesPromise = null;
+                resolve(response.contains);
+              }
+              catch (e) {
+                that._propertiesPromise = null;
+                reject(Error('This resource has some errors on server side.'));
+              }
+            }
+            else {
+              that._propertiesPromise = null;
+              reject(xhr);
+            }
+          }
+        };
+        xhr.onerror = function() {
+          that._propertiesPromise = null;
+          reject(Error('There was a network error.'));
+        };
+        xhr.send();
+      });
+    }
+    return this._propertiesPromise;
+  },
 
   iter_stored_traces: function(){
     function IterablePromise(arrayLike, process) {
@@ -276,9 +333,13 @@ Base.prototype = {
   list_models: function(){
     var that = this;
     return new Promise( function(resolve, reject){
+      var result = [];
       that.iter_stored_traces()
           .then( function(x){
-            resolve(x);
+            if(x)
+              result.push(x);
+            else
+              resolve(result);
           })
           .catch( function(err){
             reject(err);
@@ -381,12 +442,92 @@ Base.prototype = {
     });
   },
 
+  /**
+  * Create a BAse in this base ("Baseception").
+  * Returns a Promise, with the created Base as a parameter.
+  * @param id {String} ID of the created Base.
+  * @param {!optionnal} label {String} Label of the Base.
+  * @param {!optionnal} comment {String} Label of the Base.
+  */
+  create_base: function(id, label, comment) {
+    var doc = {
+      "@id": id + '/',
+      "@type": "Base",
+      "inBase": "./",
+      "label": label || "",
+      "http://www.w3.org/2000/01/rdf-schema#comment": comment || ""
+    };
+    var that = this;
+    return new Promise(function(resolve, reject) {
+
+      var xhr = new XMLHttpRequest();
+      xhr.open('POST',that.uri,true);
+      xhr.setRequestHeader('Content-Type', 'application/json');
+      xhr.withCredentials = true;
+      xhr.onreadystatechange = function () {
+        if (xhr.readyState === 4) {
+          if(xhr.status === 200 || xhr.status === 201) {
+            resolve( new Samotraces.Ktbs.Base( xhr.response.replace('>','').replace('<','') ) );
+          }
+          else {
+            reject(xhr);
+          }
+        }
+      };
+      xhr.onerror = function() {
+        reject(Error('There was a network error.'));
+      };
+
+      xhr.send( JSON.stringify(doc) );
+    });
+  },
+
 
 
   /**
   	 * @todo METHOD NOT IMPLEMENTED
   	 */
-  create_computed_trace: function(id, method, parameters, sources, label) {},
+  create_computed_trace: function(id, method, parameters, sources, label) {
+    var query = {
+      "@id": id,
+      "@type": "ComputedTrace",
+      "label": label,
+      "hasMethod": method,
+      "hasSource": sources,
+      "parameter": parameters
+    }
+    return new Promise(function(resolve, reject) {
+      var xhr = new XMLHttpRequest();
+      xhr.open('POST', this.uri, true);
+      xhr.setRequestHeader('Content-Type', 'application/json');
+      xhr.setRequestHeader('Accept', 'application/ld+json');
+      xhr.withCredentials = true;
+      xhr.onreadystatechange = function () {
+        if (xhr.readyState === 4) {
+          if(xhr.status === 200 || xhr.status === 201) {
+            try {
+              var response = JSON.parse(xhr.response);
+              resolve(response);
+            } catch (e) {
+              resolve( xhr.response );
+            } finally {
+              resolve( xhr.response );
+            }
+
+          }
+          else {
+            reject(xhr);
+          }
+        }
+      };
+      xhr.onerror = function() {
+        reject(Error('There was a network error.'));
+      };
+      var string_query = JSON.stringify(query);
+      console.log(string_query);
+      xhr.send(string_query);
+    }.bind(this));
+  },
   /**
   	 * @todo METHOD NOT IMPLEMENTED
   	 */
@@ -403,7 +544,8 @@ Base.prototype = {
   _on_state_refresh_: function(data) {
     //	console.log(data);
     this._check_change_('label', data["label"], 'base:update');
-    this._check_change_('comment', data["http://www.w3.org/2000/01/rdf-schema#comment"], 'base:update');
+    var comment = data["http://www.w3.org/2000/01/rdf-schema#comment"] || "";
+    this._check_change_('comment', comment, 'base:update');
     this._check_change_('contains', data.contains, 'base:update');
     this._check_change_('attributes', data, 'base:attrSet');
   },

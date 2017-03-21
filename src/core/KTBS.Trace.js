@@ -90,7 +90,7 @@ KTBSTrace.prototype = {
     /**
   * Change the attributes of the Base. Add or change the attributes passed in parameter.
   * Example of attributes :
-  * attributes = [ [attributes_name_1,attribute_value_1], [attribute_name_2,attribute_value_2], ...]; 
+  * attributes = [ [attributes_name_1,attribute_value_1], [attribute_name_2,attribute_value_2], ...];
   *
   * Returns a Promise with the base as a parameter if the modification succeed.
   * @param attributes {Array} Array of Array, with the name of the attribute in the 1st position, the value of the parameter in the 2nd position.
@@ -109,7 +109,7 @@ KTBSTrace.prototype = {
           console.log(old_attributes);
 
           var modeldata = JSON.stringify(old_attributes);
-          
+
           var etag = that.etag;
           var xhr = new XMLHttpRequest();
           xhr.open('PUT', that.uri, true);
@@ -119,7 +119,7 @@ KTBSTrace.prototype = {
             if (xhr.readyState === 4) {
               if(xhr.status === 200) {
                 that.etag = xhr.getResponseHeader('ETag');
-                that._on_state_refresh_( JSON.parse( xhr.response ) ); 
+                that._on_state_refresh_( JSON.parse( xhr.response ) );
                 resolve( xhr.response );
               } else {
                 reject(xhr);
@@ -135,7 +135,7 @@ KTBSTrace.prototype = {
           console.log(err);
         })
       } );
-  }, 
+  },
 
 
 
@@ -227,16 +227,66 @@ KTBSTrace.prototype = {
     });
   },*/
 
+  get_stats: function(){
+    return new Promise(function(resolve, reject) {
+      var xhr = new XMLHttpRequest();
+      xhr.open('GET', this.uri+'@stats', true);
+      xhr.setRequestHeader('Content-Type', 'application/json');
+      xhr.setRequestHeader('Accept', 'application/ld+json');
+      xhr.withCredentials = true;
+      xhr.onreadystatechange = function () {
+        if (xhr.readyState === 4) {
+          if(xhr.status === 200 || xhr.status === 201) {
+            var response = JSON.parse(xhr.response);
+            resolve( response );
+          }
+          else {
+            reject(xhr);
+          }
+        }
+      };
+      xhr.onerror = function() {
+        reject(Error('There was a network error.'));
+      };
+      xhr.send( null );
+    }.bind(this));
+  },
+
+  post_query: function(query){
+    return new Promise(function(resolve, reject) {
+      var xhr = new XMLHttpRequest();
+      xhr.open('POST', this.uri+'@obsels', true);
+      xhr.setRequestHeader('Content-Type', 'application/sparql-query');
+      xhr.setRequestHeader('Accept', 'application/ld+json');
+      xhr.withCredentials = true;
+      xhr.onreadystatechange = function () {
+        if (xhr.readyState === 4) {
+          if(xhr.status === 200 || xhr.status === 201) {
+            var response = JSON.parse(xhr.response);
+            resolve( response );
+          }
+          else {
+            reject(xhr);
+          }
+        }
+      };
+      xhr.onerror = function() {
+        reject(Error('There was a network error.'));
+      };
+      xhr.send( query );
+    }.bind(this));
+  },
+
   list_obsels: function(options, timeout){
     var that = this;
     var delay = timeout || 15000;
     this.obselLoadingPromise = this.obselLoadingPromise || new Promise(function(resolve, reject) {
-      
+
       setTimeout(function() {
         that.obselLoadingPromise = null;
         reject("Promise timed-out after " + delay + "ms");
       }, delay);
-      
+
       var xhr = new XMLHttpRequest();
 
 
@@ -282,8 +332,8 @@ KTBSTrace.prototype = {
             catch (e) {
                reject(Error('This resource has some errors on server side.'));
             }
-            
-            
+
+
           }
           else if(xhr.status === 304){
             that.obselLoadingPromise = null;
@@ -302,7 +352,7 @@ KTBSTrace.prototype = {
 
       xhr.send();
     });
-    
+
     return this.obselLoadingPromise;
   },
 
@@ -660,10 +710,10 @@ KTBSTrace.prototype = {
   * @returns A Promise.
   */
   create_obsels: function(obsels){
-    
+
     var new_obsels_data = JSON.stringify(obsels);
     var that = this;
-    
+
     return new Promise(function(resolve, reject) {
       $.ajax({
         url: that.uri,
@@ -683,7 +733,7 @@ KTBSTrace.prototype = {
         }
       });
     });
-    
+
   },
 
   // TEMPORARY METHODS
