@@ -25,11 +25,11 @@ var $ = require("jquery");
  * @param {String}	uri	URI of the KTBS trace to load.
  * @param {String}	[id]	ID of the KTBS trace to load.
  */
-var KTBSTrace = function Trace(uri, id) {
+var KTBSTrace = function Trace(uri, id, type, label) {
   // KTBS.Trace is a Resource
   "use strict";
-  if (id === undefined) { id = uri; }
-  KTBSResource.call(this, id, uri, 'Base', "");
+  id = id || uri;
+  KTBSResource.call(this, id, uri, type, label || "");
 
   this.temp = {}; // attribute used to store actions made by the user on the trace while not knowing if they are allowed. e.g., create_obsel, when we don't know yet if the Trace is a StoredTrace because the KTBS didn't reply yet.
   this.default_subject = "";
@@ -37,9 +37,12 @@ var KTBSTrace = function Trace(uri, id) {
   this.obsel_list_uri = uri + "@obsels";
   this.base_uri = "";
   this.origin = "";
+  this.isSourceOf = [];
+  this.hasSource = [];
+  this.attributes = {};
+  this.obselLoadingPromise = null;
   //this.origin_offset = (new Date(0)).getMilliseconds();
   this.obsel_list = []; this.traceSet = [];
-  this.force_state_refresh();
 };
 
 KTBSTrace.prototype = {
@@ -82,6 +85,61 @@ KTBSTrace.prototype = {
   		var ms = ktbs_date_str.substr(20,3);
   		return Date.UTC(Y,M,D,h,m,s,ms);
   	},*/
+
+
+    /**
+  * Change the attributes of the Base. Add or change the attributes passed in parameter.
+  * Example of attributes :
+  * attributes = [ [attributes_name_1,attribute_value_1], [attribute_name_2,attribute_value_2], ...];
+  *
+  * Returns a Promise with the base as a parameter if the modification succeed.
+  * @param attributes {Array} Array of Array, with the name of the attribute in the 1st position, the value of the parameter in the 2nd position.
+  */
+  modify_attributes: function( attributes ){
+    var that = this;
+    return new Promise(function(resolve, reject) {
+      that.load()
+        .then( function(){
+          var old_attributes = that.attributes;
+          for(var i = 0; i < attributes.length; i++){
+            old_attributes[attributes[i][0]] = attributes[i][1];
+          }
+
+          console.log(attributes);
+          console.log(old_attributes);
+
+          var modeldata = JSON.stringify(old_attributes);
+
+          var etag = that.etag;
+          var xhr = new XMLHttpRequest();
+          xhr.open('PUT', that.uri, true);
+          xhr.setRequestHeader('Content-Type', 'application/ld+json');
+          xhr.setRequestHeader('If-Match', etag);
+          xhr.onreadystatechange = function () {
+            if (xhr.readyState === 4) {
+              if(xhr.status === 200) {
+                that.etag = xhr.getResponseHeader('ETag');
+                that._on_state_refresh_( JSON.parse( xhr.response ) );
+                resolve( xhr.response );
+              } else {
+                reject(xhr);
+              }
+            }
+          };
+          xhr.onerror = function() {
+            reject(Error('There was a network error.'));
+          };
+          xhr.send(modeldata);
+        })
+        .catch( function(err){
+          console.log(err);
+        })
+      } );
+  },
+
+
+
+
   /**
   	 * @todo METHOD NOT IMPLEMENTED
   	 */
@@ -123,6 +181,7 @@ KTBSTrace.prototype = {
   	 * @todo REVERSE IS NOT YET TAKEN INTO ACCOUNT
   	 */
   // TODO add an optional CALLBACK???
+  /*
   list_obsels: function(begin, end, reverse) {
     "use strict";
     this.obsel_list_uri = this.uri + "@obsels";
@@ -166,6 +225,135 @@ KTBSTrace.prototype = {
       if (begin && o.get_end() < begin) { return false; }
       return true;
     });
+  },*/
+
+  get_stats: function(){
+    return new Promise(function(resolve, reject) {
+      var xhr = new XMLHttpRequest();
+      xhr.open('GET', this.uri+'@stats', true);
+      xhr.setRequestHeader('Content-Type', 'application/json');
+      xhr.setRequestHeader('Accept', 'application/ld+json');
+      xhr.withCredentials = true;
+      xhr.onreadystatechange = function () {
+        if (xhr.readyState === 4) {
+          if(xhr.status === 200 || xhr.status === 201) {
+            var response = JSON.parse(xhr.response);
+            resolve( response );
+          }
+          else {
+            reject(xhr);
+          }
+        }
+      };
+      xhr.onerror = function() {
+        reject(Error('There was a network error.'));
+      };
+      xhr.send( null );
+    }.bind(this));
+  },
+
+  post_query: function(query){
+    return new Promise(function(resolve, reject) {
+      var xhr = new XMLHttpRequest();
+      xhr.open('POST', this.uri+'@obsels', true);
+      xhr.setRequestHeader('Content-Type', 'application/sparql-query');
+      xhr.setRequestHeader('Accept', 'application/ld+json');
+      xhr.withCredentials = true;
+      xhr.onreadystatechange = function () {
+        if (xhr.readyState === 4) {
+          if(xhr.status === 200 || xhr.status === 201) {
+            var response = JSON.parse(xhr.response);
+            resolve( response );
+          }
+          else {
+            reject(xhr);
+          }
+        }
+      };
+      xhr.onerror = function() {
+        reject(Error('There was a network error.'));
+      };
+      xhr.send( query );
+    }.bind(this));
+  },
+
+  list_obsels: function(options, timeout){
+    var that = this;
+    var delay = timeout || 15000;
+    this.obselLoadingPromise = this.obselLoadingPromise || new Promise(function(resolve, reject) {
+
+      setTimeout(function() {
+        that.obselLoadingPromise = null;
+        reject("Promise timed-out after " + delay + "ms");
+      }, delay);
+
+      var xhr = new XMLHttpRequest();
+
+
+      var targetURI = that.uri+'@obsels?';
+
+      var keys = Object.keys(options);
+      for(var i = 0; i< keys.length; i++){
+        targetURI += keys[i] + '=' + options[keys[i]];
+        if( i < keys.length - 1 )
+          targetURI += "&"
+      }
+
+      console.log(targetURI);
+      xhr.open('GET',targetURI,true);
+      xhr.setRequestHeader('Content-Type', 'application/json');
+      xhr.setRequestHeader('Accept', 'application/ld+json');
+      xhr.withCredentials = true;
+
+/*
+      xhr.onprogress = function( oEvent ){
+
+        console.log(oEvent);
+
+        if (oEvent.lengthComputable) {
+          var percentComplete = oEvent.loaded / oEvent.total;
+          // ...
+        } else {
+          // Unable to compute progress information since the total size is unknown
+        }
+      };
+
+*/
+
+      xhr.onreadystatechange = function ( oEvent ) {
+        if (xhr.readyState === 4) {
+          if(xhr.status === 200) {
+            var response = undefined
+            try {
+              response = JSON.parse(xhr.response);
+              that.obselLoadingPromise = null;
+              resolve(response.obsels);
+            }
+            catch (e) {
+               reject(Error('This resource has some errors on server side.'));
+            }
+
+
+          }
+          else if(xhr.status === 304){
+            that.obselLoadingPromise = null;
+            resolve(that);
+          }
+          else {
+            that.obselLoadingPromise = null;
+            reject(xhr);
+          }
+        }
+      };
+      xhr.onerror = function() {
+        that.obselLoadingPromise = null;
+        reject(Error('There was a network error.'));
+      };
+
+      xhr.send();
+    });
+
+    return this.obselLoadingPromise;
   },
 
   Before_on_refresh_obsel_list_: function(dataRecu) {
@@ -366,11 +554,15 @@ KTBSTrace.prototype = {
     "use strict";
     this._check_and_update_trace_type_(data['@type']);
     this._check_change_('default_subject', data.hasDefaultSubject, '');
-    this._check_change_('model_uri', data.hasModel, 'trace:model');
+    this._check_change_('model_uri', this.getAbsoluteURLFromRelative(this.uri, data.hasModel), 'trace:model');
     this._check_change_('obsel_list_uri', data.hasObselList, 'trace:update');
-    this._check_change_('base_uri', data.inBase, 'trace:base');
+    this._check_change_('base_uri', this.getAbsoluteURLFromRelative(this.uri, data.inBase), 'trace:base');
     this._check_change_('origin', data.origin, 'trace:update');
     this._check_change_('label', data.label, 'trace:update');
+    this._check_change_('http://www.w3.org/2004/02/skos/core#note', data["http://www.w3.org/2004/02/skos/core#note"], 'trace:update');
+    this._check_change_('isSourceOf', data.isSourceOf, 'trace:update');
+    this._check_change_('hasSource', data.hasSource, 'trace:update');
+    this._check_change_('attributes', data, 'trace:attrSet');
     this.trigger('trace:updateData', data);
     //this._check_change_('origin_offset',this.ktbs_origin_to_ms(data.origin),'');
   },
@@ -495,6 +687,9 @@ KTBSTrace.prototype = {
         url: this.uri,
         type: 'POST',
         contentType: 'application/json',
+        xhrFields: {
+            withCredentials: true
+         },
         success: _on_create_obsel_success_.bind(this),
         data: JSON.stringify(json_obsel)
       });
@@ -507,6 +702,38 @@ KTBSTrace.prototype = {
     get_parameter: function(key) {},
     set_parameter: function(key, value) {},
     del_parameter: function(key) {}
+  },
+
+  /**
+  * Uploads an array of obsels to the trace.
+  * @param  {Array} obsels And array of obsel to post on the trace.
+  * @returns A Promise.
+  */
+  create_obsels: function(obsels){
+
+    var new_obsels_data = JSON.stringify(obsels);
+    var that = this;
+
+    return new Promise(function(resolve, reject) {
+      $.ajax({
+        url: that.uri,
+        type: 'POST',
+        contentType: 'application/json',
+        data: new_obsels_data,
+        xhrFields: {
+            withCredentials: true
+        },
+        success: function(){
+           resolve("obsels upload");
+        },
+        error: function(jqXHR, textStatus, error) {
+          console.log('query error');
+          console.log([jqXHR, textStatus, error]);
+          reject([jqXHR, textStatus, error]);
+        }
+      });
+    });
+
   },
 
   // TEMPORARY METHODS

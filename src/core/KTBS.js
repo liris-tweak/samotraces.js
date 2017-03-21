@@ -24,7 +24,8 @@ var KTBS = function KTBS(uri) {
   KTBSResource.call(this, uri, uri, 'KTBS', "");
   this.bases = [];
   this.builtin_methods = [];
-  this.force_state_refresh();
+
+  var that = this;
 };
 
 KTBS.prototype = {
@@ -37,14 +38,7 @@ KTBS.prototype = {
   * @todo METHOD NOT IMPLEMENTED
 */
   get_builtin_method: function() {},
-  /**
-  * Returns the array of the URI of the bases contained in the KTBS
-  * @returns {Array<String>} Array of URI of bases.
-*/
-  list_bases: function() {
-    "use strict";
-    return this.bases;
-  },
+
   /**
   * @summary Returns the KTBS.Base with the given ID.
   * @returns Samotraces.KTBS.Base Base corresponding to the given ID
@@ -59,6 +53,7 @@ KTBS.prototype = {
   * @param id {String} URI of the base (optional)
   * @param label {String} Label of the base (optional)
 */
+  /*
   create_base: function(id, label) {
     "use strict";
     var new_base = {
@@ -79,6 +74,95 @@ KTBS.prototype = {
       }
     });
   },
+  */
+
+
+  create_base: function(id, label, note){
+
+    var new_base = {
+      "@context":	"http://liris.cnrs.fr/silex/2011/ktbs-jsonld-context",
+      "@type":	"Base",
+      "@id":		id + "/",
+      "label":	label || "",
+      "http://www.w3.org/2000/01/rdf-schema#comment" : note || ""
+    }
+
+    var url = this.uri;
+    return new Promise( function(resolve, reject){
+      var xhr = new XMLHttpRequest();
+      xhr.open('POST',url,true);
+      xhr.setRequestHeader('Content-Type', 'application/json');
+      xhr.onreadystatechange = function () {
+        if (xhr.readyState === 4) {
+          if(xhr.status === 200 || xhr.status === 201) {
+            resolve( new Samotraces.Ktbs.Base( xhr.response.replace('>','').replace('<','') ) );
+          }
+          else {
+            reject(xhr);
+          }
+        }
+      };
+      xhr.onerror = function() {
+        reject(Error('There was a network error.'));
+      };
+
+      xhr.send( JSON.stringify(new_base) );
+    })
+
+  },
+
+  iter_bases: function(){
+    function IterablePromise(arrayLike, process) {
+      var that = this;
+      var lst = [];
+      var i = 0;
+      that.forEach = function(callback) {
+        if (i >= arrayLike.length) {
+          return Promise.resolve(lst);
+        } else {
+          return Promise.resolve(arrayLike[i++])
+          .then(process)
+          .then(function(x) { lst.push(x); return x; })
+          .then(callback)
+          .then(that.forEach.bind(that, callback))
+          ;
+        }
+      };
+      that.then = function(onFullfilled, onRejected) {
+        return that.forEach(function(){}).then(onFullfilled, onRejected);
+      };
+      that.catch = function(onRejected) {
+        return that.forEach(function(){}).catch(onRejected);
+      };
+    }
+
+    function createBaseResource( baseUri ){
+      return new Samotraces.Ktbs.Base( baseUri );
+    }
+
+    var bases_uri = [];
+    for(var j = 0 ; j < this.bases.length; j++){
+      bases_uri.push( this.uri + this.bases[j] );
+    }
+
+    return new IterablePromise(bases_uri, createBaseResource);
+
+  },
+
+  list_bases: function(){
+    var that = this;
+    return new Promise( function(resolve, reject){
+      that.iter_bases()
+          .then( function(x){
+            resolve(x);
+          })
+          .catch( function(err){
+            reject(err);
+          })
+    });
+  },
+
+
   ///////////
   /**
   * Overloads the {@link Samotraces.KTBS.Resouce#_on_state_refresh_} method.

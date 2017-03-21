@@ -24,22 +24,19 @@ var EventHandler = require("./EventHandler.js");
  */
 
 
-var Model = function(uri, id) {
-  if (id === undefined) { id = uri; }
-  EventHandler.call(this);
-  KTBSResource.call(this, id, uri, 'Model', "");
-  this.list_Types_Obsles = []
-  this.force_state_refresh();
-
+var Model = function(uri, id, label) {
+  id = id || uri;
+  KTBSResource.call(this, id, uri, 'TraceModel', label || "");
+  this.list_type_obsels = [];
+  this.list_type_attributes = [];
+  this.model_properties = {};
+  this.graph = [];
+  base_uri = "";
 };
 
 Model.prototype = {
 
-  _on_state_refresh_: function(data) {
-    var etag = this.get_etag();
-    this.trigger('Model:get');
-    this.list_Types_Obsles = this.list_obsels(data["@graph"]);
-  },
+
   list_obsels: function(data) {
     ListeObselType = [];
     var M = this;
@@ -105,36 +102,75 @@ Model.prototype = {
     return Att;
   },
 
-  put_model: function(modeldata) {
-    this.force_state_refresh();
+  put_model: function(input) {
     var that = this;
+
+    var modeldata = {
+      '@context': 'http://liris.cnrs.fr/silex/2011/ktbs-jsonld-context',
+      '@graph': input
+    }
+
     return new Promise(function(resolve, reject) {
-      that.on ('Model:get', function(){
-       var etag = that.etag;
-
-    // PUT
-    var xhr = new XMLHttpRequest();
-    xhr.open('PUT', that.id, true);
-    xhr.setRequestHeader('Content-Type', 'application/json');
-    xhr.setRequestHeader('If-Match', etag);
-    xhr.onreadystatechange = function () {
-      if (xhr.readyState === 4) {
-        if(xhr.status === 200) {
-          console.log('OKOKOK');
-          resolve(new Samotraces.Ktbs.Model(that.id));
-        } else {
-          reject(xhr);
+      var etag = that.etag;
+      var xhr = new XMLHttpRequest();
+      xhr.open('PUT', that.uri, true);
+      xhr.setRequestHeader('Content-Type', 'application/ld+json');
+      xhr.setRequestHeader('Accept', 'application/ld+json');
+      xhr.setRequestHeader('If-Match', etag);
+      xhr.withCredentials = true;
+      xhr.onreadystatechange = function () {
+        if (xhr.readyState === 4) {
+          if(xhr.status === 200) {
+            that.etag = xhr.getResponseHeader('ETag');
+            that._on_state_refresh_(JSON.parse(xhr.response));
+            resolve();
+          } else {
+            reject(xhr);
+          }
         }
-      }
-    };
-    xhr.onerror = function() {
-      reject(Error('There was a network error.'));
-    };
-    xhr.send(modeldata);
+      };
+      xhr.onerror = function() {
+        reject(Error('There was a network error.'));
+      };
+      xhr.send(JSON.stringify(modeldata));
+    });
+  },
 
-  })
-  });
-}
+  _on_state_refresh_: function(data) {
+
+    this._check_change_('list_type_obsels', data["@graph"], 'model:update');
+
+    var type_obsels = [];
+    var type_attributes = [];
+
+    for(var i = 0;  i < data["@graph"].length; i++){
+      if( data["@graph"][i]["@type"] === "TraceModel" ){
+        this._check_change_('base_uri', this.getAbsoluteURLFromRelative(this.uri, data["@graph"][i].inBase), 'model:update');
+        this._check_change_('@id', data["@graph"][i]["@id"], 'model:update');
+        this._check_change_('label', data["@graph"][i]["label"], 'model:update');
+        this._check_change_('http://www.w3.org/2000/01/rdf-schema#comment', data["@graph"][i]["http://www.w3.org/2000/01/rdf-schema#comment"], 'model:update');
+        this._check_change_('model_properties', data["@graph"][i]);
+      }
+      else if( data["@graph"][i]["@type"] === "ObselType" ){
+        data["@graph"][i]['@id'] = this.getAbsoluteURLFromRelative(this['@id'], data["@graph"][i]['@id']);
+        type_obsels.push(data["@graph"][i]);
+      }
+      else if( data["@graph"][i]["@type"] === "AttributeType" ){
+        data["@graph"][i]['@id'] = this.getAbsoluteURLFromRelative(this['@id'], data["@graph"][i]['@id']);
+        for(var j = 0; j < data["@graph"][i]['hasAttributeObselType'].length; j++){
+          data["@graph"][i]['hasAttributeObselType'][j] = this.getAbsoluteURLFromRelative(this['@id'], data["@graph"][i]['hasAttributeObselType'][j]);
+        }
+        type_attributes.push(data["@graph"][i]);
+      }
+    }
+
+    this._check_change_('list_type_attributes',type_attributes, 'model:update');
+    this._check_change_('list_type_obsels', type_obsels, 'model:update');
+
+    this._check_change_('graph', data["@graph"], 'model:update');
+
+  }
+
 };
 
 module.exports = Model;

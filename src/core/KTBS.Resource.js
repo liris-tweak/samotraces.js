@@ -24,11 +24,26 @@ var KTBSResource = (function() {
     return this.type;
   }
 
-  function getAbsoluteURLFromRlative(base, relative) {
+  function getAbsoluteURLFromRelative(base, relative) {
+
+    if(relative.indexOf('http://') > -1){
+      return relative;
+    }
+    if(relative.indexOf('#') === 0){
+      var position = base.indexOf('#');
+      if( position === -1){
+        return base + relative;
+      }
+      else{
+        var new_base = base.substring(0,position);
+        return new_base + relative;
+      }
+    }
+
     var stack = base.split("/"),
         parts = relative.split("/");
-    stack.pop(); // remove current file name (or empty string)
-                 // (omit if "base" is the current folder without trailing slash)
+        stack.pop(); // remove current file name (or empty string)
+                     // (omit if "base" is the current folder without trailing slash)
     for (var i=0; i<parts.length; i++) {
         if (parts[i] == ".")
             continue;
@@ -61,7 +76,7 @@ function get_etag() { return this.etag; }
     /**
   	 * @summary Forces the Resource to synchronise with the KTBS.
   	 * @memberof Samotraces.KTBS.Resource.prototype
-     * @param {Object} options 
+     * @param {Object} options
      *  'options._on_state_refresh_': true|false
      *   enable or disable the old behavior of calling _on_state_refresh_ on the resource after synchronise completes
   	 * @description
@@ -70,7 +85,9 @@ function get_etag() { return this.etag; }
   	 * trigger the _on_state_refresh_ method of the Resource
   	 * on success.
   	 */
+  /*
   function force_state_refresh(options, success, reject) {
+
     success = success || function () {};
     reject = reject || function () {};
     options = options || {'_on_state_refresh_': true}; // For backward compatibility
@@ -107,13 +124,102 @@ function get_etag() { return this.etag; }
       },
       success: function (data, textStatus, xhr){
         trc.etag = xhr.getResponseHeader('ETag');
-        success(data);
+        trc.trigger('getetag');
         if (options._on_state_refresh_) {
           trc._on_state_refresh_(data);
         }
+        success(data);
       }
     });
   }
+  */
+
+  function load( timeout ){
+    var that = this;
+    var delay = timeout || 15000;
+    this.loading_promise = this.loading_promise || new Promise(function(resolve, reject) {
+
+      setTimeout(function() {
+        that.loading_promise = null;
+        reject("Promise timed-out after " + delay + "ms");
+      }, delay);
+
+      var xhr = new XMLHttpRequest();
+      xhr.open('GET',that.uri,true);
+      xhr.setRequestHeader('Content-Type', 'application/json');
+      xhr.setRequestHeader('Accept', 'application/ld+json');
+      xhr.withCredentials = true;
+      xhr.onreadystatechange = function () {
+
+        if (xhr.readyState === 4) {
+          if(xhr.status === 200) {
+            var response = undefined
+            try {
+              response = JSON.parse(xhr.response);
+              that.etag = xhr.getResponseHeader('ETag');
+              if(!that._on_state_refresh_){
+                if(response['@type'] === null || response['@type'] === undefined ){
+                  for(var i = 0;  i < response["@graph"].length; i++){
+                    if( response["@graph"][i]["@type"] === "TraceModel" ){
+                      var model = new Samotraces.Ktbs.Model(response["@graph"][i]['@id']);
+                      model._on_state_refresh_(response);
+                      that.loading_promise = null;
+                      resolve(model);
+                    }
+                  }
+                }
+                switch(response['@type']){
+                  case 'Base':
+                    var base = new Samotraces.Ktbs.Base(response['@id']);
+                    base._on_state_refresh_(response);
+                    that.loading_promise = null;
+                    resolve(base);
+                  break;
+                  case 'StoredTrace':
+                    var trace = new Samotraces.Ktbs.Trace(response['@id'],response['@id'],'StoredTrace');
+                    trace._on_state_refresh_(response);
+                    that.loading_promise = null;
+                    resolve(trace);
+                  break;
+                  case 'ComputedTrace':
+                    var trace = new Samotraces.Ktbs.Trace(response['@id'],response['@id'],'ComputedTrace');
+                    trace._on_state_refresh_(response);
+                    that.loading_promise = null;
+                    resolve(trace);
+                  break;
+                }
+              }
+              that._on_state_refresh_(response);
+              that.loading_promise = null;
+              resolve(that);
+            }
+            catch (e) {
+               reject(Error('This resource has some errors on server side.'));
+            }
+
+
+          }
+          else if(xhr.status === 304){
+            that.loading_promise = null;
+            resolve(that);
+          }
+          else {
+            that.loading_promise = null;
+            reject(xhr);
+          }
+        }
+      };
+      xhr.onerror = function() {
+        that.loading_promise = null;
+        reject(Error('There was a network error.'));
+      };
+
+      xhr.send();
+    });
+
+    return this.loading_promise;
+  }
+
     /**
   	 * @summary Forces the Resource to synchronise
   	 * with at a given refreshing rate.
@@ -154,18 +260,26 @@ function get_etag() { return this.etag; }
   	 *     WHEN A RESOURCE IS DELETED.
   	 */
   function remove() {
-    function refresh_parent() {
-      //TROUVER UN MOYEN MALIN DE RAFRAICHIR LA LISTE DES BASES DU KTBS...
-    }
-    $.ajax({
-      url: this.uri,
-      type: 'DELETE',
-      success: refresh_parent.bind(this),
-      error: function(jqXHR, textStatus, errorThrown) {
-        throw "Cannot delete " + this.get_resource_type() + " " + this.uri + ": " + textStatus + ' ' + JSON.stringify(errorThrown);
-      }
+
+    var that = this;
+    return new Promise(function(resolve, reject) {
+
+      var xhr = new XMLHttpRequest();
+      xhr.open('DELETE', that.uri, true);
+      xhr.setRequestHeader('Accept', 'application/json');
+      xhr.withCredentials = true;
+      xhr.onerror = function() {
+        reject( "Cannot delete " + that.get_resource_type() + " " + that.uri + ": " + xhr.status );
+      };
+      xhr.onreadystatechange = function () {
+        if (xhr.readyState === 4) {
+          resolve( xhr.response );
+        }
+      };
+      xhr.send(null);
     });
-  }
+
+    }
   /**
   	 * @summary Returns the label of the Resource
   	 */
@@ -206,13 +320,18 @@ function get_etag() { return this.etag; }
     // DOCUMENTED ABOVE
     // ATTRIBUTES
     this.id = id;
-    this.uri = uri;
-    this.label = label;
-    this.type = type;
+    this.uri = uri || id;
+    this.label = label || "";
+    this.type = type || "";
+    this.etag = "";
+
+
+    this.loading_promise = null;
+
+
     // API METHODS
     this.get_id = get_id;
     this.get_uri = get_uri;
-    this.force_state_refresh = force_state_refresh;
     this.get_read_only = get_read_only;
     this.remove = remove;
     this.get_label = get_label;
@@ -220,11 +339,12 @@ function get_etag() { return this.etag; }
     this.reset_label = reset_label;
     this.get_etag = get_etag;
     // helper
+    this.load = load;
     this.get_resource_type = get_resource_type;
     this._check_change_ = _check_change_;
     this.start_auto_refresh = start_auto_refresh;
     this.stop_auto_refresh = stop_auto_refresh;
-    this.getAbsoluteURLFromRlative=getAbsoluteURLFromRlative;
+    this.getAbsoluteURLFromRelative = getAbsoluteURLFromRelative;
     return this;
   };
 })();
